@@ -71,7 +71,9 @@ Respond in JSON format with this structure:
 
     // If we have custom config, enhance the system prompt
     if (agentConfig) {
-      systemPrompt = `${agentConfig.role}: ${agentConfig.purpose}
+      systemPrompt = `You are ${agentConfig.name}, a ${agentConfig.role}. ${agentConfig.purpose}
+
+Personality: ${agentConfig.personality || 'Professional and helpful'}
 
 Business Context: ${JSON.stringify(agentConfig.businessContext)}
 
@@ -86,6 +88,8 @@ Key Responsibilities:
 Alert Thresholds: ${JSON.stringify(agentConfig.alertThresholds)}
 
 Key Principles: ${agentConfig.keyPrinciples.join('. ')}
+
+IMPORTANT: Always introduce yourself as ${agentConfig.name} when greeting users or when it feels natural in conversation. Be personable and remember you're their dedicated virtual manager who knows their business well.
 
 Current context data: ${JSON.stringify(context)}
 

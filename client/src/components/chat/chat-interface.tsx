@@ -85,8 +85,8 @@ export default function ChatInterface() {
       <div className="border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">AI Assistant</h2>
-            <p className="text-sm text-gray-500">Ask me anything about your POS data</p>
+            <h2 className="text-lg font-semibold text-gray-900">Alex - AI Assistant</h2>
+            <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your POS data</p>
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">
@@ -102,7 +102,7 @@ export default function ChatInterface() {
         {/* Welcome Message */}
         <MessageBubble
           type="ai"
-          message="Hello! I'm your AI assistant for POS analytics. I can help you understand your sales data, operator performance, and business insights. Try asking me 'What happened yesterday?' or 'Show me top products this week'."
+          message="Hi! I'm Alex, your virtual manager. I've been keeping an eye on your operations and I'm here to help with any questions about your business performance. Try asking me 'What happened yesterday?' or 'Show me my top operators this week'."
           timestamp={new Date()}
         />
 

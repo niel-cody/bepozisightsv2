@@ -57,6 +57,7 @@ The system models core POS entities:
 - **Business Intelligence**: AI acts as a virtual manager providing actionable recommendations and trend analysis
 - **Real Data Analysis**: AI now analyzes authentic POS data from the database for accurate insights
 - **Custom Configuration**: AI behavior customized via `ai-agent-config.json` file for structured, domain-specific responses
+- **Named AI Assistant**: Meet "Alex" - the virtual manager with a personality and consistent identity
 
 ### Chart and Visualization
 - **Charting Library**: Recharts for responsive, interactive data visualizations
