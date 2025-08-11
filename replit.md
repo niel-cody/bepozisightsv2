@@ -56,7 +56,7 @@ The system models core POS entities:
 - **Structured Responses**: AI returns both conversational responses and structured data for dashboard visualization
 - **Business Intelligence**: AI acts as a virtual manager providing actionable recommendations and trend analysis
 - **Real Data Analysis**: AI now analyzes authentic POS data from the database for accurate insights
-- **Custom Instructions**: AI behavior customized via `ai-agent-instructions.md` file for domain-specific responses
+- **Custom Configuration**: AI behavior customized via `ai-agent-config.json` file for structured, domain-specific responses
 
 ### Chart and Visualization
 - **Charting Library**: Recharts for responsive, interactive data visualizations

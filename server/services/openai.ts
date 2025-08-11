@@ -15,14 +15,14 @@ export interface PosAnalysisContext {
   recentTransactions: any[];
 }
 
-async function loadAgentInstructions(): Promise<string> {
+async function loadAgentConfig(): Promise<any> {
   try {
-    const instructionsPath = path.join(process.cwd(), 'ai-agent-instructions.md');
-    const instructions = await fs.readFile(instructionsPath, 'utf-8');
-    return instructions;
+    const configPath = path.join(process.cwd(), 'ai-agent-config.json');
+    const configFile = await fs.readFile(configPath, 'utf-8');
+    return JSON.parse(configFile);
   } catch (error) {
-    console.warn('Could not load AI agent instructions, using default behavior');
-    return '';
+    console.warn('Could not load AI agent config, using default behavior');
+    return null;
   }
 }
 
@@ -31,9 +31,9 @@ export async function analyzePosQuery(
   context: PosAnalysisContext
 ): Promise<{ response: string; data?: any }> {
   try {
-    const agentInstructions = await loadAgentInstructions();
+    const agentConfig = await loadAgentConfig();
     
-    const systemPrompt = agentInstructions || `You are an AI assistant for a Point of Sale (POS) system, acting as a virtual manager for venue operations. 
+    let systemPrompt = `You are an AI assistant for a Point of Sale (POS) system, acting as a virtual manager for venue operations. 
     
 You have access to the following data:
 - Till summaries and cash balances
@@ -68,6 +68,29 @@ Respond in JSON format with this structure:
     "charts": [{"type": "bar|line|pie", "title": "chart title", "data": []}]
   }
 }`;
+
+    // If we have custom config, enhance the system prompt
+    if (agentConfig) {
+      systemPrompt = `${agentConfig.role}: ${agentConfig.purpose}
+
+Business Context: ${JSON.stringify(agentConfig.businessContext)}
+
+Communication Style: ${agentConfig.communicationStyle.tone}. ${agentConfig.communicationStyle.language}
+Requirements: ${agentConfig.communicationStyle.requirements.join('. ')}
+
+Key Responsibilities:
+- Performance Analysis: ${agentConfig.responsibilities.performanceAnalysis.join(', ')}
+- Alert Management: ${agentConfig.responsibilities.alertManagement.join(', ')}
+- Business Insights: ${agentConfig.responsibilities.businessInsights.join(', ')}
+
+Alert Thresholds: ${JSON.stringify(agentConfig.alertThresholds)}
+
+Key Principles: ${agentConfig.keyPrinciples.join('. ')}
+
+Current context data: ${JSON.stringify(context)}
+
+${systemPrompt}`;
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
