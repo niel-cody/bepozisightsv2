@@ -27,11 +27,12 @@ Preferred communication style: Simple, everyday language.
 - **Logging**: Custom request/response logging for API endpoints
 
 ### Data Storage Solutions
-- **Database**: PostgreSQL as the primary database
+- **Database**: PostgreSQL as the primary database (now active and seeded)
 - **ORM**: Drizzle ORM for type-safe database queries and schema management
 - **Connection**: Neon serverless PostgreSQL for cloud database hosting
 - **Schema Management**: Drizzle Kit for migrations and schema evolution
-- **In-Memory Storage**: Fallback memory storage implementation for development/testing
+- **Database Seeding**: Comprehensive sample data including 4 tills, 5 operators, 10 products, 7 days of summaries, and 25 transactions
+- **Dual Storage**: Automatic fallback to in-memory storage if database unavailable
 
 ### Database Schema Design
 The system models core POS entities:
@@ -51,9 +52,10 @@ The system models core POS entities:
 
 ### AI Integration
 - **OpenAI Integration**: GPT-4o model for natural language processing and business insights
-- **Context-Aware Analysis**: AI receives full POS context including tills, operators, products, and transaction history
+- **Context-Aware Analysis**: AI receives real-time POS data from PostgreSQL database including tills, operators, products, and transaction history
 - **Structured Responses**: AI returns both conversational responses and structured data for dashboard visualization
 - **Business Intelligence**: AI acts as a virtual manager providing actionable recommendations and trend analysis
+- **Real Data Analysis**: AI now analyzes authentic POS data from the database for accurate insights
 
 ### Chart and Visualization
 - **Charting Library**: Recharts for responsive, interactive data visualizations

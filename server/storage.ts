@@ -14,6 +14,8 @@ import {
   type InsertChatMessage
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { PostgresStorage } from "./postgres-storage";
+import { seedDatabase } from "./seed-data";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -262,4 +264,12 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use PostgreSQL storage if DATABASE_URL is available
+export const storage = process.env.DATABASE_URL 
+  ? new PostgresStorage()
+  : new MemStorage();
+
+// Initialize database with sample data if using PostgreSQL
+if (process.env.DATABASE_URL) {
+  seedDatabase().catch(console.error);
+}
