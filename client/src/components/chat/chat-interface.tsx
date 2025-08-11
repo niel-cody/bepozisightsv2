@@ -85,7 +85,7 @@ export default function ChatInterface() {
       <div className="border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Alex - AI Assistant</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Alex - Virtual Manager</h2>
             <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your POS data</p>
           </div>
           <div className="flex items-center space-x-2">
@@ -96,7 +96,6 @@ export default function ChatInterface() {
           </div>
         </div>
       </div>
-
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {/* Welcome Message */}
@@ -144,7 +143,6 @@ export default function ChatInterface() {
 
         <div ref={messagesEndRef} />
       </div>
-
       {/* Chat Input */}
       <div className="border-t border-gray-200 px-6 py-4">
         <form onSubmit={handleSubmit} className="flex space-x-3">
