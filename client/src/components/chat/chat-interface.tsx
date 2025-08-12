@@ -63,8 +63,9 @@ export default function ChatInterface() {
 
   const sendMessageMutation = useMutation<Message, Error, { message: string }>({
     mutationFn: async ({ message }): Promise<Message> => {
-      const response = await apiRequest("/api/chat/send", "POST", { message });
-      return response as Message;
+      const response = await apiRequest("POST", "/api/chat/send", { message });
+      const result = await response.json();
+      return result;
     },
     onMutate: () => {
       setIsTyping(true);
@@ -245,7 +246,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-border bg-background p-4 flex-shrink-0">
+        <div className="border-t border-border/20 bg-background p-4 flex-shrink-0">
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
             <div className="flex gap-3">
               <div className="flex-1 relative">
@@ -253,23 +254,29 @@ export default function ChatInterface() {
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder="Ask anything..."
-                  className="pr-12 py-3 text-base bg-muted/50 border-border/50 focus:border-primary/50 focus:ring-primary/20"
+                  className="pr-12 py-3 text-base bg-card border-border hover:border-ring focus:border-ring focus:ring-ring/20 text-foreground placeholder:text-muted-foreground"
                   disabled={sendMessageMutation.isPending}
                 />
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-1">
-                  <div className="w-1 h-1 bg-muted-foreground/40 rounded-full"></div>
-                  <div className="w-1 h-1 bg-muted-foreground/40 rounded-full"></div>
-                  <div className="w-1 h-1 bg-muted-foreground/40 rounded-full"></div>
-                </div>
+                {sendMessageMutation.isPending && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex gap-1">
+                    <div className="w-1 h-1 bg-muted-foreground/60 rounded-full animate-pulse"></div>
+                    <div className="w-1 h-1 bg-muted-foreground/60 rounded-full animate-pulse delay-100"></div>
+                    <div className="w-1 h-1 bg-muted-foreground/60 rounded-full animate-pulse delay-200"></div>
+                  </div>
+                )}
               </div>
               <Button 
                 type="submit" 
                 disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-                className="px-4 py-3"
+                className="px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
+                {sendMessageMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                  </svg>
+                )}
               </Button>
             </div>
           </form>
