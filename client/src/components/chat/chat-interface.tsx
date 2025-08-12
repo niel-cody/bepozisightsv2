@@ -107,13 +107,13 @@ export default function ChatInterface({ currentConversationId: propConversationI
   return (
     <div className="h-full flex flex-col bg-background" data-testid="chat-interface">
       {/* Chat Header */}
-      <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
+      <div className="p-3 sm:p-4 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center justify-between w-full">
           {/* Model Selection - Far Left */}
           <div className="flex items-center gap-2">
             <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-              <SelectTrigger className="w-32 gap-2" data-testid="select-model">
-                <Brain className="w-12 h-12 text-muted-foreground" />
+              <SelectTrigger className="w-28 sm:w-32 gap-1 sm:gap-2 text-xs sm:text-sm" data-testid="select-model">
+                <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -142,21 +142,21 @@ export default function ChatInterface({ currentConversationId: propConversationI
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="messages-container">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" data-testid="messages-container">
           {loadingMessages ? (
             <div className="flex justify-center py-8">
               <div className="text-muted-foreground">Loading messages...</div>
             </div>
           ) : messages.length === 0 ? (
             /* Welcome State */
-            <div className="flex flex-col items-center justify-center h-full space-y-6 text-center max-w-md mx-auto">
-              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-                <MessageSquare className="w-8 h-8 text-primary" />
+            <div className="flex flex-col items-center justify-center h-full space-y-4 sm:space-y-6 text-center max-w-sm sm:max-w-md mx-auto px-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
               
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-card-foreground">Welcome to Alex</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">Welcome to Alex</h3>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                   I'm your virtual manager assistant. I can analyze your POS data, provide insights about sales trends, operator performance, and help you make data-driven decisions.
                 </p>
               </div>
@@ -169,7 +169,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
                       key={index}
                       onClick={() => handleQuickQuery(query)}
                       variant="outline"
-                      className="justify-start text-left h-auto p-3 whitespace-normal"
+                      className="justify-start text-left h-auto p-3 sm:p-4 whitespace-normal text-sm min-h-[48px]"
                       data-testid={`quick-query-${index}`}
                     >
                       <MessageSquare className="w-4 h-4 mr-2 flex-shrink-0 mt-0.5" />
@@ -206,22 +206,28 @@ export default function ChatInterface({ currentConversationId: propConversationI
         </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
+      <div className="p-3 sm:p-4 border-t border-border bg-card/50 backdrop-blur-sm">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Ask me about your business data..."
             disabled={sendMessageMutation.isPending}
-            className="flex-1"
+            className="flex-1 text-base sm:text-sm min-h-[44px] sm:min-h-auto"
             data-testid="input-message"
           />
           <Button 
             type="submit" 
             disabled={sendMessageMutation.isPending || !inputMessage.trim()}
+            className="min-h-[44px] sm:min-h-auto px-4 sm:px-3"
             data-testid="button-send"
           >
-            {sendMessageMutation.isPending ? "Sending..." : "Send"}
+            <span className="hidden sm:inline">
+              {sendMessageMutation.isPending ? "Sending..." : "Send"}
+            </span>
+            <span className="sm:hidden">
+              {sendMessageMutation.isPending ? "..." : "→"}
+            </span>
           </Button>
         </form>
       </div>

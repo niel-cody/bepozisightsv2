@@ -300,21 +300,21 @@ export default function Dashboard() {
           {/* Main Content */}
           <SidebarInset className="flex-1 h-screen min-w-0 flex flex-col">
             {/* Header */}
-            <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur flex-shrink-0">
+            <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
               <SidebarTrigger className="lg:hidden" />
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
                     <div>
-                      <h2 className="text-lg font-semibold text-foreground">
+                      <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
                         Alex - Virtual Manager
                       </h2>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">
                         Your AI assistant for POS analytics and insights
                       </p>
                     </div>
                   ) : (
-                    <h2 className="text-lg font-semibold text-foreground">
+                    <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
                       {allNavigationItems.find(item => item.view === currentView)?.title}
                     </h2>
                   )}
