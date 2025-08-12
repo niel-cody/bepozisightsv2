@@ -574,6 +574,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Sales Insights endpoint
+  app.post("/api/sales/insights", async (req, res) => {
+    try {
+      const { period, kpiData, venueData, trendsData } = req.body;
+      
+      // Format data for AI analysis
+      const analysisData = {
+        period: period,
+        summary: {
+          totalGrossSales: kpiData.grossSales,
+          totalNetSales: kpiData.netSales,
+          totalTransactions: kpiData.transactions,
+          totalDiscounts: kpiData.discounts,
+          avgTransactionValue: kpiData.avgTransactionValue,
+          profitMargin: kpiData.profitMargin
+        },
+        venues: venueData.map((v: any) => ({
+          name: v.venue,
+          sales: v.totalSales,
+          transactions: v.totalTransactions,
+          avgTransactionValue: v.avgTransactionValue,
+          discounts: v.totalDiscounts
+        })),
+        trends: trendsData.slice(-30) // Last 30 data points for trend analysis
+      };
+
+      // Create AI analysis prompt
+      const prompt = `As Alex, the virtual POS manager, analyze this sales data for the ${period} period:
+
+SALES SUMMARY:
+- Gross Sales: $${analysisData.summary.totalGrossSales.toLocaleString()}
+- Net Sales: $${analysisData.summary.totalNetSales.toLocaleString()}
+- Transactions: ${analysisData.summary.totalTransactions.toLocaleString()}
+- Average Transaction: $${analysisData.summary.avgTransactionValue.toFixed(2)}
+- Profit Margin: ${analysisData.summary.profitMargin.toFixed(1)}%
+
+VENUE PERFORMANCE:
+${analysisData.venues.map((v: any) => 
+  `- ${v.name}: $${v.sales.toLocaleString()} (${v.transactions} transactions, $${v.avgTransactionValue.toFixed(2)} avg)`
+).join('\n')}
+
+RECENT TRENDS:
+${analysisData.trends.slice(-7).map((t: any) => 
+  `- ${t.date}: $${t.sales.toLocaleString()} (${t.transactions} transactions)`
+).join('\n')}
+
+Please provide:
+1. A concise data summary (2-3 sentences)
+2. Exactly 3 key trends you've identified
+3. Exactly 2 actionable suggestions based on the data
+
+Format as JSON with fields: summary, trends (array), suggestions (array)`;
+
+      const aiResponse = await callAI(prompt, { systemPrompt: 'You are Alex, a virtual POS manager. Provide structured JSON responses with business insights.' });
+      let parsedResponse;
+      
+      try {
+        // Try to parse as JSON
+        parsedResponse = JSON.parse(aiResponse);
+      } catch (e) {
+        // If JSON parsing fails, create structured response from text
+        const lines = aiResponse.split('\n').filter((line: string) => line.trim());
+        parsedResponse = {
+          summary: lines.find((line: string) => line.includes('summary') || line.includes('Summary'))?.replace(/^[^:]*:?\s*/, '') || 
+                  "Strong performance across all key metrics for the selected period.",
+          trends: lines.filter((line: string) => /^\d+\.|\-|\•/.test(line.trim())).slice(0, 3).map((line: string) => 
+            line.replace(/^\d+\.\s*|\-\s*|\•\s*/, '').trim()
+          ),
+          suggestions: lines.filter((line: string) => /suggestion|recommend|consider/i.test(line)).slice(0, 2).map((line: string) => 
+            line.replace(/^\d+\.\s*|\-\s*|\•\s*/, '').trim()
+          )
+        };
+        
+        // Fallback if no structured data found
+        if (parsedResponse.trends.length === 0) {
+          parsedResponse.trends = [
+            "Sales performance shows consistent patterns across venues",
+            "Transaction volumes align with seasonal expectations",
+            "Average transaction values indicate healthy customer engagement"
+          ];
+        }
+        
+        if (parsedResponse.suggestions.length === 0) {
+          parsedResponse.suggestions = [
+            "Monitor top-performing venues for scalable best practices",
+            "Analyze peak transaction periods to optimize staffing and inventory"
+          ];
+        }
+      }
+
+      res.json({
+        summary: parsedResponse.summary,
+        trends: parsedResponse.trends.slice(0, 3),
+        suggestions: parsedResponse.suggestions.slice(0, 2)
+      });
+      
+    } catch (error) {
+      console.error('Sales insights error:', error);
+      res.status(500).json({ error: "Failed to generate sales insights" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -41,10 +41,14 @@ import { useConversations, useCreateConversation, useDeleteConversation } from "
 import { SalesOverview } from "@/components/sales/sales-overview";
 import { CalendarHeatmap } from "@/components/sales/calendar-heatmap";
 import { VenueBreakdown } from "@/components/sales/venue-breakdown";
+import { SalesInsightsButton } from "@/components/sales/sales-insights-button";
+import { SalesInsightsDisplay } from "@/components/sales/sales-insights-display";
 
 // Create a separate sales page component to manage shared state
 function SalesPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'quarter' | 'ytd' | 'year'>('ytd');
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [insightsData, setInsightsData] = useState<any>(null);
 
   return (
     <div className="h-full overflow-y-auto p-6">
@@ -57,19 +61,22 @@ function SalesPage() {
               Comprehensive sales performance and venue analysis
             </p>
           </div>
-          <Button 
-            onClick={() => {
-              // Use a ref or context to access setCurrentView from parent
-              const event = new CustomEvent('switchToChat');
-              window.dispatchEvent(event);
-            }} 
-            size="lg"
-            className="bg-primary hover:bg-primary/90"
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Ask AI for Detailed Insights
-          </Button>
+          <SalesInsightsButton 
+            selectedPeriod={selectedPeriod}
+            onInsightsReceived={(insights) => {
+              setInsightsData(insights);
+              setInsightsOpen(true);
+            }}
+          />
         </div>
+
+        {/* AI Insights Display */}
+        {insightsOpen && insightsData && (
+          <SalesInsightsDisplay 
+            insights={insightsData} 
+            onClose={() => setInsightsOpen(false)}
+          />
+        )}
 
         <SalesOverview 
           selectedPeriod={selectedPeriod} 
