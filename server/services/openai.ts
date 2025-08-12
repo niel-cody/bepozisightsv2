@@ -167,32 +167,41 @@ Respond in JSON format with this structure:
 
     // If we have custom config, enhance the system prompt with Alex's personality
     if (agentConfig) {
-      systemPrompt = `You are ${agentConfig.name}, a ${agentConfig.role}. ${agentConfig.purpose}
+      // Handle both modular context format (with agent object) and legacy format
+      const agentInfo = agentConfig.agent || agentConfig;
+      const commStyle = agentConfig.communicationStyle || {};
+      
+      systemPrompt = `You are ${agentInfo.name || 'Alex'}, a ${agentInfo.role || agentConfig.role}. ${agentInfo.purpose || agentConfig.purpose}
 
-Personality: ${agentConfig.personality || 'Professional and helpful'}
+Personality: ${agentInfo.personality || agentConfig.personality || 'Professional and helpful'}
 
-Business Context: 
+${agentConfig.businessContext ? `Business Context: 
 - Venue Type: ${agentConfig.businessContext.venueType}
 - Tills: ${agentConfig.businessContext.tills.join(', ')}
 - Staff Roles: ${agentConfig.businessContext.staffRoles.join(', ')}
-- Product Categories: ${agentConfig.businessContext.productCategories.join(', ')}
+- Product Categories: ${agentConfig.businessContext.productCategories.join(', ')}` : ''}
 
 DATA CONTEXT: ${filteredContext.importedData?.hasImportedData ? `You have access to ${filteredContext.allDailySummaries?.length || 0} days of filtered real McBrew - QLD business data relevant to this query. Use this actual data to provide specific insights.` : 'Currently using sample data only. Recommend importing real business data for better insights.'}
 
-Communication Style: ${agentConfig.communicationStyle.tone}. ${agentConfig.communicationStyle.language}
-Requirements: ${agentConfig.communicationStyle.requirements.join('. ')}
+Communication Style: ${commStyle.tone || (agentConfig.communicationStyle && agentConfig.communicationStyle.tone) || 'Professional and supportive'}
+${commStyle.language ? `Language: ${commStyle.language}` : ''}
+${commStyle.rules ? `Guidelines: ${commStyle.rules.join('. ')}` : ''}
+${agentConfig.communicationStyle && agentConfig.communicationStyle.requirements ? `Requirements: ${agentConfig.communicationStyle.requirements.join('. ')}` : ''}
 
-Key Responsibilities:
+${agentConfig.responsibilities ? `Key Responsibilities:
 - Performance Analysis: ${agentConfig.responsibilities.performanceAnalysis.join(', ')}
 - Alert Management: ${agentConfig.responsibilities.alertManagement.join(', ')}
-- Business Insights: ${agentConfig.responsibilities.businessInsights.join(', ')}
+- Business Insights: ${agentConfig.responsibilities.businessInsights.join(', ')}` : ''}
 
-Alert Thresholds: ${JSON.stringify(agentConfig.alertThresholds)}
+${agentConfig.alertThresholds ? `Alert Thresholds: ${JSON.stringify(agentConfig.alertThresholds)}` : ''}
 
-Key Principles: ${agentConfig.keyPrinciples.join('. ')}
+${agentConfig.principles ? `Key Principles: ${agentConfig.principles.join('. ')}` : ''}
+${agentConfig.keyPrinciples ? `Key Principles: ${agentConfig.keyPrinciples.join('. ')}` : ''}
+
+${agentConfig.responseContract ? `Response Requirements: ${agentConfig.responseContract.requirements.join('. ')}` : ''}
 
 IMPORTANT: 
-- Always introduce yourself as ${agentConfig?.agent?.name || agentConfig?.name || 'Alex'} when greeting users or when it feels natural in conversation
+- Always introduce yourself as ${agentInfo.name || 'Alex'} when greeting users or when it feels natural in conversation
 - Be personable and remember you're their dedicated virtual manager who knows their business well
 - Use ACTUAL data from the database - reference specific dates, amounts, and business names
 - Provide insights based on real patterns and trends from the historical data
