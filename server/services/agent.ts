@@ -82,6 +82,29 @@ const tools = [
         required: ["staffName"]
       }
     }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getVenueSales",
+      description: "Get sales performance data for venues/locations including daily summaries, gross sales, transaction counts, and venue comparisons",
+      parameters: {
+        type: "object",
+        properties: {
+          period: {
+            type: "string",
+            description: "Time period to analyze: 'week', 'month', 'all'",
+            enum: ["week", "month", "all"],
+            default: "week"
+          },
+          compareVenues: {
+            type: "boolean",
+            description: "Whether to compare performance across different venues",
+            default: true
+          }
+        }
+      }
+    }
   }
 ];
 
@@ -248,6 +271,85 @@ const functions = {
     } catch (error) {
       console.error("Error getting product sales:", error);
       return { error: "Could not retrieve product sales data" };
+    }
+  },
+
+  getVenueSales: async (args: { period?: string; compareVenues?: boolean }) => {
+    try {
+      const summaries = await storage.getDailySummaries();
+      const period = args.period || "week";
+      const compareVenues = args.compareVenues !== false;
+      
+      // Filter by time period if needed
+      let filteredSummaries = summaries;
+      if (period === "week") {
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        filteredSummaries = summaries.filter(s => new Date(s.date) >= weekAgo);
+      } else if (period === "month") {
+        const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        filteredSummaries = summaries.filter(s => new Date(s.date) >= monthAgo);
+      }
+      
+      if (compareVenues) {
+        // Group by venue and calculate totals
+        const venueStats = filteredSummaries.reduce((acc, summary) => {
+          const venue = summary.venue || 'Unknown Venue';
+          if (!acc[venue]) {
+            acc[venue] = {
+              venue: venue,
+              totalSales: 0,
+              totalTransactions: 0,
+              days: 0,
+              grossSales: 0
+            };
+          }
+          
+          acc[venue].totalSales += parseFloat(summary.nettTotal || "0");
+          acc[venue].grossSales += parseFloat(summary.grossSales || "0");
+          acc[venue].totalTransactions += summary.transactionCount || 0;
+          acc[venue].days += 1;
+          
+          return acc;
+        }, {} as Record<string, any>);
+        
+        // Convert to array and calculate averages
+        const venueComparison = Object.values(venueStats).map((venue: any) => ({
+          venue: venue.venue,
+          totalSales: venue.totalSales,
+          grossSales: venue.grossSales,
+          totalTransactions: venue.totalTransactions,
+          days: venue.days,
+          avgDailySales: venue.days > 0 ? venue.totalSales / venue.days : 0,
+          avgTransactionValue: venue.totalTransactions > 0 ? venue.totalSales / venue.totalTransactions : 0
+        })).sort((a, b) => b.totalSales - a.totalSales);
+        
+        return {
+          period: period,
+          venueComparison,
+          totalVenues: venueComparison.length,
+          summary: {
+            totalSales: venueComparison.reduce((sum, v) => sum + v.totalSales, 0),
+            totalTransactions: venueComparison.reduce((sum, v) => sum + v.totalTransactions, 0),
+            totalDays: filteredSummaries.length
+          }
+        };
+      } else {
+        // Just return aggregated data
+        const totalSales = filteredSummaries.reduce((sum, s) => sum + parseFloat(s.nettTotal || "0"), 0);
+        const totalTransactions = filteredSummaries.reduce((sum, s) => sum + (s.transactionCount || 0), 0);
+        
+        return {
+          period: period,
+          totalSales,
+          totalTransactions,
+          days: filteredSummaries.length,
+          avgDailySales: filteredSummaries.length > 0 ? totalSales / filteredSummaries.length : 0,
+          avgTransactionValue: totalTransactions > 0 ? totalSales / totalTransactions : 0
+        };
+      }
+    } catch (error) {
+      console.error("Error getting venue sales:", error);
+      return { error: "Could not retrieve venue sales data" };
     }
   },
 
