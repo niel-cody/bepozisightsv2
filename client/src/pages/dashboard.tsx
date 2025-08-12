@@ -51,7 +51,7 @@ export default function Dashboard() {
   return (
     <div className="h-screen overflow-hidden">
       <SidebarProvider defaultOpen={true}>
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" className="border-r border-sidebar-border">
           <SidebarHeader>
             <div className="flex items-center gap-3 px-3 py-4">
               <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-md">
@@ -102,13 +102,10 @@ export default function Dashboard() {
             </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset className="h-screen">
+        <SidebarInset className="h-screen flex flex-col">
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-6 bg-background/80 backdrop-blur-sm">
-          <SidebarTrigger 
-            className="-ml-1 hover:bg-accent hover:text-accent-foreground transition-colors" 
-            onClick={() => console.log('Sidebar trigger clicked')}
-          />
+          <SidebarTrigger className="-ml-1" />
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-semibold text-foreground tracking-tight">
