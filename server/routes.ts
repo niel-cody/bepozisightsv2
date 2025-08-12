@@ -627,15 +627,19 @@ Please provide:
 
 Format as JSON with fields: summary, trends (array), suggestions (array)`;
 
-      const aiResponse = await callAI(prompt, { systemPrompt: 'You are Alex, a virtual POS manager. Provide structured JSON responses with business insights.' });
+      // Create a temporary conversation ID for the analysis
+      const tempConversationId = `insights-${Date.now()}`;
+      
+      // Use agentChat with conversation context
+      const aiResponse = await agentChat(prompt, tempConversationId, "gpt-4o");
       let parsedResponse;
       
       try {
         // Try to parse as JSON
-        parsedResponse = JSON.parse(aiResponse);
+        parsedResponse = JSON.parse(aiResponse.content);
       } catch (e) {
         // If JSON parsing fails, create structured response from text
-        const lines = aiResponse.split('\n').filter((line: string) => line.trim());
+        const lines = aiResponse.content.split('\n').filter((line: string) => line.trim());
         parsedResponse = {
           summary: lines.find((line: string) => line.includes('summary') || line.includes('Summary'))?.replace(/^[^:]*:?\s*/, '') || 
                   "Strong performance across all key metrics for the selected period.",

@@ -1,91 +1,93 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X, TrendingUp, Lightbulb, BarChart3 } from "lucide-react";
 import { SalesInsightsResponse } from "@/hooks/useSalesInsights";
 
 interface SalesInsightsDisplayProps {
   insights: SalesInsightsResponse;
+  open: boolean;
   onClose: () => void;
 }
 
-export function SalesInsightsDisplay({ insights, onClose }: SalesInsightsDisplayProps) {
+export function SalesInsightsDisplay({ insights, open, onClose }: SalesInsightsDisplayProps) {
+  if (!insights) {
+    return null;
+  }
+
   return (
-    <Card className="w-full border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-4 h-4 text-primary" />
             </div>
-            <CardTitle className="text-xl">Alex's Sales Analysis</CardTitle>
+            <DialogTitle className="text-xl">Alex's Sales Analysis</DialogTitle>
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onClose}
-            className="h-8 w-8 p-0"
-          >
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {/* Summary */}
-        <div>
-          <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Data Summary
-          </h3>
-          <p className="text-muted-foreground leading-relaxed">
-            {insights.summary}
-          </p>
-        </div>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Summary */}
+          <div>
+            <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Data Summary
+            </h3>
+            <p className="text-muted-foreground leading-relaxed">
+              {insights.summary}
+            </p>
+          </div>
 
-        {/* Trends */}
-        <div>
-          <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            Key Trends Identified
-          </h3>
-          <div className="space-y-3">
-            {insights.trends.map((trend, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border">
-                <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-semibold text-primary">{index + 1}</span>
+          {/* Trends */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Key Trends Identified
+            </h3>
+            <div className="space-y-3">
+              {insights.trends.map((trend, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border">
+                  <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs font-semibold text-primary">{index + 1}</span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-foreground">{trend}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground">{trend}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Suggestions */}
-        <div>
-          <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-            <Lightbulb className="w-4 h-4" />
-            Actionable Recommendations
-          </h3>
-          <div className="space-y-3">
-            {insights.suggestions.map((suggestion, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border">
-                <div className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Lightbulb className="w-3 h-3 text-amber-600" />
+          {/* Suggestions */}
+          <div>
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4" />
+              Actionable Recommendations
+            </h3>
+            <div className="space-y-3">
+              {insights.suggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg border">
+                  <div className="w-6 h-6 bg-amber-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Lightbulb className="w-3 h-3 text-amber-600" />
+                  </div>
+                  <p className="text-sm leading-relaxed text-foreground">{suggestion}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-foreground">{suggestion}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="pt-4 border-t border-border/50">
+            <p className="text-xs text-muted-foreground text-center">
+              Analysis generated by Alex, your AI-powered virtual POS manager
+            </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="pt-4 border-t border-border/50">
-          <p className="text-xs text-muted-foreground text-center">
-            Analysis generated by Alex, your AI-powered virtual POS manager
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

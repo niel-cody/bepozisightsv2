@@ -70,13 +70,12 @@ function SalesPage() {
           />
         </div>
 
-        {/* AI Insights Display */}
-        {insightsOpen && insightsData && (
-          <SalesInsightsDisplay 
-            insights={insightsData} 
-            onClose={() => setInsightsOpen(false)}
-          />
-        )}
+        {/* AI Insights Modal */}
+        <SalesInsightsDisplay 
+          insights={insightsData} 
+          open={insightsOpen && !!insightsData}
+          onClose={() => setInsightsOpen(false)}
+        />
 
         <SalesOverview 
           selectedPeriod={selectedPeriod} 
