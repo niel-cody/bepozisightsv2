@@ -150,12 +150,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
               </Button>
             </form>
 
-            {/* Demo Credentials */}
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                Demo: demo@bepoz.com
-              </p>
-            </div>
+
           </CardContent>
         </Card>
 
