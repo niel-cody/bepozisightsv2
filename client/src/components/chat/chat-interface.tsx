@@ -63,7 +63,7 @@ export default function ChatInterface() {
   return (
     <div className="flex h-full min-h-0">
       {/* Chat History Sidebar */}
-      <div className="w-80 border-r border-border bg-card/50 flex flex-col">
+      <div className="w-80 border-r bg-card/50 flex flex-col">
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Chat History</h3>
@@ -83,8 +83,8 @@ export default function ChatInterface() {
         </div>
         
         <div className="flex-1 overflow-y-auto p-2">
-          <div className="space-y-1">
-            <div className="p-3 rounded-lg bg-accent/50 border border-accent cursor-pointer hover:bg-accent/70 transition-colors">
+              <div className="space-y-1">
+                <div className="p-3 rounded-md bg-accent/50 border cursor-pointer hover:bg-accent/70 transition-colors">
               <div className="text-sm font-medium text-foreground truncate">Current Chat</div>
               <div className="text-xs text-muted-foreground mt-1 truncate">Business insights discussion</div>
             </div>
@@ -117,7 +117,7 @@ export default function ChatInterface() {
           {messages.length === 0 && (
             <div className="h-full flex items-center justify-center p-8">
               <div className="max-w-md text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
                   </svg>
@@ -189,7 +189,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
+        <div className="border-t bg-background/95 backdrop-blur-sm p-4">
           <form onSubmit={handleSubmit} className="flex space-x-3">
             <div className="flex-1">
               <Input
@@ -198,7 +198,7 @@ export default function ChatInterface() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 disabled={sendMessageMutation.isPending}
-                className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-2xl px-4 py-3 text-sm bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-md px-4 py-3 text-sm bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="input-chat-message"
               />
             </div>
@@ -206,7 +206,7 @@ export default function ChatInterface() {
               type="submit"
               disabled={!inputMessage.trim() || sendMessageMutation.isPending}
               size="sm"
-              className="px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="button-send-message"
             >
               {sendMessageMutation.isPending ? (

@@ -26,8 +26,8 @@ export default function SalesTrendChart({ data, compact = false }: SalesTrendCha
         <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
           <defs>
             <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(203.8863, 88.2845%, 53.1373%)" stopOpacity={0.1}/>
-              <stop offset="95%" stopColor="hsl(203.8863, 88.2845%, 53.1373%)" stopOpacity={0}/>
+              <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.1}/>
+              <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <XAxis dataKey="displayDate" hide />
@@ -36,7 +36,7 @@ export default function SalesTrendChart({ data, compact = false }: SalesTrendCha
           <Area 
             type="monotone" 
             dataKey="sales" 
-            stroke="hsl(203.8863, 88.2845%, 53.1373%)" 
+            stroke="var(--chart-1)" 
             fill="url(#salesGradient)"
             strokeWidth={2}
           />
@@ -55,9 +55,9 @@ export default function SalesTrendChart({ data, compact = false }: SalesTrendCha
         <Line 
           type="monotone" 
           dataKey="sales" 
-          stroke="hsl(203.8863, 88.2845%, 53.1373%)" 
+          stroke="var(--chart-1)" 
           strokeWidth={2}
-          dot={{ fill: "hsl(203.8863, 88.2845%, 53.1373%)" }}
+          dot={{ fill: "var(--chart-1)" }}
         />
       </LineChart>
     </ResponsiveContainer>

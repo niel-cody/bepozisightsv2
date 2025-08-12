@@ -41,14 +41,14 @@ export default function Sidebar({ open, onClose, currentView, onViewChange }: Si
   return (
     <aside 
       className={cn(
-        "bg-white shadow-sm w-64 border-r border-gray-200 fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out z-30 h-full",
+        "bg-card text-card-foreground shadow-sm w-64 border-r h-full fixed lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out z-30",
         open ? "translate-x-0" : "-translate-x-full"
       )}
       data-testid="sidebar"
     >
       <nav className="p-4 space-y-2">
-        <div className="pb-4 border-b border-gray-200">
-          <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Data Views</h2>
+        <div className="pb-4 border-b">
+          <h2 className="text-sm font-semibold uppercase tracking-wider">Data Views</h2>
         </div>
         
         {menuItems.map((item) => {
@@ -62,8 +62,8 @@ export default function Sidebar({ open, onClose, currentView, onViewChange }: Si
               className={cn(
                 "w-full justify-start space-x-3 h-auto py-2",
                 isActive 
-                  ? "bg-primary-50 text-primary-700 font-medium hover:bg-primary-50" 
-                  : "text-gray-700 hover:bg-gray-50"
+                  ? "bg-accent text-accent-foreground font-medium" 
+                  : ""
               )}
               onClick={() => onViewChange(item.id)}
               data-testid={`button-nav-${item.id}`}
@@ -74,13 +74,13 @@ export default function Sidebar({ open, onClose, currentView, onViewChange }: Si
           );
         })}
         
-        <div className="pt-4 border-t border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-2">Quick Queries</h3>
+        <div className="pt-4 border-t">
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-2">Quick Queries</h3>
           {quickQueries.map((item, index) => (
             <Button
               key={index}
               variant="ghost"
-              className="w-full justify-start text-sm text-gray-600 hover:text-primary-600 hover:bg-primary-50 h-auto py-2"
+              className="w-full justify-start text-sm h-auto py-2"
               onClick={() => handleQuickQuery(item.query)}
               data-testid={`button-quick-query-${index}`}
             >

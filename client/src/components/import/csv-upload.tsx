@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
@@ -126,21 +127,21 @@ export default function CSVUpload() {
       <CardContent className="space-y-6">
         {/* File Upload Area */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-md p-8 text-center transition-colors ${
             dragActive
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:border-gray-400"
+              ? "border-ring bg-accent/20"
+              : "border-border hover:bg-accent/10"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-lg font-medium text-gray-900 mb-2">
+          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-lg font-medium text-foreground mb-2">
             Drop CSV file here or click to browse
           </p>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Supports TS, OS, PS, and AC data files
           </p>
           <input
@@ -161,7 +162,7 @@ export default function CSVUpload() {
 
         {/* Manual CSV Input */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-foreground">
             Or paste CSV data manually:
           </label>
           <Textarea
@@ -175,7 +176,7 @@ export default function CSVUpload() {
 
         {/* Table Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-foreground">
             Data Type:
           </label>
           <Select value={tableName} onValueChange={setTableName}>
@@ -193,9 +194,9 @@ export default function CSVUpload() {
 
         {/* Expected Format Info */}
         {tableName && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">Expected CSV Format for {tableName}:</h4>
-            <code className="text-sm text-blue-800 block">
+          <div className="bg-accent/10 border rounded-md p-4">
+            <h4 className="font-medium text-foreground mb-2">Expected CSV Format for {tableName}:</h4>
+            <code className="text-sm text-foreground/80 block">
               {tableName === "tills" && "TimeSpan,Name,Qty Transactions,Gross Sales,NettTotal,Profit%,Cost of Sales..."}
               {tableName === "operators" && "TimeSpan,Name,Qty Transactions,Gross Sales,NettTotal,Profit%..."}
               {tableName === "products" && "name,category,price,stock,soldToday,revenue"}
@@ -206,39 +207,31 @@ export default function CSVUpload() {
 
         {/* Import Results */}
         {importMutation.data && (
-          <div className={`border rounded-lg p-4 ${
-            importMutation.data.success ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"
-          }`}>
-            <div className="flex items-center gap-2 mb-2">
+          <Alert variant={importMutation.data.success ? "default" : "destructive"}>
+            <div className="flex items-start gap-2">
               {importMutation.data.success ? (
-                <CheckCircle className="h-5 w-5 text-green-600" />
+                <CheckCircle className="h-5 w-5" />
               ) : (
-                <AlertCircle className="h-5 w-5 text-red-600" />
+                <AlertCircle className="h-5 w-5" />
               )}
-              <span className={`font-medium ${
-                importMutation.data.success ? "text-green-900" : "text-red-900"
-              }`}>
-                {importMutation.data.message}
-              </span>
-            </div>
-            
-            {importMutation.data.success && (
-              <p className="text-sm text-green-700">
-                Successfully imported {importMutation.data.imported} records
-              </p>
-            )}
-
-            {importMutation.data.errors.length > 0 && (
-              <div className="mt-2">
-                <p className="text-sm font-medium text-red-700 mb-1">Errors:</p>
-                <ul className="text-sm text-red-600 space-y-1">
-                  {importMutation.data.errors.map((error, index) => (
-                    <li key={index}>• {error}</li>
-                  ))}
-                </ul>
+              <div>
+                <AlertTitle>{importMutation.data.success ? "Import Successful" : "Import Failed"}</AlertTitle>
+                <AlertDescription>
+                  {importMutation.data.message}
+                  {importMutation.data.success && (
+                    <span className="block mt-1">Successfully imported {importMutation.data.imported} records</span>
+                  )}
+                  {importMutation.data.errors.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {importMutation.data.errors.map((error, index) => (
+                        <li key={index}>• {error}</li>
+                      ))}
+                    </ul>
+                  )}
+                </AlertDescription>
               </div>
-            )}
-          </div>
+            </div>
+          </Alert>
         )}
 
         {/* Submit Button */}

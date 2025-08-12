@@ -16,7 +16,7 @@ export default function OperatorChart({ data, compact = false }: OperatorChartPr
         <XAxis dataKey="name" />
         <YAxis tickFormatter={(value) => `$${value}`} />
         <Tooltip formatter={(value) => [`$${value}`, "Sales"]} />
-        <Bar dataKey="sales" fill="hsl(203.8863, 88.2845%, 53.1373%)" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="sales" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

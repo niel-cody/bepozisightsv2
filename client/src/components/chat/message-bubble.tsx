@@ -27,10 +27,10 @@ export default function MessageBubble({ message, isUser, timestamp, chart }: Mes
       <div className={cn("flex-1", isUser ? "flex justify-end" : "max-w-2xl")}>
         <div className="w-full">
           <div className={cn(
-            "px-4 py-3 rounded-2xl shadow-sm transition-all max-w-2xl",
+            "px-4 py-3 rounded-md shadow-sm transition-all max-w-2xl",
             isUser 
-              ? "bg-primary text-primary-foreground ml-auto rounded-br-md" 
-              : "bg-accent/30 border border-border text-foreground rounded-bl-md"
+              ? "bg-primary text-primary-foreground ml-auto" 
+              : "bg-accent/50 border border-border text-foreground"
           )}>
             <p className={cn(
               "text-sm leading-relaxed whitespace-pre-wrap",

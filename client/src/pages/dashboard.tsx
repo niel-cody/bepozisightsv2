@@ -23,7 +23,7 @@ export default function Dashboard() {
     <SidebarProvider defaultOpen={true}>
       <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-6 bg-background/80 backdrop-blur-sm">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6 bg-background/80 backdrop-blur-sm">
           <SidebarTrigger className="-ml-1" />
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
@@ -40,7 +40,7 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-full">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-md">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 <span className="text-xs font-medium text-accent-foreground">Online</span>
               </div>
@@ -77,7 +77,7 @@ export default function Dashboard() {
               <div className="h-full overflow-y-auto p-8">
                 <div className="max-w-4xl mx-auto">
                   <div className="text-center py-20">
-                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                       <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                       </svg>
@@ -86,7 +86,7 @@ export default function Dashboard() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">Use the AI Assistant to explore your data and generate comprehensive business insights.</p>
                     <button 
                       onClick={() => setCurrentView("chat")}
-                      className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
+                      className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
                     >
                       <MessageSquare className="w-5 h-5 mr-2" />
                       Start AI Analysis
