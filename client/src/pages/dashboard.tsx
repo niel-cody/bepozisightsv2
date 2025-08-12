@@ -113,13 +113,9 @@ export default function Dashboard() {
                         <SidebarMenuButton
                           isActive={currentView === item.view}
                           onClick={() => setCurrentView(item.view)}
-                          className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                          className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
                         >
-                          <item.icon className="w-4 h-4 mr-3" />
-                          <div className="flex-1 text-left">
-                            <div className="text-sm font-medium">{item.title}</div>
-                            <div className="text-xs text-sidebar-muted-foreground">{item.description}</div>
-                          </div>
+                          <div className="text-sm font-normal">{item.title}</div>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -128,32 +124,28 @@ export default function Dashboard() {
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         onClick={() => setInsightsOpen(!insightsOpen)}
-                        className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                       >
-                        <TrendingUp className="w-4 h-4 mr-3" />
-                        <div className="flex-1 text-left">
-                          <div className="text-sm font-medium">Insights</div>
-                          <div className="text-xs text-sidebar-muted-foreground">Reports & Analytics</div>
-                        </div>
+                        <div className="text-sm font-normal">Insights</div>
                         {insightsOpen ? (
-                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground" />
+                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
                         ) : (
-                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground" />
+                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
                         )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     
                     {/* Insights Submenu */}
                     {insightsOpen && (
-                      <div className="ml-4 space-y-1">
+                      <div className="ml-6 space-y-0.5">
                         {insightsItems.map((item) => (
                           <SidebarMenuItem key={item.view}>
                             <SidebarMenuButton
                               isActive={currentView === item.view}
                               onClick={() => setCurrentView(item.view)}
-                              className="w-full justify-start p-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                              className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
                             >
-                              <div className="text-sm font-medium">{item.title}</div>
+                              <div className="text-sm font-normal">{item.title}</div>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}
@@ -165,13 +157,9 @@ export default function Dashboard() {
                       <SidebarMenuButton
                         isActive={currentView === settingsItem.view}
                         onClick={() => setCurrentView(settingsItem.view)}
-                        className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
                       >
-                        <settingsItem.icon className="w-4 h-4 mr-3" />
-                        <div className="flex-1 text-left">
-                          <div className="text-sm font-medium">{settingsItem.title}</div>
-                          <div className="text-xs text-sidebar-muted-foreground">{settingsItem.description}</div>
-                        </div>
+                        <div className="text-sm font-normal">{settingsItem.title}</div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </SidebarMenu>
