@@ -105,7 +105,10 @@ export default function Dashboard() {
         <SidebarInset className="h-screen">
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-6 bg-background/80 backdrop-blur-sm">
-          <SidebarTrigger className="-ml-1 hover:bg-accent hover:text-accent-foreground transition-colors" />
+          <SidebarTrigger 
+            className="-ml-1 hover:bg-accent hover:text-accent-foreground transition-colors" 
+            onClick={() => console.log('Sidebar trigger clicked')}
+          />
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-semibold text-foreground tracking-tight">
