@@ -26,9 +26,32 @@ export interface PosAnalysisContext {
 
 async function loadAgentConfig(): Promise<any> {
   try {
-    const configPath = path.join(process.cwd(), 'ai-agent-config.json');
-    const configFile = await fs.readFile(configPath, 'utf-8');
-    return JSON.parse(configFile);
+    // Try loading modular context files first
+    const basePath = path.join(process.cwd(), 'context', 'base.json');
+    const dataModelPath = path.join(process.cwd(), 'context', 'data_model.json');
+    
+    let composedConfig: any = {};
+    
+    try {
+      // Load base configuration
+      const baseFile = await fs.readFile(basePath, 'utf-8');
+      const baseConfig = JSON.parse(baseFile);
+      composedConfig = { ...baseConfig };
+      
+      // Load data model configuration
+      const dataModelFile = await fs.readFile(dataModelPath, 'utf-8');
+      const dataModelConfig = JSON.parse(dataModelFile);
+      composedConfig.dataModel = dataModelConfig.dataModel;
+      
+      console.log('Loaded modular AI context from context/ folder');
+      return composedConfig;
+    } catch (contextError) {
+      // Fall back to legacy ai-agent-config.json
+      console.log('Modular context not found, falling back to ai-agent-config.json');
+      const configPath = path.join(process.cwd(), 'ai-agent-config.json');
+      const configFile = await fs.readFile(configPath, 'utf-8');
+      return JSON.parse(configFile);
+    }
   } catch (error) {
     console.warn('Could not load AI agent config, using default behavior');
     return null;
@@ -169,7 +192,7 @@ Alert Thresholds: ${JSON.stringify(agentConfig.alertThresholds)}
 Key Principles: ${agentConfig.keyPrinciples.join('. ')}
 
 IMPORTANT: 
-- Always introduce yourself as ${agentConfig.name} when greeting users or when it feels natural in conversation
+- Always introduce yourself as ${agentConfig?.agent?.name || agentConfig?.name || 'Alex'} when greeting users or when it feels natural in conversation
 - Be personable and remember you're their dedicated virtual manager who knows their business well
 - Use ACTUAL data from the database - reference specific dates, amounts, and business names
 - Provide insights based on real patterns and trends from the historical data
