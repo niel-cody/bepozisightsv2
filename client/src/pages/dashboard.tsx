@@ -18,9 +18,10 @@ export default function Dashboard() {
   });
 
   return (
-    <SidebarProvider defaultOpen={true} open={true}>
-      <AppSidebar currentView={currentView} onViewChange={setCurrentView} />
-      <SidebarInset>
+    <div className="h-screen overflow-hidden">
+      <SidebarProvider defaultOpen={true} open={true}>
+        <AppSidebar currentView={currentView} onViewChange={setCurrentView} />
+        <SidebarInset className="h-screen">
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-6 bg-background/80 backdrop-blur-sm">
           <SidebarTrigger className="-ml-1 hover:bg-accent hover:text-accent-foreground transition-colors" />
@@ -51,9 +52,9 @@ export default function Dashboard() {
         </header>
 
         {/* Main Content */}
-        <main className="flex flex-1 flex-col overflow-hidden">
+        <main className="flex-1 flex flex-col overflow-hidden min-h-0">
           {currentView === "chat" && (
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
               <ChatInterface />
             </div>
           )}
@@ -95,7 +96,8 @@ export default function Dashboard() {
             </div>
           )}
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
