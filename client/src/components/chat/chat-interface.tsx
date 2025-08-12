@@ -2,9 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import MessageBubble from "./message-bubble";
-import { MessageSquare, Plus, Calendar, MoreHorizontal, Trash2 } from "lucide-react";
+import { MessageSquare, Plus, Calendar, MoreHorizontal, Trash2, Settings } from "lucide-react";
 import { useConversations, useCreateConversation, useDeleteConversation, useConversationMessages } from "@/hooks/useConversations";
 import type { Conversation, ChatMessage } from "@shared/schema";
 
@@ -15,10 +16,13 @@ const quickQueries = [
   "Which staff members had the highest sales last week?"
 ];
 
+type ModelType = "gpt-4o-nano" | "gpt-4o-mini" | "gpt-4o";
+
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
+  const [selectedModel, setSelectedModel] = useState<ModelType>("gpt-4o-mini");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -48,7 +52,8 @@ export default function ChatInterface() {
 
       const response = await apiRequest("POST", "/api/chat/send", { 
         message,
-        conversationId
+        conversationId,
+        model: selectedModel
       });
       const result = await response.json();
       return result;
@@ -183,6 +188,38 @@ export default function ChatInterface() {
             <div>
               <h2 className="text-lg font-semibold text-card-foreground">Alex - Virtual Manager</h2>
               <p className="text-sm text-muted-foreground">Your AI assistant for POS analytics and insights</p>
+            </div>
+            
+            {/* Model Selection */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Settings className="w-4 h-4 text-muted-foreground" />
+                <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
+                  <SelectTrigger className="w-32" data-testid="select-model">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gpt-4o-nano" data-testid="model-standard">
+                      <div className="flex flex-col">
+                        <span>Standard</span>
+                        <span className="text-xs text-muted-foreground">Fast responses</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
+                      <div className="flex flex-col">
+                        <span>Detailed</span>
+                        <span className="text-xs text-muted-foreground">Balanced analysis</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="gpt-4o" data-testid="model-scientific">
+                      <div className="flex flex-col">
+                        <span>Scientific</span>
+                        <span className="text-xs text-muted-foreground">Deep insights</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>

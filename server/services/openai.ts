@@ -37,7 +37,8 @@ async function loadAgentConfig(): Promise<any> {
 
 export async function analyzePosQuery(
   query: string, 
-  context: PosAnalysisContext
+  context: PosAnalysisContext,
+  model: string = 'gpt-4o-mini'
 ): Promise<{ response: string; data?: any }> {
   try {
     const agentConfig = await loadAgentConfig();
@@ -118,7 +119,7 @@ ${systemPrompt}`;
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using gpt-4o-mini for better token limits and cost efficiency
+      model: model, // Dynamic model selection: nano/mini/4o based on user preference
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: query }
@@ -148,7 +149,7 @@ ${JSON.stringify(context)}
 Respond with JSON: {"insights": ["insight 1", "insight 2", ...]}`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using gpt-4o-mini for better token limits and cost efficiency
+      model: "gpt-4o-mini", // Default for insights generation
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
     });

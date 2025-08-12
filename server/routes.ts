@@ -204,8 +204,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       };
 
-      // Get AI response
-      const aiResult = await analyzePosQuery(messageData.message, context);
+      // Get AI response with selected model
+      const aiResult = await analyzePosQuery(messageData.message, context, messageData.model || 'gpt-4o-mini');
       
       // Save message with AI response (include conversationId)
       const chatMessage = await storage.createChatMessage({

@@ -137,6 +137,7 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   timestamp: true,
 }).partial({ response: true }).extend({
   conversationId: z.string().optional().default('default'),
+  model: z.enum(['gpt-4o-nano', 'gpt-4o-mini', 'gpt-4o']).optional().default('gpt-4o-mini'),
 });
 
 // Customer account summaries table - matches CS file structure
