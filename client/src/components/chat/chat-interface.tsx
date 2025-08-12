@@ -174,55 +174,47 @@ export default function ChatInterface() {
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-card-foreground">Alex - Virtual Manager</h2>
-              <p className="text-sm text-muted-foreground">Your AI assistant for POS analytics and insights</p>
-            </div>
+          <div className="flex items-center justify-end gap-3">
+            {/* New Chat Button */}
+            <Button 
+              onClick={handleNewChat}
+              size="sm" 
+              variant="outline"
+              className="gap-2"
+              data-testid="button-new-chat"
+            >
+              <Plus className="w-4 h-4" />
+              New Chat
+            </Button>
             
-            {/* Controls */}
-            <div className="flex items-center gap-3">
-              {/* New Chat Button */}
-              <Button 
-                onClick={handleNewChat}
-                size="sm" 
-                variant="outline"
-                className="gap-2"
-                data-testid="button-new-chat"
-              >
-                <Plus className="w-4 h-4" />
-                New Chat
-              </Button>
-              
-              {/* Model Selection */}
-              <div className="flex items-center gap-2">
-                <Brain className="w-4 h-4 text-muted-foreground" />
-                <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-                  <SelectTrigger className="w-32" data-testid="select-model">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
-                      <div className="flex flex-col">
-                        <span>Standard</span>
-                        <span className="text-xs text-muted-foreground">Fast, cost-efficient responses</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
-                      <div className="flex flex-col">
-                        <span>Detailed</span>
-                        <span className="text-xs text-muted-foreground">Balanced analysis and insights</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="gpt-4o" data-testid="model-scientific">
-                      <div className="flex flex-col">
-                        <span>Scientific</span>
-                        <span className="text-xs text-muted-foreground">Deep reasoning and analysis</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Model Selection */}
+            <div className="flex items-center gap-2">
+              <Brain className="w-4 h-4 text-muted-foreground" />
+              <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
+                <SelectTrigger className="w-32" data-testid="select-model">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
+                    <div className="flex flex-col">
+                      <span>Standard</span>
+                      <span className="text-xs text-muted-foreground">Fast, cost-efficient responses</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
+                    <div className="flex flex-col">
+                      <span>Detailed</span>
+                      <span className="text-xs text-muted-foreground">Balanced analysis and insights</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="gpt-4o" data-testid="model-scientific">
+                    <div className="flex flex-col">
+                      <span>Scientific</span>
+                      <span className="text-xs text-muted-foreground">Deep reasoning and analysis</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
