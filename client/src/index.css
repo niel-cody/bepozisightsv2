@@ -90,22 +90,30 @@
 
   html, body, #root {
     height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile browsers */
     width: 100vw;
-    width: 100dvw; /* Dynamic viewport width */
     margin: 0;
     padding: 0;
     overflow: hidden;
-    /* Prevent address bar issues on mobile */
+    /* Use small viewport units for better mobile support */
+    min-height: 100svh; /* Small viewport height - excludes browser UI */
+    max-height: 100lvh; /* Large viewport height - includes browser UI */
   }
   
-  /* Additional mobile viewport fixes */
+  /* iOS Safari specific fixes */
   @supports (-webkit-touch-callout: none) {
-    /* iOS Safari specific fixes */
     html, body, #root {
+      height: 100vh;
       height: -webkit-fill-available;
       min-height: -webkit-fill-available;
     }
+  }
+  
+  /* Prevent iOS bounce scrolling */
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -131,7 +139,7 @@
   /* Full height utilities */
   .sidebar-layout {
     height: 100vh;
-    height: 100dvh; /* Mobile-friendly height */
+    height: 100svh; /* Small viewport height for mobile */
     display: flex;
   }
   
@@ -141,6 +149,15 @@
       height: -webkit-fill-available;
       min-height: -webkit-fill-available;
     }
+  }
+  
+  /* Safe area adjustments for iOS */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
   
   .scrollbar-hide {
