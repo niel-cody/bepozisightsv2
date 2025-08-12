@@ -86,7 +86,7 @@ export default function ChatInterface() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">Alex</h2>
-            <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your POS data</p>
+            <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your data</p>
           </div>
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-1">
