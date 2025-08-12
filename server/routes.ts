@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { analyzePosQuery, generateInsights, type PosAnalysisContext } from "./services/openai";
+import { SimpleCSVImporter } from "./utils/simple-csv-importer";
 import { insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -61,6 +62,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(summary);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch today's summary" });
+    }
+  });
+
+  // CSV Import endpoint
+  app.post("/api/import/csv", async (req, res) => {
+    try {
+      const { csvData, tableName } = req.body;
+      
+      if (!csvData || !tableName) {
+        return res.status(400).json({ error: "CSV data and table name are required" });
+      }
+
+      const result = await SimpleCSVImporter.importCSV(csvData, tableName);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error: any) {
+      console.error("Error importing CSV:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to import CSV data",
+        imported: 0,
+        errors: [error.message]
+      });
     }
   });
 

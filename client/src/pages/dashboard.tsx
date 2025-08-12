@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/dashboard/sidebar";
 import DataPanel from "@/components/dashboard/data-panel";
 import ChatInterface from "@/components/chat/chat-interface";
+import CSVUpload from "@/components/import/csv-upload";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Package } from "lucide-react";
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -70,10 +71,36 @@ export default function Dashboard() {
         />
 
         <main className="flex-1 flex flex-col lg:ml-0 ml-0 overflow-hidden">
-          <div className="flex flex-1 overflow-hidden">
-            <ChatInterface />
-            <DataPanel />
-          </div>
+          {currentView === "chat" && (
+            <div className="flex flex-1 overflow-hidden">
+              <ChatInterface />
+              <DataPanel />
+            </div>
+          )}
+          
+          {currentView === "import" && (
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="max-w-4xl mx-auto">
+                <div className="mb-8">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Import CSV Data</h1>
+                  <p className="text-gray-600">Upload your POS data files to expand the database for better AI analysis</p>
+                </div>
+                <CSVUpload />
+              </div>
+            </div>
+          )}
+          
+          {currentView !== "chat" && currentView !== "import" && (
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center py-16">
+                  <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Coming Soon</h3>
+                  <p className="text-gray-500">This view is under development. Use the AI Assistant for insights.</p>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
       {/* Mobile Sidebar Overlay */}

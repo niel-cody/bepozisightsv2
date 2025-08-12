@@ -5,7 +5,8 @@ import {
   Building2, 
   Users, 
   Package, 
-  Calculator 
+  Calculator,
+  Upload
 } from "lucide-react";
 
 interface SidebarProps {
@@ -18,6 +19,7 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose, currentView, onViewChange }: SidebarProps) {
   const menuItems = [
     { id: "chat", label: "AI Assistant", icon: MessageCircle },
+    { id: "import", label: "Import Data", icon: Upload },
     { id: "tills", label: "Till Summaries", icon: Building2 },
     { id: "operators", label: "Operator Performance", icon: Users },
     { id: "products", label: "Product Analysis", icon: Package },
