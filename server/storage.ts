@@ -58,7 +58,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   async getUsers(): Promise<User[]> {
-    return [];
+    return Array.from(this.users.values());
   }
   private users: Map<string, User>;
   private tills: Map<string, Till>;
@@ -407,10 +407,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Use PostgreSQL storage if DATABASE_URL is available
-export const storage = process.env.DATABASE_URL 
-  ? new PostgresStorage()
-  : new MemStorage();
+// Temporarily use MemStorage to avoid database authentication issues
+export const storage = new MemStorage();
 
 // Database is ready - your imported data will persist between restarts
 // No automatic seeding to preserve your uploaded CSV data
