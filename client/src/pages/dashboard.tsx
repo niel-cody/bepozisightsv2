@@ -324,6 +324,28 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {/* New AI Chat Button */}
+              <Button 
+                onClick={handleNewChat}
+                size="sm" 
+                variant="outline"
+                className="gap-2 hidden sm:flex"
+                data-testid="button-new-ai-chat"
+              >
+                <Plus className="w-4 h-4" />
+                New AI Chat
+              </Button>
+
+              {/* Mobile New Chat Button */}
+              <Button 
+                onClick={handleNewChat}
+                size="sm" 
+                variant="outline"
+                className="sm:hidden p-2"
+                data-testid="button-new-ai-chat-mobile"
+              >
+                <Plus className="w-4 h-4" />
+              </Button>
             </header>
 
             {/* Main Content Area */}
