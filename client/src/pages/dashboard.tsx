@@ -16,7 +16,8 @@ import {
   LogOut,
   Calendar,
   Trash2,
-  TrendingUp
+  TrendingUp,
+  Shield
 } from "lucide-react";
 import { 
   Sidebar,
@@ -127,6 +128,15 @@ const insightsItems = [
   },
 ];
 
+const adminItems = [
+  { 
+    title: "Settings", 
+    icon: Settings, 
+    view: "settings" as ViewType,
+    description: "Configuration" 
+  },
+];
+
 const settingsItem = { 
   title: "Settings", 
   icon: Settings, 
@@ -140,6 +150,7 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
   const [chatOpen, setChatOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(true);
   const { user, logout } = useAuth();
 
   // Listen for custom events from sales page
@@ -312,16 +323,38 @@ export default function Dashboard() {
                       </div>
                     )}
                     
-                    {/* Settings */}
+                    {/* Admin Menu */}
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        isActive={currentView === settingsItem.view}
-                        onClick={() => setCurrentView(settingsItem.view)}
-                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                        onClick={() => setAdminOpen(!adminOpen)}
+                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                       >
-                        <div className="text-sm font-normal">{settingsItem.title}</div>
+                        <Shield className="w-4 h-4 mr-2" />
+                        <div className="text-sm font-normal">Admin</div>
+                        {adminOpen ? (
+                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
+                        )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
+                    
+                    {/* Admin Submenu */}
+                    {adminOpen && (
+                      <div className="ml-6 space-y-0.5">
+                        {adminItems.map((item) => (
+                          <SidebarMenuItem key={item.view}>
+                            <SidebarMenuButton
+                              isActive={currentView === item.view}
+                              onClick={() => setCurrentView(item.view)}
+                              className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                            >
+                              <div className="text-sm font-normal">{item.title}</div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </div>
+                    )}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
