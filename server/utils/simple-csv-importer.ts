@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { tills, operators, products, transactions } from '../../shared/schema';
+import { tills, operators, products, transactions, dailySummaries } from '../../shared/schema';
 import { parse } from 'csv-parse/sync';
 
 interface ImportResult {
@@ -75,12 +75,30 @@ export class SimpleCSVImporter {
           }
           break;
 
+        case 'accounts':
+          for (const record of records) {
+            try {
+              await db.insert(dailySummaries).values({
+                date: new Date().toISOString().split('T')[0], // Use today's date for accounts
+                totalSales: record.balance || '0.00',
+                transactionCount: parseInt(record.transactions) || 0,
+                averageTransaction: record.averageTransaction || '0.00',
+                topProduct: record.topAccount || null,
+                topOperator: record.accountName || null
+              });
+              importCount++;
+            } catch (error: any) {
+              errors.push(`Account "${record.accountName}": ${error.message}`);
+            }
+          }
+          break;
+
         default:
           return {
             success: false,
             message: 'Unsupported table type',
             imported: 0,
-            errors: ['Only tills, operators, and products are supported']
+            errors: ['Only tills, operators, products, and accounts are supported']
           };
       }
 

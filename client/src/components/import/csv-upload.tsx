@@ -141,7 +141,7 @@ export default function CSVUpload() {
             Drop CSV file here or click to browse
           </p>
           <p className="text-sm text-gray-500 mb-4">
-            Supports tills, operators, and products data
+            Supports TS, OS, PS, and AC data files
           </p>
           <input
             type="file"
@@ -165,10 +165,10 @@ export default function CSVUpload() {
             Or paste CSV data manually:
           </label>
           <Textarea
-            placeholder="name,location,status,cashBalance&#10;Till 1,Front Counter,active,1250.75&#10;Till 2,Drive Through,active,892.50"
+            placeholder="name,location,status,cashBalance&#10;Till 1,Front Counter,active,1250.75&#10;Till 2,Drive Through,active,892.50&#10;&#10;Or paste your TS, OS, PS, or AC file content here..."
             value={csvData}
             onChange={(e) => setCsvData(e.target.value)}
-            rows={6}
+            rows={8}
             className="font-mono text-sm"
           />
         </div>
@@ -183,9 +183,10 @@ export default function CSVUpload() {
               <SelectValue placeholder="Select data type to import" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="tills">Tills / Registers</SelectItem>
-              <SelectItem value="operators">Operators / Staff</SelectItem>
-              <SelectItem value="products">Products / Items</SelectItem>
+              <SelectItem value="tills">Till Summaries (TS)</SelectItem>
+              <SelectItem value="operators">Operator Summaries (OS)</SelectItem>
+              <SelectItem value="products">Product Summaries (PS)</SelectItem>
+              <SelectItem value="accounts">Account Summaries (AC)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -198,6 +199,7 @@ export default function CSVUpload() {
               {tableName === "tills" && "name,location,status,cashBalance,lastTransaction"}
               {tableName === "operators" && "name,employeeId,role,status,totalSales,transactionCount"}
               {tableName === "products" && "name,category,price,stock,soldToday,revenue"}
+              {tableName === "accounts" && "accountName,accountType,balance,transactions,lastActivity"}
             </code>
           </div>
         )}
