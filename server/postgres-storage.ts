@@ -11,6 +11,8 @@ import {
   type Transaction,
   type InsertTransaction,
   type TillSummary,
+  type Conversation,
+  type InsertConversation,
   type ChatMessage,
   type InsertChatMessage,
   users,
@@ -19,6 +21,7 @@ import {
   products,
   transactions,
   tillSummaries,
+  conversations,
   chatMessages
 } from '@shared/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -107,21 +110,54 @@ export class PostgresStorage implements IStorage {
     return result[0];
   }
 
-  async getChatMessages(): Promise<ChatMessage[]> {
+  async getConversations(): Promise<Conversation[]> {
+    return await db.select().from(conversations).orderBy(desc(conversations.updatedAt));
+  }
+
+  async getConversation(id: string): Promise<Conversation | undefined> {
+    const result = await db.select().from(conversations).where(eq(conversations.id, id)).limit(1);
+    return result[0];
+  }
+
+  async createConversation(conversation: InsertConversation): Promise<Conversation> {
+    const result = await db.insert(conversations).values(conversation).returning();
+    return result[0];
+  }
+
+  async updateConversation(id: string, updates: Partial<Conversation>): Promise<Conversation | undefined> {
+    const result = await db.update(conversations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(conversations.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteConversation(id: string): Promise<void> {
+    // Delete messages first
+    await db.delete(chatMessages).where(eq(chatMessages.conversationId, id));
+    // Then delete conversation
+    await db.delete(conversations).where(eq(conversations.id, id));
+  }
+
+  async getChatMessages(conversationId?: string): Promise<ChatMessage[]> {
+    if (conversationId) {
+      return await db.select().from(chatMessages)
+        .where(eq(chatMessages.conversationId, conversationId))
+        .orderBy(chatMessages.timestamp);
+    }
     return await db.select().from(chatMessages).orderBy(chatMessages.timestamp);
   }
 
   async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
-    const messageToInsert = {
-      message: message.message,
-      response: message.response || "",
-      userId: message.userId || null
-    };
-    const result = await db.insert(chatMessages).values(messageToInsert).returning();
+    const result = await db.insert(chatMessages).values(message).returning();
     return result[0];
   }
 
-  async clearChatHistory(): Promise<void> {
-    await db.delete(chatMessages);
+  async clearChatHistory(conversationId?: string): Promise<void> {
+    if (conversationId) {
+      await db.delete(chatMessages).where(eq(chatMessages.conversationId, conversationId));
+    } else {
+      await db.delete(chatMessages);
+    }
   }
 }

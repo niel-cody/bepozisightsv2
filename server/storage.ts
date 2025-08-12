@@ -116,7 +116,15 @@ export class MemStorage implements IStorage {
         role: operatorData.role,
         status: operatorData.status || "active",
         totalSales: operatorData.totalSales || null,
-        transactionCount: operatorData.transactionCount || null
+        transactionCount: operatorData.transactionCount || null,
+        grossSales: null,
+        totalDiscount: null,
+        nettTotal: null,
+        profitAmount: null,
+        profitPercent: null,
+        averageSale: null,
+        venue: null,
+        lastTransactionDate: null
       };
       this.operators.set(id, operator);
     });
@@ -155,7 +163,32 @@ export class MemStorage implements IStorage {
     
     summariesData.forEach(summaryData => {
       const id = randomUUID();
-      const summary: TillSummary = { id, ...summaryData };
+      const summary: TillSummary = { 
+        id, 
+        date: summaryData.date,
+        name: "McBrew - QLD",
+        transactionCount: summaryData.transactionCount,
+        dateTimeFirstTrans: null,
+        dateTimeLastTrans: null,
+        grossSales: null,
+        totalDiscount: null,
+        nettTotal: summaryData.totalSales,
+        percentOfNettTotal: null,
+        costOfSales: null,
+        profitAmount: null,
+        profitPercent: null,
+        quantityCancelled: null,
+        cancelled: null,
+        quantityReturns: null,
+        returns: null,
+        quantityTraining: null,
+        trainingTotal: null,
+        quantityNoSales: null,
+        quantityNoSaleAfterCancel: null,
+        noSaleAfterCancel: null,
+        quantityTableRefundAfterPrint: null,
+        tableRefundAfterPrint: null
+      };
       this.dailySummaries.set(summaryData.date, summary);
     });
   }
