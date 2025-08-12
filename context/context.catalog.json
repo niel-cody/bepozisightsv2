@@ -1,0 +1,205 @@
+{
+  "catalog": {
+    "till_summaries": {
+      "description": "Daily venue/till rollups: sales, transactions, refunds, cancels, training, cash-related fields.",
+      "grain": "Venue + Date",
+      "timeColumn": "Date",
+      "joinKeys": [
+        "Venue",
+        "Date"
+      ],
+      "measures": [
+        {
+          "name": "NettTotal",
+          "agg": "sum",
+          "desc": "Net sales (incl tax unless noted)"
+        },
+        {
+          "name": "Gross Sales",
+          "agg": "sum"
+        },
+        {
+          "name": "Qty Transactions",
+          "agg": "sum"
+        },
+        {
+          "name": "Total Discount",
+          "agg": "sum"
+        },
+        {
+          "name": "ProfitAmt",
+          "agg": "sum"
+        },
+        {
+          "name": "Profit%",
+          "agg": "avg"
+        },
+        {
+          "name": "Returns",
+          "agg": "sum"
+        },
+        {
+          "name": "Qty Returns",
+          "agg": "sum"
+        },
+        {
+          "name": "Average Sale",
+          "agg": "avg"
+        }
+      ],
+      "dimensions": [
+        "Venue",
+        "Date",
+        "DateTime First Trans.",
+        "DateTime Last Trans."
+      ],
+      "semantics": {
+        "aov": "Average Sale",
+        "refund_rate_pct": "Returns / Qty Transactions",
+        "discount_rate_pct": "Total Discount / Gross Sales"
+      }
+    },
+    "operator_summaries": {
+      "description": "Per-operator performance by day.",
+      "grain": "Operator Name + Venue + Date",
+      "timeColumn": "Date",
+      "joinKeys": [
+        "Venue",
+        "Date",
+        "Operator Name"
+      ],
+      "measures": [
+        {
+          "name": "NettTotal",
+          "agg": "sum"
+        },
+        {
+          "name": "Qty Transactions",
+          "agg": "sum"
+        },
+        {
+          "name": "Average Sale",
+          "agg": "avg"
+        },
+        {
+          "name": "Profit%",
+          "agg": "avg"
+        }
+      ],
+      "dimensions": [
+        "Operator Name",
+        "Venue",
+        "Date",
+        "DateTime Last Trans."
+      ],
+      "semantics": {
+        "sales_per_txn": "NettTotal / Qty Transactions",
+        "underperformance_flag": "Compare vs operator baseline last 4 weeks"
+      }
+    },
+    "product_summaries": {
+      "description": "Per-product sales/mix by day.",
+      "grain": "Product Name + Venue + Date",
+      "timeColumn": "Date",
+      "joinKeys": [
+        "Venue",
+        "Date",
+        "Product Name"
+      ],
+      "measures": [
+        {
+          "name": "Nett Sales",
+          "agg": "sum"
+        },
+        {
+          "name": "Qty Units sold",
+          "agg": "sum"
+        }
+      ],
+      "dimensions": [
+        "Product Name",
+        "Sort Group",
+        "Type Group",
+        "Type",
+        "Size",
+        "Venue",
+        "Date"
+      ],
+      "semantics": {
+        "avg_price": "Nett Sales / Qty Units sold",
+        "mix_share": "Nett Sales / total Nett Sales for Venue+Date"
+      }
+    },
+    "account_summaries": {
+      "description": "Customer/account activity by day (loyalty points, visits, spend).",
+      "grain": "Account Name + Venue + Date",
+      "timeColumn": "Date",
+      "joinKeys": [
+        "Venue",
+        "Date",
+        "Account Name"
+      ],
+      "measures": [
+        {
+          "name": "Nett Sales",
+          "agg": "sum"
+        },
+        {
+          "name": "Payments",
+          "agg": "sum"
+        },
+        {
+          "name": "Charges",
+          "agg": "sum"
+        },
+        {
+          "name": "Visits",
+          "agg": "sum"
+        },
+        {
+          "name": "Points Start",
+          "agg": "last"
+        },
+        {
+          "name": "Points End",
+          "agg": "last"
+        }
+      ],
+      "dimensions": [
+        "Account Name",
+        "Venue",
+        "Date"
+      ],
+      "semantics": {
+        "points_delta": "Points End - Points Start",
+        "avg_ticket": "Nett Sales / Visits"
+      }
+    }
+  },
+  "termDictionary": {
+    "aov|average order|avg ticket|average spend": {
+      "table": "till_summaries",
+      "column": "Average Sale"
+    },
+    "refunds|returns": {
+      "table": "till_summaries",
+      "column": "Returns"
+    },
+    "net sales|nett sales|net": {
+      "table": "till_summaries",
+      "column": "NettTotal"
+    },
+    "transactions|orders|receipts|tickets": {
+      "table": "till_summaries",
+      "column": "Qty Transactions"
+    },
+    "staff|operator|barista|cashier": {
+      "table": "operator_summaries",
+      "column": "Operator Name"
+    },
+    "units|qty sold": {
+      "table": "product_summaries",
+      "column": "Qty Units sold"
+    }
+  }
+}

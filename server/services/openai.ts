@@ -26,33 +26,44 @@ export interface PosAnalysisContext {
 
 async function loadAgentConfig(): Promise<any> {
   try {
-    // Try loading modular context files first
-    const basePath = path.join(process.cwd(), 'context', 'base.json');
-    const dataModelPath = path.join(process.cwd(), 'context', 'data_model.json');
-    
-    let composedConfig: any = {};
+    // Load the compiled comprehensive context file
+    const compiledPath = path.join(process.cwd(), 'context', 'compiled', 'alex_context.compiled.json');
     
     try {
-      // Load base configuration
-      const baseFile = await fs.readFile(basePath, 'utf-8');
-      const baseConfig = JSON.parse(baseFile);
-      composedConfig = { ...baseConfig };
+      const compiledFile = await fs.readFile(compiledPath, 'utf-8');
+      const compiledConfig = JSON.parse(compiledFile);
       
-      // Load data model configuration
-      const dataModelFile = await fs.readFile(dataModelPath, 'utf-8');
-      const dataModelConfig = JSON.parse(dataModelFile);
-      composedConfig.dataModel = dataModelConfig.dataModel;
+      console.log('✓ Loaded comprehensive Alex context from compiled configuration');
+      console.log('Agent:', compiledConfig.agent?.name, '-', compiledConfig.agent?.role);
+      console.log('Schema version:', compiledConfig.schemaVersion);
       
-      console.log('✓ Loaded modular AI context from context/ folder');
-      console.log('Agent name:', composedConfig.agent?.name);
-      console.log('Agent role:', composedConfig.agent?.role);
-      return composedConfig;
-    } catch (contextError) {
-      // Fall back to legacy ai-agent-config.json
-      console.log('⚠ Modular context not found, falling back to ai-agent-config.json');
-      const configPath = path.join(process.cwd(), 'ai-agent-config.json');
-      const configFile = await fs.readFile(configPath, 'utf-8');
-      return JSON.parse(configFile);
+      return compiledConfig;
+    } catch (compiledError) {
+      console.log('⚠ Compiled context not found, trying modular context files');
+      
+      // Fallback to modular approach
+      const basePath = path.join(process.cwd(), 'context', 'context.base.json');
+      const dataModelPath = path.join(process.cwd(), 'context', 'data_model.json');
+      
+      let composedConfig: any = {};
+      
+      try {
+        // Load base configuration
+        const baseFile = await fs.readFile(basePath, 'utf-8');
+        const baseConfig = JSON.parse(baseFile);
+        composedConfig = { ...baseConfig };
+        
+        // Load data model configuration
+        const dataModelFile = await fs.readFile(dataModelPath, 'utf-8');
+        const dataModelConfig = JSON.parse(dataModelFile);
+        composedConfig.dataModel = dataModelConfig.dataModel;
+        
+        console.log('✓ Loaded modular AI context from context/ folder');
+        return composedConfig;
+      } catch (contextError) {
+        console.log('⚠ All context files not found, using minimal configuration');
+        return null;
+      }
     }
   } catch (error) {
     console.warn('Could not load AI agent config, using default behavior');

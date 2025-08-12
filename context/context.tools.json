@@ -1,0 +1,72 @@
+{
+  "tools": [
+    {
+      "name": "get_metrics",
+      "purpose": "Aggregate metrics for a period with optional comparisons.",
+      "input": {
+        "venueId": "string",
+        "from": "ISODate",
+        "to": "ISODate",
+        "groupBy": "none|date|hour|operator|till|product|category",
+        "metrics": [
+          "gross_sales",
+          "net_sales",
+          "txn_count",
+          "avg_sale",
+          "refund_qty",
+          "refund_amount"
+        ],
+        "compareTo": "previous_period|same_day_last_week|same_period_last_year|null"
+      },
+      "output": {
+        "series": [
+          {
+            "name": "string",
+            "points": [
+              {
+                "x": "ISODate|string",
+                "y": "number"
+              }
+            ]
+          }
+        ],
+        "totals": {
+          "metric": "number"
+        },
+        "comparison": {
+          "changePct": "number|null",
+          "basis": "string|null"
+        }
+      }
+    },
+    {
+      "name": "list_entities",
+      "purpose": "Resolve and validate operators/tills/products from user text.",
+      "input": {
+        "query": "string",
+        "entityType": "operator|till|product|account",
+        "venueId": "string"
+      },
+      "output": {
+        "matches": [
+          {
+            "id": "string",
+            "name": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "render_chart",
+      "purpose": "Return a chart spec consistent with responseContract.format.data.charts.",
+      "input": {
+        "type": "line|bar|area|pie",
+        "title": "string",
+        "series": "array"
+      },
+      "output": {
+        "chart": "object"
+      }
+    }
+  ]
+}

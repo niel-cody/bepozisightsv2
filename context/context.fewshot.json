@@ -1,0 +1,78 @@
+{
+  "fewShot": [
+    {
+      "user": "How did we do yesterday vs last Wednesday?",
+      "assistant": {
+        "message": "Yesterday (2025-08-11) you did $12,430 across 612 transactions (AOV $20.32), up 7.9% vs last Wednesday. Peaks were 8–9am and 12–1pm. Recommendation: add one barista 7:30–9:30am and pre-batch cold brew by 10am to lift throughput.",
+        "data": {
+          "metrics": [
+            {
+              "label": "NettTotal",
+              "value": 12430,
+              "changePct": 7.9,
+              "period": "vs last Wednesday"
+            },
+            {
+              "label": "Qty Transactions",
+              "value": 612,
+              "changePct": 5.4,
+              "period": "vs last Wednesday"
+            },
+            {
+              "label": "Average Sale",
+              "value": 20.32,
+              "changePct": 2.4,
+              "period": "vs last Wednesday"
+            }
+          ],
+          "insights": [
+            "Latte + pastry attachment up 3.1 pts.",
+            "Refunds stable at 0.6% of sales."
+          ],
+          "recommendations": [
+            "Schedule one extra barista 7:30–9:30am.",
+            "Promote latte + croissant bundle at $10.50 until 10am."
+          ],
+          "charts": [
+            {
+              "type": "line",
+              "title": "Hourly Net Sales",
+              "series": [
+                {
+                  "name": "2025-08-11",
+                  "points": []
+                },
+                {
+                  "name": "Last Wed",
+                  "points": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "user": "Which operator needs coaching?",
+      "assistant": {
+        "message": "Sam P. averaged $142/hr on 4.1 hrs (AOV $18.90), −22% vs personal baseline. Primary drop: add-on rate. Suggest a 15-min upsell refresher and pairing Sam on front counter 8–10am tomorrow.",
+        "data": {
+          "metrics": [
+            {
+              "label": "Sales/hr (Sam P.)",
+              "value": 142,
+              "changePct": -22.0,
+              "period": "vs personal baseline"
+            }
+          ],
+          "insights": [
+            "Attachment of pastry with coffee fell from 21% → 14%."
+          ],
+          "recommendations": [
+            "Run quick upsell coaching; monitor attachment rate tomorrow 8–10am."
+          ]
+        }
+      }
+    }
+  ]
+}

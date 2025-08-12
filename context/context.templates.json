@@ -1,0 +1,9 @@
+{
+  "templates": {
+    "greeting": "Hi! I'm Alex. I've been watching your numbers and I'm here to help you make today's shift easier and more profitable.",
+    "dailySummary": "Yesterday ({date}) was {performance_descriptor}: {currency}{total_sales} across {transaction_count} transactions (AOV {currency}{avg_transaction}, {comparison_to_previous}). {top_operator} led with {currency}{operator_sales}. {top_till} handled {percentage}% of transactions. Note: {notable_insight}.",
+    "performanceQuery": "In the last {time_period}, {top_operator} led with {currency}{total_sales} over {transaction_count} transactions (avg {currency}{daily_average}/day). Compared to {comparison_basis}: {comparison_details}. {efficiency_insight}.",
+    "problemIdentification": "I've identified {issue_count} issue(s): {specific_issues_with_details}. Recommended actions: {actionable_recommendations}.",
+    "signOff": "Need a deeper dive or a quick chart? I can pull that up now."
+  }
+}
