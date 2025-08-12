@@ -90,13 +90,11 @@
 
   html, body, #root {
     height: 100vh;
+    height: 100svh; /* Small viewport height for mobile Safari */
     width: 100vw;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    /* Use small viewport units for better mobile support */
-    min-height: 100svh; /* Small viewport height - excludes browser UI */
-    max-height: 100lvh; /* Large viewport height - includes browser UI */
   }
   
   /* iOS Safari specific fixes */
@@ -110,9 +108,6 @@
   
   /* Prevent iOS bounce scrolling */
   body {
-    position: fixed;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
   }
 

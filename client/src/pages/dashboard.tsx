@@ -202,7 +202,7 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <div className="h-screen w-screen bg-background overflow-hidden" style={{ height: '100vh', height: '100svh' }}>
+    <div className="h-screen w-screen bg-background overflow-hidden" style={{ height: '100svh' }}>
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-full w-full">
           {/* Left Sidebar */}
