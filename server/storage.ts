@@ -57,9 +57,6 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  async getUsers(): Promise<User[]> {
-    return Array.from(this.users.values());
-  }
   private users: Map<string, User>;
   private tills: Map<string, Till>;
   private operators: Map<string, OperatorSummary>;
@@ -80,6 +77,10 @@ export class MemStorage implements IStorage {
     this.chatMessages = new Map();
     
     this.initializeSampleData();
+  }
+
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
   }
 
   private initializeSampleData() {
@@ -407,8 +408,10 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Temporarily use MemStorage to avoid database authentication issues
-export const storage = new MemStorage();
+// Use PostgreSQL storage if DATABASE_URL is available, fallback to MemStorage
+export const storage = process.env.DATABASE_URL 
+  ? new PostgresStorage()
+  : new MemStorage();
 
 // Database is ready - your imported data will persist between restarts
 // No automatic seeding to preserve your uploaded CSV data
