@@ -179,8 +179,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // No need to build massive context - the agent will call functions as needed!
 
-      // Get AI response using function calling (no token limits!)
-      const agentResponse = await agentChat(messageData.message, messageData.model || 'gpt-4o-mini');
+      // Get AI response using function calling with conversation context
+      const agentResponse = await agentChat(messageData.message, messageData.conversationId || 'default', messageData.model || 'gpt-4o-mini');
       const aiResult = {
         response: agentResponse.content,
         data: null // Agent handles data internally via function calls
@@ -216,16 +216,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storage.getDailySummary(new Date().toISOString().split('T')[0])
       ]);
 
-      const context: PosAnalysisContext = {
-        tills,
-        operators,
-        products,
-        dailySummary: todaySummary,
-        recentTransactions: []
-      };
-
-      const insights = await generateInsights(context);
-      res.json({ insights });
+      // Use agent for insights generation too
+      const insights = await agentChat("Generate key business insights for today's performance and overall trends", 'insights', 'gpt-4o-mini');
+      res.json({ insights: insights.content });
     } catch (error) {
       console.error("Insights error:", error);
       res.status(500).json({ error: "Failed to generate insights" });

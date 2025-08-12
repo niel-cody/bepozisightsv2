@@ -65,6 +65,23 @@ const tools = [
         required: ["period"]
       }
     }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getStaffDetails",
+      description: "Get detailed information about a specific staff member including refunds, sales metrics, etc.",
+      parameters: {
+        type: "object",
+        properties: {
+          staffName: {
+            type: "string",
+            description: "Name or partial name of the staff member to look up"
+          }
+        },
+        required: ["staffName"]
+      }
+    }
   }
 ];
 
@@ -158,13 +175,49 @@ const functions = {
           name: op.name,
           totalSales: parseFloat(op.totalSales || "0"),
           transactionCount: op.transactionCount || 0,
-          avgTransaction: op.transactionCount && op.transactionCount > 0 ? parseFloat(op.totalSales || "0") / op.transactionCount : 0
+          avgTransaction: op.transactionCount && op.transactionCount > 0 ? parseFloat(op.totalSales || "0") / op.transactionCount : 0,
+          // Include additional details for context
+          role: op.role,
+          status: op.status,
+          employeeId: op.employeeId
         }));
       
       return { topPerformers: topOperators, period: args.period };
     } catch (error) {
       console.error("Error getting top performing staff:", error);
       return { error: "Could not retrieve staff performance data" };
+    }
+  },
+
+  getStaffDetails: async (args: { staffName: string }) => {
+    try {
+      const operators = await storage.getOperators();
+      
+      // Find staff member by name (case insensitive)
+      const staffMember = operators.find(op => 
+        op.name.toLowerCase().includes(args.staffName.toLowerCase())
+      );
+      
+      if (!staffMember) {
+        return { error: `Could not find staff member with name containing "${args.staffName}"` };
+      }
+      
+      return {
+        name: staffMember.name,
+        role: staffMember.role,
+        status: staffMember.status,
+        employeeId: staffMember.employeeId,
+        totalSales: parseFloat(staffMember.totalSales || "0"),
+        transactionCount: staffMember.transactionCount || 0,
+        avgTransaction: staffMember.transactionCount && staffMember.transactionCount > 0 ? 
+          parseFloat(staffMember.totalSales || "0") / staffMember.transactionCount : 0,
+        grossSales: parseFloat(staffMember.grossSales || "0"),
+        totalDiscount: parseFloat(staffMember.totalDiscount || "0"),
+        lastTransactionDate: staffMember.lastTransactionDate
+      };
+    } catch (error) {
+      console.error("Error getting staff details:", error);
+      return { error: "Could not retrieve staff details" };
     }
   },
 
@@ -233,9 +286,13 @@ const functions = {
   }
 };
 
-// Main agent chat function with function calling
-export async function agentChat(message: string, model: string = "gpt-4o-mini"): Promise<{ content: string }> {
+// Main agent chat function with function calling and conversation memory
+export async function agentChat(message: string, conversationId: string, model: string = "gpt-4o-mini"): Promise<{ content: string }> {
   try {
+    // Get conversation history to maintain context
+    const conversationHistory = await storage.getChatMessages(conversationId);
+    
+    // Build conversation context from history
     const messages = [
       {
         role: "system" as const,
@@ -247,18 +304,37 @@ You have access to these functions to get real business data:
 - getRevenueComparison: Compare revenue across time periods
 - getBusinessSummary: Get overall business metrics and today's performance  
 - getTopPerformingStaff: Get information about top performing staff members
+- getStaffDetails: Get detailed information about a specific staff member
+
+IMPORTANT: Maintain conversation context. When users ask follow-up questions like "did he also do refunds?" or mention names like "Brendan Catering", refer back to previous messages in the conversation to understand what they're referring to. Use getStaffDetails to get specific information about staff members mentioned in conversation.
 
 Use these functions to answer questions with real data. Be conversational, friendly, and provide actionable insights.
 
 When users ask about revenue comparisons, use getRevenueComparison.
 When users ask for general business overview, use getBusinessSummary.
-When users ask about staff performance, use getTopPerformingStaff.`
-      },
-      {
-        role: "user" as const,
-        content: message
+When users ask about staff performance, use getTopPerformingStaff.
+When users ask about specific staff members or refunds, use getStaffDetails.`
       }
     ];
+
+    // Add conversation history (limit to last 10 exchanges to avoid token limits)
+    const recentHistory = conversationHistory.slice(-10);
+    for (const historyItem of recentHistory) {
+      messages.push({
+        role: "user" as const,
+        content: historyItem.message
+      });
+      messages.push({
+        role: "assistant" as const,
+        content: historyItem.response
+      });
+    }
+
+    // Add current message
+    messages.push({
+      role: "user" as const,
+      content: message
+    });
 
     const response = await openai.chat.completions.create({
       model: model,
@@ -278,7 +354,7 @@ When users ask about staff performance, use getTopPerformingStaff.`
         const functionArgs = JSON.parse(toolCall.function.arguments);
         
         if (functions[functionName as keyof typeof functions]) {
-          const result = await functions[functionName as keyof typeof functions](functionArgs);
+          const result = await (functions as any)[functionName](functionArgs);
           functionResults.push({
             tool_call_id: toolCall.id,
             content: JSON.stringify(result)
