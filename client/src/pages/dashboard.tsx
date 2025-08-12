@@ -170,7 +170,7 @@ export default function Dashboard() {
                         className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                       >
                         <MessageSquare className="w-4 h-4 mr-2" />
-                        <div className="text-sm font-normal">Chat</div>
+                        <div className="text-sm font-normal">Chat history</div>
                         {chatOpen ? (
                           <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
                         ) : (
