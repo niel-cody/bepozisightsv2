@@ -43,7 +43,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
   const { state } = useSidebar()
-  const isCollapsed = state === "collapsed"
+  const isCollapsed = state === "closed"
   
   return (
     <Sidebar variant="sidebar" collapsible="icon">
