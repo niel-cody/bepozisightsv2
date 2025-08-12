@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { tills, operatorSummaries, products, transactions, tillSummaries, customers } from '../../shared/schema';
+import { tills, operatorSummaries, products, transactions, tillSummaries, customerSummaries } from '../../shared/schema';
 import { parse } from 'csv-parse/sync';
 
 interface ImportResult {
@@ -155,20 +155,46 @@ export class SimpleCSVImporter {
         case 'customers':
           for (const record of records) {
             try {
-              await db.insert(customers).values({
-                name: record.name || record.customerName,
-                email: record.email,
-                phone: record.phone,
-                address: record.address,
-                customerType: record.customerType || 'regular',
-                totalSpent: record.totalSpent || '0.00',
-                visitCount: parseInt(record.visitCount) || 0,
-                lastVisit: record.lastVisit ? new Date(record.lastVisit) : null,
-                notes: record.notes
+              // Parse the date from TimeSpan format
+              const dateStr = record.TimeSpan;
+              let parsedDate = new Date().toISOString().split('T')[0]; // Default to today
+              
+              if (dateStr) {
+                try {
+                  // Handle format like "Wed 11-Nov-2009"
+                  const cleanDate = dateStr.replace(/^[A-Za-z]+ /, ''); // Remove day prefix
+                  const date = new Date(cleanDate);
+                  if (!isNaN(date.getTime())) {
+                    parsedDate = date.toISOString().split('T')[0];
+                  }
+                } catch (e) {
+                  // Use default date if parsing fails
+                }
+              }
+
+              await db.insert(customerSummaries).values({
+                date: parsedDate,
+                accountId: record['Account ID'] || record.accountId || '',
+                accountName: record['Account Name'] || record.accountName || '',
+                balanceStart: record['Balance Start'] || record.balanceStart || '0.00',
+                balanceEnd: record['Balance End'] || record.balanceEnd || '0.00',
+                pointsStart: record['Points Start'] || record.pointsStart || '0.00',
+                pointsEnd: record['Points End'] || record.pointsEnd || '0.00',
+                payments: record.Payments || record.payments || '0.00',
+                charges: record.Charges || record.charges || '0.00',
+                paymentsMinusCharges: record['Payments Minus Charges'] || record.paymentsMinusCharges || '0.00',
+                nettTurnover: record.NettTurnover || record.nettTurnover || '0.00',
+                grossTurnover: record.GrossTurnover || record.grossTurnover || '0.00',
+                turnoverDiscount: record['Turnover Discount'] || record.turnoverDiscount || '0.00',
+                visits: parseInt(record.Visits || record.visits) || 0,
+                title: record.Title || record.title || null,
+                firstName: record['First Name'] || record.firstName || null,
+                lastName: record['Last Name'] || record.lastName || null,
+                status: record.Status || record.status || 'OK'
               });
               importCount++;
             } catch (error: any) {
-              errors.push(`Customer "${record.name}": ${error.message}`);
+              errors.push(`Customer "${record['Account Name'] || record.accountName}": ${error.message}`);
             }
           }
           break;

@@ -122,21 +122,30 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   timestamp: true,
 }).partial({ response: true });
 
-// Customer data table for future use
-export const customers = pgTable("customers", {
+// Customer account summaries table - matches CS file structure
+export const customerSummaries = pgTable("customer_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  address: text("address"),
-  customerType: text("customer_type").default("regular"), // regular, vip, corporate
-  totalSpent: decimal("total_spent", { precision: 10, scale: 2 }).default("0.00"),
-  visitCount: integer("visit_count").default(0),
-  lastVisit: timestamp("last_visit"),
-  notes: text("notes"),
+  date: text("date").notNull(), // TimeSpan field
+  accountId: text("account_id").notNull(),
+  accountName: text("account_name").notNull(),
+  balanceStart: decimal("balance_start", { precision: 10, scale: 2 }).default("0.00"),
+  balanceEnd: decimal("balance_end", { precision: 10, scale: 2 }).default("0.00"),
+  pointsStart: decimal("points_start", { precision: 10, scale: 2 }).default("0.00"),
+  pointsEnd: decimal("points_end", { precision: 10, scale: 2 }).default("0.00"),
+  payments: decimal("payments", { precision: 10, scale: 2 }).default("0.00"),
+  charges: decimal("charges", { precision: 10, scale: 2 }).default("0.00"),
+  paymentsMinusCharges: decimal("payments_minus_charges", { precision: 10, scale: 2 }).default("0.00"),
+  nettTurnover: decimal("nett_turnover", { precision: 10, scale: 2 }).default("0.00"),
+  grossTurnover: decimal("gross_turnover", { precision: 10, scale: 2 }).default("0.00"),
+  turnoverDiscount: decimal("turnover_discount", { precision: 10, scale: 2 }).default("0.00"),
+  visits: integer("visits").default(0),
+  title: text("title"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  status: text("status").default("OK"),
 });
 
-export const insertCustomerSchema = createInsertSchema(customers).omit({
+export const insertCustomerSummarySchema = createInsertSchema(customerSummaries).omit({
   id: true,
 });
 
@@ -154,5 +163,5 @@ export type TillSummary = typeof tillSummaries.$inferSelect;
 export type InsertTillSummary = z.infer<typeof insertTillSummarySchema>;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
-export type Customer = typeof customers.$inferSelect;
-export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type CustomerSummary = typeof customerSummaries.$inferSelect;
+export type InsertCustomerSummary = z.infer<typeof insertCustomerSummarySchema>;

@@ -4,7 +4,8 @@ import {
   operatorSummaries, 
   products, 
   tillSummaries, 
-  transactions 
+  transactions,
+  customerSummaries
 } from '@shared/schema';
 
 export async function seedDatabase() {
@@ -13,6 +14,7 @@ export async function seedDatabase() {
   try {
     // Clear existing data
     await db.delete(transactions);
+    await db.delete(customerSummaries);
     await db.delete(tillSummaries);
     await db.delete(products);
     await db.delete(operatorSummaries);

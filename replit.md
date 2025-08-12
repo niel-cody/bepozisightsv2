@@ -42,7 +42,7 @@ The system models core POS entities:
 - **Till Summaries**: Daily business summaries with complete financial metrics (renamed from Daily Summaries)
 - **Products**: Inventory items with sales tracking
 - **Transactions**: Complete transaction records with itemized details
-- **Customers**: Customer data and profiles for future CRM features
+- **Customer Summaries**: Customer account transaction summaries with financial metrics, points, and visit tracking
 - **Chat Messages**: AI conversation history and context
 
 ### Authentication and Authorization

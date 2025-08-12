@@ -186,7 +186,7 @@ export default function CSVUpload() {
               <SelectItem value="tills">Till Summaries (TS) - Daily Sales Data</SelectItem>
               <SelectItem value="operators">Operator Summaries (OS)</SelectItem>
               <SelectItem value="products">Product Summaries (PS)</SelectItem>
-              <SelectItem value="customers">Customer Data</SelectItem>
+              <SelectItem value="customers">Customer Summaries (CS)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -199,7 +199,7 @@ export default function CSVUpload() {
               {tableName === "tills" && "TimeSpan,Name,Qty Transactions,Gross Sales,NettTotal,Profit%,Cost of Sales..."}
               {tableName === "operators" && "TimeSpan,Name,Qty Transactions,Gross Sales,NettTotal,Profit%..."}
               {tableName === "products" && "name,category,price,stock,soldToday,revenue"}
-              {tableName === "customers" && "name,email,phone,address,customerType,totalSpent,visitCount,lastVisit,notes"}
+              {tableName === "customers" && "TimeSpan,Account ID,Account Name,Balance Start,Balance End,Points Start,Points End,Payments,Charges,Payments Minus Charges,NettTurnover,GrossTurnover,Turnover Discount,Visits,Title,First Name,Last Name,Status"}
             </code>
           </div>
         )}
