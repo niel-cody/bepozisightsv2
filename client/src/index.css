@@ -90,10 +90,22 @@
 
   html, body, #root {
     height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
     width: 100vw;
+    width: 100dvw; /* Dynamic viewport width */
     margin: 0;
     padding: 0;
     overflow: hidden;
+    /* Prevent address bar issues on mobile */
+  }
+  
+  /* Additional mobile viewport fixes */
+  @supports (-webkit-touch-callout: none) {
+    /* iOS Safari specific fixes */
+    html, body, #root {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+    }
   }
 
   body {
@@ -119,7 +131,16 @@
   /* Full height utilities */
   .sidebar-layout {
     height: 100vh;
+    height: 100dvh; /* Mobile-friendly height */
     display: flex;
+  }
+  
+  /* Mobile Safari specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    .sidebar-layout {
+      height: -webkit-fill-available;
+      min-height: -webkit-fill-available;
+    }
   }
   
   .scrollbar-hide {
