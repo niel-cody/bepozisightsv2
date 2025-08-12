@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowUpIcon, ArrowDownIcon, DollarSign, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 
 interface MetricCardProps {
@@ -61,9 +62,22 @@ function MetricCard({ title, value, change, icon, loading }: MetricCardProps) {
   );
 }
 
+type PeriodType = 'today' | 'week' | 'month' | 'quarter' | 'ytd' | 'year';
+
+const PERIOD_OPTIONS = [
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'This Week' },
+  { value: 'month', label: 'This Month' },
+  { value: 'quarter', label: 'This Quarter' },
+  { value: 'ytd', label: 'Year to Date' },
+  { value: 'year', label: 'This Year' },
+];
+
 export function SalesOverview() {
-  const { data: todayStats, isLoading: todayLoading } = useQuery({
-    queryKey: ['/api/sales/today'],
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('ytd');
+
+  const { data: periodStats, isLoading: periodLoading } = useQuery({
+    queryKey: ['/api/sales/period', selectedPeriod],
     refetchInterval: 30000,
   });
 
@@ -72,80 +86,70 @@ export function SalesOverview() {
     refetchInterval: 30000,
   });
 
-  // Calculate metrics
-  const todayData = todayStats || { grossSales: 0, nettTotal: 0, transactionCount: 0, discounts: 0 };
-  const trendsData = salesTrends || [];
-  
-  // Get yesterday's data for comparison
-  const yesterday = trendsData[trendsData.length - 2];
-  const today = trendsData[trendsData.length - 1];
-  
-  const calculateChange = (current: number, previous: number) => {
-    if (!previous || previous === 0) return 0;
-    return ((current - previous) / previous) * 100;
+  // Calculate metrics based on selected period
+  const periodData = periodStats || { 
+    current: { grossSales: 0, nettTotal: 0, transactionCount: 0, discounts: 0 },
+    previous: { grossSales: 0, nettTotal: 0, transactionCount: 0, discounts: 0 },
+    changes: { grossSalesChange: 0, netSalesChange: 0, transactionChange: 0, avgSaleChange: 0 }
   };
 
-  const grossSalesChange = calculateChange(
-    parseFloat(todayData.grossSales || '0'),
-    parseFloat(yesterday?.sales || '0')
-  );
-
-  const netSalesChange = calculateChange(
-    parseFloat(todayData.nettTotal || '0'),
-    parseFloat(yesterday?.sales || '0')
-  );
-
-  const transactionChange = calculateChange(
-    todayData.transactionCount || 0,
-    yesterday?.transactions || 0
-  );
-
-  const avgSaleChange = calculateChange(
-    todayData.transactionCount ? parseFloat(todayData.nettTotal || '0') / todayData.transactionCount : 0,
-    yesterday?.transactions ? yesterday.sales / yesterday.transactions : 0
-  );
+  const currentData = periodData.current || { grossSales: 0, nettTotal: 0, transactionCount: 0, discounts: 0 };
+  const changes = periodData.changes || { grossSalesChange: 0, netSalesChange: 0, transactionChange: 0, avgSaleChange: 0 };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Key Business Stats - Today</h2>
-          <p className="text-muted-foreground">Rolling 7-day view with last week & vs last year</p>
+          <h2 className="text-2xl font-bold">
+            Key Business Stats - {PERIOD_OPTIONS.find(p => p.value === selectedPeriod)?.label}
+          </h2>
+          <p className="text-muted-foreground">Performance metrics with period-over-period comparison</p>
         </div>
-        <Badge variant="outline">Today</Badge>
+        <Select value={selectedPeriod} onValueChange={(value: PeriodType) => setSelectedPeriod(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select period" />
+          </SelectTrigger>
+          <SelectContent>
+            {PERIOD_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Gross Sales"
-          value={`$${parseFloat(todayData.grossSales || '0').toLocaleString()}`}
-          change={grossSalesChange}
+          value={`$${parseFloat(currentData.grossSales || '0').toLocaleString()}`}
+          change={changes.grossSalesChange}
           icon={<DollarSign className="h-4 w-4" />}
-          loading={todayLoading}
+          loading={periodLoading}
         />
         
         <MetricCard
           title="Net Sales"
-          value={`$${parseFloat(todayData.nettTotal || '0').toLocaleString()}`}
-          change={netSalesChange}
+          value={`$${parseFloat(currentData.nettTotal || '0').toLocaleString()}`}
+          change={changes.netSalesChange}
           icon={<TrendingUp className="h-4 w-4" />}
-          loading={todayLoading}
+          loading={periodLoading}
         />
         
         <MetricCard
           title="Average Sale"
-          value={`$${todayData.transactionCount ? (parseFloat(todayData.nettTotal || '0') / todayData.transactionCount).toFixed(2) : '0.00'}`}
-          change={avgSaleChange}
+          value={`$${currentData.transactionCount ? (parseFloat(currentData.nettTotal || '0') / currentData.transactionCount).toFixed(2) : '0.00'}`}
+          change={changes.avgSaleChange}
           icon={<ShoppingCart className="h-4 w-4" />}
-          loading={todayLoading}
+          loading={periodLoading}
         />
         
         <MetricCard
           title="Transactions"
-          value={(todayData.transactionCount || 0).toLocaleString()}
-          change={transactionChange}
+          value={(currentData.transactionCount || 0).toLocaleString()}
+          change={changes.transactionChange}
           icon={<Users className="h-4 w-4" />}
-          loading={todayLoading}
+          loading={periodLoading}
         />
       </div>
     </div>

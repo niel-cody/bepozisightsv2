@@ -339,6 +339,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get period-based sales data
+  app.get("/api/sales/period/:period", async (req, res) => {
+    try {
+      const { period } = req.params;
+      const summaries = await storage.getDailySummaries();
+      const now = new Date();
+      
+      let currentPeriodStart: Date;
+      let previousPeriodStart: Date;
+      let previousPeriodEnd: Date;
+      
+      switch (period) {
+        case 'today':
+          currentPeriodStart = new Date(now.getTime());
+          currentPeriodStart.setHours(0, 0, 0, 0);
+          previousPeriodStart = new Date(currentPeriodStart.getTime() - 24 * 60 * 60 * 1000);
+          previousPeriodEnd = new Date(currentPeriodStart.getTime() - 1);
+          break;
+          
+        case 'week':
+          // Current week (last 7 days)
+          currentPeriodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          previousPeriodStart = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+          previousPeriodEnd = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+          
+        case 'month':
+          // Current month
+          currentPeriodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          previousPeriodStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          previousPeriodEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+          break;
+          
+        case 'quarter':
+          // Current quarter
+          const currentQuarter = Math.floor(now.getMonth() / 3);
+          currentPeriodStart = new Date(now.getFullYear(), currentQuarter * 3, 1);
+          previousPeriodStart = new Date(now.getFullYear(), (currentQuarter - 1) * 3, 1);
+          previousPeriodEnd = new Date(now.getFullYear(), currentQuarter * 3, 0);
+          break;
+          
+        case 'ytd':
+        case 'year':
+          // Year to date or full year
+          currentPeriodStart = new Date(now.getFullYear(), 0, 1);
+          previousPeriodStart = new Date(now.getFullYear() - 1, 0, 1);
+          previousPeriodEnd = new Date(now.getFullYear() - 1, 11, 31);
+          break;
+          
+        default:
+          // Default to today
+          currentPeriodStart = new Date(now.getTime());
+          currentPeriodStart.setHours(0, 0, 0, 0);
+          previousPeriodStart = new Date(currentPeriodStart.getTime() - 24 * 60 * 60 * 1000);
+          previousPeriodEnd = new Date(currentPeriodStart.getTime() - 1);
+      }
+      
+      // Filter summaries for current period
+      const currentPeriodSummaries = summaries.filter(s => {
+        const date = new Date(s.date);
+        return date >= currentPeriodStart && date <= now;
+      });
+      
+      // Filter summaries for previous period
+      const previousPeriodSummaries = summaries.filter(s => {
+        const date = new Date(s.date);
+        return date >= previousPeriodStart && date <= previousPeriodEnd;
+      });
+      
+      // Calculate current period totals
+      const currentGrossSales = currentPeriodSummaries.reduce((sum, s) => sum + parseFloat(s.grossSales || "0"), 0);
+      const currentNetSales = currentPeriodSummaries.reduce((sum, s) => sum + parseFloat(s.nettTotal || "0"), 0);
+      const currentTransactions = currentPeriodSummaries.reduce((sum, s) => sum + (s.transactionCount || 0), 0);
+      const currentDiscounts = currentPeriodSummaries.reduce((sum, s) => sum + parseFloat(s.totalDiscount || "0"), 0);
+      
+      // Calculate previous period totals
+      const previousGrossSales = previousPeriodSummaries.reduce((sum, s) => sum + parseFloat(s.grossSales || "0"), 0);
+      const previousNetSales = previousPeriodSummaries.reduce((sum, s) => sum + parseFloat(s.nettTotal || "0"), 0);
+      const previousTransactions = previousPeriodSummaries.reduce((sum, s) => sum + (s.transactionCount || 0), 0);
+      
+      // Calculate changes
+      const calculateChange = (current: number, previous: number) => {
+        if (!previous || previous === 0) return 0;
+        return ((current - previous) / previous) * 100;
+      };
+      
+      const grossSalesChange = calculateChange(currentGrossSales, previousGrossSales);
+      const netSalesChange = calculateChange(currentNetSales, previousNetSales);
+      const transactionChange = calculateChange(currentTransactions, previousTransactions);
+      const avgSaleChange = calculateChange(
+        currentTransactions > 0 ? currentNetSales / currentTransactions : 0,
+        previousTransactions > 0 ? previousNetSales / previousTransactions : 0
+      );
+      
+      res.json({
+        current: {
+          grossSales: currentGrossSales,
+          nettTotal: currentNetSales,
+          transactionCount: currentTransactions,
+          discounts: currentDiscounts
+        },
+        previous: {
+          grossSales: previousGrossSales,
+          nettTotal: previousNetSales,
+          transactionCount: previousTransactions
+        },
+        changes: {
+          grossSalesChange,
+          netSalesChange,
+          transactionChange,
+          avgSaleChange
+        },
+        period: period,
+        days: {
+          current: currentPeriodSummaries.length,
+          previous: previousPeriodSummaries.length
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch period sales data" });
+    }
+  });
+
   // Get daily sales data for heatmap
   app.get("/api/sales/daily", async (req, res) => {
     try {
