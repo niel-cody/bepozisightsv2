@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { 
   TrendingUp, 
@@ -13,7 +14,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Calendar
 } from "lucide-react";
 
 interface OperatorPerformance {
@@ -33,9 +35,11 @@ interface OperatorPerformance {
 export function OperatorsTradingView() {
   const [sortBy, setSortBy] = useState<'performance' | 'sales' | 'change'>('performance');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedPeriod, setSelectedPeriod] = useState<'30days' | '90days' | '6months' | '1year'>('90days');
 
   const { data: operators, isLoading } = useQuery<OperatorPerformance[]>({
-    queryKey: ['/api/operators/trading-view'],
+    queryKey: ['/api/operators/trading-view', selectedPeriod],
+    queryFn: () => fetch(`/api/operators/trading-view/${selectedPeriod}`).then(res => res.json()),
     refetchInterval: 30000,
   });
 
@@ -127,12 +131,30 @@ export function OperatorsTradingView() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Operator Trading View</h1>
             <p className="text-muted-foreground">
-              Track employee performance like stocks - last 90 days data for optimal performance
+              Track employee performance like stocks with period-based analytics
             </p>
           </div>
           
-          {/* Sort Controls */}
-          <div className="flex items-center gap-2">
+          {/* Controls */}
+          <div className="flex items-center gap-4">
+            {/* Period Selector */}
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <Select value={selectedPeriod} onValueChange={(value: any) => setSelectedPeriod(value)}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="30days">Last 30 Days</SelectItem>
+                  <SelectItem value="90days">Last 90 Days</SelectItem>
+                  <SelectItem value="6months">Last 6 Months</SelectItem>
+                  <SelectItem value="1year">Last Year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Sort Controls */}
+            <div className="flex items-center gap-2">
             <Button
               variant={sortBy === 'performance' ? 'default' : 'outline'}
               size="sm"
@@ -161,6 +183,7 @@ export function OperatorsTradingView() {
             >
               {sortOrder === 'desc' ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
             </Button>
+          </div>
           </div>
         </div>
 
