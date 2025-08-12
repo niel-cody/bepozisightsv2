@@ -121,7 +121,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h1 className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</h1>
-                  <p className="text-xs text-sidebar-muted-foreground">AI Assistant</p>
+                  <p className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</p>
                 </div>
               </div>
             </SidebarHeader>
