@@ -9,10 +9,10 @@ import { useConversations, useCreateConversation, useDeleteConversation, useConv
 import type { Conversation, ChatMessage } from "@shared/schema";
 
 const quickQueries = [
-  "Show me today's sales summary",
-  "Which products are performing best?",
-  "How are my operators doing?",
-  "What are the busiest hours?"
+  "What were my top-selling items last week?",
+  "How did my revenue this month compare to last month?",
+  "Which customers spent the most in the past 30 days?",
+  "Which staff members had the highest sales last week?"
 ];
 
 export default function ChatInterface() {
