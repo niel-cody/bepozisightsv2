@@ -92,29 +92,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all chat messages (legacy endpoint) - MUST come first to avoid conflicts
+  // Conversations API
+  app.get("/api/conversations", async (req, res) => {
+    try {
+      const conversations = await storage.getConversations();
+      res.json(conversations);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res.status(500).json({ error: "Failed to fetch conversations" });
+    }
+  });
+
+  app.post("/api/conversations", async (req, res) => {
+    try {
+      const { title } = req.body;
+      const conversation = await storage.createConversation({
+        title: title || "New Chat"
+      });
+      res.json(conversation);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      res.status(500).json({ error: "Failed to create conversation" });
+    }
+  });
+
+  app.delete("/api/conversations/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteConversation(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+      res.status(500).json({ error: "Failed to delete conversation" });
+    }
+  });
+
+  // Chat Messages API
+  app.get("/api/chat/messages/:conversationId", async (req, res) => {
+    try {
+      const { conversationId } = req.params;
+      const messages = await storage.getChatMessages(conversationId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // Get all chat messages (backward compatibility)
   app.get("/api/chat/messages", async (req, res) => {
     try {
       const messages = await storage.getChatMessages();
       res.json(messages);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch chat messages" });
-    }
-  });
-
-  // Get chat messages by session - more specific route comes after general one
-  app.get("/api/chat/messages/:sessionId", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      console.log("Fetching messages for session:", sessionId);
-      
-      // For now, return all messages regardless of session
-      // In a full implementation, you'd filter by sessionId
-      const messages = await storage.getChatMessages();
-      console.log("Found messages:", messages.length);
-      res.json(messages);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
       res.status(500).json({ error: "Failed to fetch chat messages" });
     }
   });
@@ -126,6 +156,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error clearing chat history:", error);
       res.status(500).json({ error: "Failed to clear chat history" });
+    }
+  });
+
+  app.delete("/api/chat/messages/:conversationId", async (req, res) => {
+    try {
+      const { conversationId } = req.params;
+      await storage.clearChatHistory(conversationId);
+      res.json({ success: true, message: "Conversation messages cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing conversation messages:", error);
+      res.status(500).json({ error: "Failed to clear conversation messages" });
     }
   });
 
@@ -166,8 +207,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get AI response
       const aiResult = await analyzePosQuery(messageData.message, context);
       
-      // Save message with AI response
+      // Save message with AI response (include conversationId)
       const chatMessage = await storage.createChatMessage({
+        conversationId: messageData.conversationId || 'default',
         message: messageData.message,
         response: aiResult.response,
         userId: messageData.userId || null

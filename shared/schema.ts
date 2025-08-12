@@ -135,7 +135,9 @@ export const insertConversationSchema = createInsertSchema(conversations).omit({
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   id: true,
   timestamp: true,
-}).partial({ response: true });
+}).partial({ response: true }).extend({
+  conversationId: z.string().optional().default('default'),
+});
 
 // Customer account summaries table - matches CS file structure
 export const customerSummaries = pgTable("customer_summaries", {
