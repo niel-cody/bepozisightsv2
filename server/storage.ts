@@ -10,6 +10,8 @@ import {
   type Transaction,
   type InsertTransaction,
   type TillSummary,
+  type Conversation,
+  type InsertConversation,
   type ChatMessage,
   type InsertChatMessage
 } from "@shared/schema";
@@ -41,9 +43,15 @@ export interface IStorage {
   getDailySummaries(): Promise<TillSummary[]>;
   getDailySummary(date: string): Promise<TillSummary | undefined>;
   
-  getChatMessages(): Promise<ChatMessage[]>;
+  getConversations(): Promise<Conversation[]>;
+  getConversation(id: string): Promise<Conversation | undefined>;
+  createConversation(conversation: InsertConversation): Promise<Conversation>;
+  updateConversation(id: string, updates: Partial<Conversation>): Promise<Conversation | undefined>;
+  deleteConversation(id: string): Promise<void>;
+  
+  getChatMessages(conversationId?: string): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
-  clearChatHistory(): Promise<void>;
+  clearChatHistory(conversationId?: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -53,6 +61,7 @@ export class MemStorage implements IStorage {
   private products: Map<string, Product>;
   private transactions: Map<string, Transaction>;
   private dailySummaries: Map<string, TillSummary>;
+  private conversations: Map<string, Conversation>;
   private chatMessages: Map<string, ChatMessage>;
 
   constructor() {
@@ -62,6 +71,7 @@ export class MemStorage implements IStorage {
     this.products = new Map();
     this.transactions = new Map();
     this.dailySummaries = new Map();
+    this.conversations = new Map();
     this.chatMessages = new Map();
     
     this.initializeSampleData();
@@ -272,8 +282,60 @@ export class MemStorage implements IStorage {
     return this.dailySummaries.get(date);
   }
 
-  async getChatMessages(): Promise<ChatMessage[]> {
-    return Array.from(this.chatMessages.values()).sort(
+  async getConversations(): Promise<Conversation[]> {
+    return Array.from(this.conversations.values()).sort(
+      (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()
+    );
+  }
+
+  async getConversation(id: string): Promise<Conversation | undefined> {
+    return this.conversations.get(id);
+  }
+
+  async createConversation(insertConversation: InsertConversation): Promise<Conversation> {
+    const id = randomUUID();
+    const now = new Date();
+    const conversation: Conversation = { 
+      id,
+      title: insertConversation.title,
+      userId: insertConversation.userId || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.conversations.set(id, conversation);
+    return conversation;
+  }
+
+  async updateConversation(id: string, updates: Partial<Conversation>): Promise<Conversation | undefined> {
+    const conversation = this.conversations.get(id);
+    if (!conversation) return undefined;
+    
+    const updatedConversation = { 
+      ...conversation, 
+      ...updates, 
+      updatedAt: new Date() 
+    };
+    this.conversations.set(id, updatedConversation);
+    return updatedConversation;
+  }
+
+  async deleteConversation(id: string): Promise<void> {
+    this.conversations.delete(id);
+    // Also delete all messages in this conversation
+    const messagesToDelete = Array.from(this.chatMessages.values())
+      .filter(msg => msg.conversationId === id)
+      .map(msg => msg.id);
+    
+    messagesToDelete.forEach(msgId => this.chatMessages.delete(msgId));
+  }
+
+  async getChatMessages(conversationId?: string): Promise<ChatMessage[]> {
+    const allMessages = Array.from(this.chatMessages.values());
+    const filteredMessages = conversationId 
+      ? allMessages.filter(msg => msg.conversationId === conversationId)
+      : allMessages;
+      
+    return filteredMessages.sort(
       (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
     );
   }
@@ -282,6 +344,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const message: ChatMessage = { 
       id,
+      conversationId: insertMessage.conversationId,
       message: insertMessage.message,
       response: insertMessage.response || "",
       userId: insertMessage.userId || null,
@@ -291,8 +354,18 @@ export class MemStorage implements IStorage {
     return message;
   }
 
-  async clearChatHistory(): Promise<void> {
-    this.chatMessages.clear();
+  async clearChatHistory(conversationId?: string): Promise<void> {
+    if (conversationId) {
+      // Clear messages for specific conversation
+      const messagesToDelete = Array.from(this.chatMessages.values())
+        .filter(msg => msg.conversationId === conversationId)
+        .map(msg => msg.id);
+      
+      messagesToDelete.forEach(msgId => this.chatMessages.delete(msgId));
+    } else {
+      // Clear all messages
+      this.chatMessages.clear();
+    }
   }
 }
 

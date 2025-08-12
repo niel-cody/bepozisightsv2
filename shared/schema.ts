@@ -83,8 +83,17 @@ export const tillSummaries = pgTable("till_summaries", {
   tableRefundAfterPrint: decimal("table_refund_after_print", { precision: 10, scale: 2 }),
 });
 
+export const conversations = pgTable("conversations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  userId: varchar("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
+});
+
 export const chatMessages = pgTable("chat_messages", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  conversationId: varchar("conversation_id").references(() => conversations.id).notNull(),
   message: text("message").notNull(),
   response: text("response").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
@@ -115,6 +124,12 @@ export const insertProductSchema = createInsertSchema(products).omit({
 export const insertTransactionSchema = createInsertSchema(transactions).omit({
   id: true,
   timestamp: true,
+});
+
+export const insertConversationSchema = createInsertSchema(conversations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
@@ -161,6 +176,8 @@ export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type Transaction = typeof transactions.$inferSelect;
 export type TillSummary = typeof tillSummaries.$inferSelect;
 export type InsertTillSummary = z.infer<typeof insertTillSummarySchema>;
+export type InsertConversation = z.infer<typeof insertConversationSchema>;
+export type Conversation = typeof conversations.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type CustomerSummary = typeof customerSummaries.$inferSelect;
