@@ -9,6 +9,7 @@ The system serves as a virtual manager assistant, allowing business owners and m
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+UI Design: Clean, simple interface with minimal visual clutter for better focus.
 
 ## System Architecture
 

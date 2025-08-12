@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Sidebar from "@/components/dashboard/sidebar";
-import DataPanel from "@/components/dashboard/data-panel";
+
 import ChatInterface from "@/components/chat/chat-interface";
 import CSVUpload from "@/components/import/csv-upload";
 import { Button } from "@/components/ui/button";
@@ -72,10 +72,7 @@ export default function Dashboard() {
 
         <main className="flex-1 flex flex-col lg:ml-0 ml-0 overflow-hidden">
           {currentView === "chat" && (
-            <div className="flex flex-1 overflow-hidden">
-              <ChatInterface />
-              <DataPanel />
-            </div>
+            <ChatInterface />
           )}
           
           {currentView === "import" && (
