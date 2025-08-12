@@ -110,8 +110,8 @@ export default function ChatInterface({ currentConversationId: propConversationI
     <div className="h-full flex flex-col bg-background" data-testid="chat-interface">
       {/* Chat Header */}
       <div className="p-3 sm:p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center justify-between w-full">
-          {/* Model Selection - Far Left */}
+        <div className="flex items-center justify-end w-full">
+          {/* Model Selection - Far Right */}
           <div className="flex items-center gap-2">
             <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
               <SelectTrigger className="w-28 sm:w-32 gap-1 sm:gap-2 text-xs sm:text-sm" data-testid="select-model">
