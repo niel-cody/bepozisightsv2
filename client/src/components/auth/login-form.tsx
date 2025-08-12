@@ -20,6 +20,8 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
+      console.log("Starting login request with:", credentials.username);
+      
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -29,21 +31,26 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
         body: JSON.stringify(credentials),
       });
       
+      console.log("Login response status:", response.status);
+      console.log("Login response headers:", Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
         console.error("Login response not ok:", response.status, response.statusText);
         const errorData = await response.json().catch(() => ({ error: "Authentication failed" }));
         throw new Error(errorData.error || "Authentication failed");
       }
       
-      return response.json();
+      const data = await response.json();
+      console.log("Login response data:", data);
+      return data;
     },
     onSuccess: (data) => {
-      console.log("Login success:", data);
+      console.log("Login mutation success callback:", data);
       setError(""); // Clear any existing errors
       onLoginSuccess(data.user);
     },
     onError: (error: any) => {
-      console.error("Login error:", error);
+      console.error("Login mutation error callback:", error);
       setError(error.message || "Authentication failed");
     },
   });

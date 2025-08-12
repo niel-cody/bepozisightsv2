@@ -20,7 +20,9 @@ function AuthWrapper() {
   });
 
   useEffect(() => {
+    console.log("Auth check result:", authData);
     if (authData?.user && !isAuthenticated) {
+      console.log("Auto-logging in user:", authData.user);
       login(authData.user);
     }
   }, [authData, isAuthenticated, login]);
