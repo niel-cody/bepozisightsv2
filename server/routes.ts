@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { analyzePosQuery, generateInsights, type PosAnalysisContext } from "./services/openai";
+import { agentChat } from "./services/agent";
 import { SimpleCSVImporter } from "./utils/simple-csv-importer";
 import { insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
@@ -177,35 +177,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const messageData = insertChatMessageSchema.parse(req.body);
       console.log("Message data parsed:", messageData);
       
-      // Get comprehensive context data for AI analysis
-      const [tills, operators, products, todaySummary, recentTransactions, allDailySummaries] = await Promise.all([
-        storage.getTills(),
-        storage.getOperators(),
-        storage.getProducts(),
-        storage.getDailySummary(new Date().toISOString().split('T')[0]),
-        storage.getTransactions(),
-        storage.getDailySummaries()
-      ]);
+      // No need to build massive context - the agent will call functions as needed!
 
-      const context: PosAnalysisContext = {
-        tills,
-        operators,
-        products,
-        dailySummary: todaySummary,
-        recentTransactions: recentTransactions.slice(-10), // Last 10 transactions
-        allDailySummaries: allDailySummaries.slice(-3), // Reduced to 3 days to prevent token limits
-        importedData: {
-          hasImportedData: allDailySummaries.length > 7, // More than seed data
-          totalDays: allDailySummaries.length,
-          dateRange: allDailySummaries.length > 0 ? {
-            earliest: allDailySummaries[0]?.date,
-            latest: allDailySummaries[allDailySummaries.length - 1]?.date
-          } : null
-        }
+      // Get AI response using function calling (no token limits!)
+      const agentResponse = await agentChat(messageData.message, messageData.model || 'gpt-4o-mini');
+      const aiResult = {
+        response: agentResponse.content,
+        data: null // Agent handles data internally via function calls
       };
-
-      // Get AI response with selected model
-      const aiResult = await analyzePosQuery(messageData.message, context, messageData.model || 'gpt-4o-mini');
       
       // Save message with AI response (include conversationId and model)
       const chatMessage = await storage.createChatMessage({
