@@ -1,7 +1,17 @@
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { MessageSquare, BarChart3, Settings } from "lucide-react"
-import {
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { 
+  MessageSquare, 
+  BarChart3, 
+  Users, 
+  Package, 
+  CreditCard, 
+  Settings,
+  Plus,
+  Search,
+  Menu
+} from "lucide-react";
+import { 
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -15,69 +25,97 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import ChatInterface from "@/components/chat/chat-interface"
-import CSVUpload from "@/components/import/csv-upload"
+} from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import ChatInterface from "@/components/chat/chat-interface";
+import CSVUpload from "@/components/import/csv-upload";
 
-// Menu items following official docs pattern
-const items = [
-  {
-    title: "AI Assistant",
-    url: "#",
-    icon: MessageSquare,
-    view: "chat",
+type ViewType = "chat" | "sales" | "operators" | "products" | "accounts" | "settings";
+
+const navigationItems = [
+  { 
+    title: "Chat", 
+    icon: MessageSquare, 
+    view: "chat" as ViewType,
+    description: "AI Assistant" 
   },
-  {
-    title: "Analytics", 
-    url: "#",
-    icon: BarChart3,
-    view: "analytics",
+  { 
+    title: "Sales", 
+    icon: BarChart3, 
+    view: "sales" as ViewType,
+    description: "Sales Reports" 
   },
-  {
-    title: "Settings",
-    url: "#", 
-    icon: Settings,
-    view: "import",
+  { 
+    title: "Operators", 
+    icon: Users, 
+    view: "operators" as ViewType,
+    description: "Staff Performance" 
   },
-]
+  { 
+    title: "Products", 
+    icon: Package, 
+    view: "products" as ViewType,
+    description: "Product Analytics" 
+  },
+  { 
+    title: "Accounts", 
+    icon: CreditCard, 
+    view: "accounts" as ViewType,
+    description: "Customer Accounts" 
+  },
+  { 
+    title: "Settings", 
+    icon: Settings, 
+    view: "settings" as ViewType,
+    description: "Configuration" 
+  },
+];
 
 export default function Dashboard() {
-  const [currentView, setCurrentView] = useState("chat")
-
-  const { data: todaySummary } = useQuery({
-    queryKey: ["/api/summary"],
-  })
+  const [currentView, setCurrentView] = useState<ViewType>("chat");
 
   return (
-    <div className="h-screen w-full">
+    <div className="h-screen w-full bg-background">
       <SidebarProvider defaultOpen={true}>
         <div className="flex h-full">
-          <Sidebar collapsible="icon" className="h-full">
-            <SidebarHeader>
-              <div className="flex items-center gap-3 px-3 py-4">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-md">
-                  <MessageSquare className="w-5 h-5 text-primary-foreground" />
+          {/* Left Sidebar */}
+          <Sidebar className="w-64 border-r border-border/30 bg-sidebar-background">
+            <SidebarHeader className="p-4 border-b border-sidebar-border">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
                 </div>
-                <div className="group-data-[collapsible=icon]:hidden">
-                  <span className="font-bold text-sidebar-foreground text-lg tracking-tight">Alex</span>
-                  <p className="text-xs text-sidebar-foreground/70 font-medium">AI Assistant</p>
+                <div>
+                  <h1 className="font-semibold text-sm text-sidebar-foreground">POS Intelligence</h1>
+                  <p className="text-xs text-sidebar-muted-foreground">AI Assistant</p>
                 </div>
               </div>
+              <Button 
+                className="w-full bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground border-0" 
+                size="sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Chat
+              </Button>
             </SidebarHeader>
-            <SidebarContent>
+
+            <SidebarContent className="p-2">
               <SidebarGroup>
-                <SidebarGroupLabel>Application</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {items.map((item) => (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
+                    {navigationItems.map((item) => (
+                      <SidebarMenuItem key={item.view}>
+                        <SidebarMenuButton
                           isActive={currentView === item.view}
                           onClick={() => setCurrentView(item.view)}
-                          tooltip={item.title}
+                          className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
                         >
-                          <item.icon />
-                          <span>{item.title}</span>
+                          <item.icon className="w-4 h-4 mr-3" />
+                          <div className="flex-1 text-left">
+                            <div className="text-sm font-medium">{item.title}</div>
+                            <div className="text-xs text-sidebar-muted-foreground">{item.description}</div>
+                          </div>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
@@ -85,101 +123,139 @@ export default function Dashboard() {
                 </SidebarGroupContent>
               </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-semibold text-primary-foreground">SM</span>
-                      </div>
-                      <div className="group-data-[collapsible=icon]:hidden">
-                        <span className="text-sm font-medium text-sidebar-foreground">Store Manager</span>
-                        <p className="text-xs text-sidebar-foreground/70">admin@store.com</p>
-                      </div>
-                    </div>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarFooter>
-          </Sidebar>
-          
-          <SidebarInset className="flex-1 h-full">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-semibold text-foreground tracking-tight">
-                    {currentView === "chat" && "AI Assistant"}
-                    {currentView === "import" && "Settings"} 
-                    {currentView === "analytics" && "Analytics"}
-                  </h1>
-                  <div className="h-4 w-px bg-border" />
-                  <span className="text-sm text-muted-foreground">
-                    {currentView === "chat" && "Chat with Alex for business insights"}
-                    {currentView === "import" && "Configure your data sources"}
-                    {currentView === "analytics" && "Explore your business data"}
-                  </span>
+
+            <SidebarFooter className="p-4 border-t border-sidebar-border">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
+                  <span className="text-xs font-semibold text-sidebar-accent-foreground">SM</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-accent/50 rounded-full">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-xs font-medium text-accent-foreground">Online</span>
-                  </div>
-                  <div className="w-9 h-9 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-md">
-                    <span className="text-sm font-semibold text-primary-foreground">SM</span>
-                  </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-sidebar-foreground">Store Manager</div>
+                  <div className="text-xs text-sidebar-muted-foreground">admin@store.com</div>
                 </div>
               </div>
-            </header>
-            
-            <main className="flex-1 overflow-hidden">
-              {currentView === "chat" && (
-                <div className="h-full">
-                  <ChatInterface />
+            </SidebarFooter>
+          </Sidebar>
+
+          {/* Main Content */}
+          <SidebarInset className="flex-1">
+            <div className="flex h-full flex-col">
+              {/* Header */}
+              <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur">
+                <SidebarTrigger className="lg:hidden" />
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold text-foreground">
+                    {navigationItems.find(item => item.view === currentView)?.title}
+                  </h2>
                 </div>
-              )}
-              
-              {currentView === "import" && (
-                <div className="h-full overflow-y-auto p-8">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="mb-8">
-                      <h2 className="text-3xl font-semibold text-foreground mb-4 tracking-tight">Data Settings</h2>
-                      <p className="text-muted-foreground text-lg leading-relaxed">Configure your data sources and import CSV files to unlock powerful AI-driven business insights.</p>
-                    </div>
-                    <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
-                      <CSVUpload />
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-xs text-muted-foreground font-medium">Online</span>
+                </div>
+              </header>
+
+              {/* Main Content Area */}
+              <main className="flex-1 overflow-hidden">
+                {currentView === "chat" && (
+                  <div className="h-full">
+                    <ChatInterface />
+                  </div>
+                )}
+
+                {currentView === "sales" && (
+                  <div className="h-full flex items-center justify-center p-8">
+                    <div className="text-center">
+                      <BarChart3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-xl font-semibold mb-2">Sales Reports</h3>
+                      <p className="text-muted-foreground mb-4">View detailed sales analytics and performance metrics</p>
+                      <Button onClick={() => setCurrentView("chat")}>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Ask AI for Sales Insights
+                      </Button>
                     </div>
                   </div>
-                </div>
-              )}
-              
-              {currentView === "analytics" && (
-                <div className="h-full overflow-y-auto p-8">
-                  <div className="max-w-4xl mx-auto">
-                    <div className="text-center py-20">
-                      <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                        <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
+                )}
+
+                {currentView === "operators" && (
+                  <div className="h-full flex items-center justify-center p-8">
+                    <div className="text-center">
+                      <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-xl font-semibold mb-2">Operator Reports</h3>
+                      <p className="text-muted-foreground mb-4">Monitor staff performance and productivity</p>
+                      <Button onClick={() => setCurrentView("chat")}>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Ask AI for Staff Insights
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {currentView === "products" && (
+                  <div className="h-full flex items-center justify-center p-8">
+                    <div className="text-center">
+                      <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-xl font-semibold mb-2">Product Reports</h3>
+                      <p className="text-muted-foreground mb-4">Analyze product performance and inventory</p>
+                      <Button onClick={() => setCurrentView("chat")}>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Ask AI for Product Insights
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {currentView === "accounts" && (
+                  <div className="h-full flex items-center justify-center p-8">
+                    <div className="text-center">
+                      <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-xl font-semibold mb-2">Account Reports</h3>
+                      <p className="text-muted-foreground mb-4">Customer accounts and transaction history</p>
+                      <Button onClick={() => setCurrentView("chat")}>
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Ask AI for Account Insights
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {currentView === "settings" && (
+                  <div className="h-full overflow-y-auto p-8">
+                    <div className="max-w-3xl mx-auto">
+                      <div className="mb-8">
+                        <h2 className="text-2xl font-semibold mb-2">Settings</h2>
+                        <p className="text-muted-foreground">Configure your POS intelligence system</p>
                       </div>
-                      <h3 className="text-2xl font-semibold text-foreground mb-4">Analytics Dashboard</h3>
-                      <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">Use the AI Assistant to explore your data and generate comprehensive business insights.</p>
-                      <button 
-                        onClick={() => setCurrentView("chat")}
-                        className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
-                      >
-                        <MessageSquare className="w-5 h-5 mr-2" />
-                        Start AI Analysis
-                      </button>
+                      
+                      <div className="space-y-6">
+                        <div className="bg-card border rounded-lg p-6">
+                          <h3 className="text-lg font-semibold mb-4">Data Import</h3>
+                          <p className="text-muted-foreground mb-4">Upload CSV files to import your POS data</p>
+                          <CSVUpload />
+                        </div>
+
+                        <div className="bg-card border rounded-lg p-6">
+                          <h3 className="text-lg font-semibold mb-4">AI Configuration</h3>
+                          <p className="text-muted-foreground mb-4">Configure AI assistant behavior and preferences</p>
+                          <div className="space-y-4">
+                            <div>
+                              <label className="text-sm font-medium">Assistant Name</label>
+                              <Input value="Alex" className="mt-1" />
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium">Response Style</label>
+                              <Input value="Professional" className="mt-1" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </main>
+                )}
+              </main>
+            </div>
           </SidebarInset>
         </div>
       </SidebarProvider>
     </div>
-  )
+  );
 }
