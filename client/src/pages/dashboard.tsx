@@ -150,7 +150,7 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
   const [chatOpen, setChatOpen] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(true);
+  const [adminOpen, setAdminOpen] = useState(false);
   const { user, logout } = useAuth();
 
   // Listen for custom events from sales page
