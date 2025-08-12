@@ -102,6 +102,8 @@ export default function ChatInterface({ currentConversationId: propConversationI
 
   const handleQuickQuery = (query: string) => {
     setInputMessage(query);
+    // Auto-send the query immediately
+    sendMessageMutation.mutate({ message: query });
   };
 
   return (
