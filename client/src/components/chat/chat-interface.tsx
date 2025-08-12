@@ -174,20 +174,8 @@ export default function ChatInterface() {
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
         <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center justify-end gap-3">
-            {/* New Chat Button */}
-            <Button 
-              onClick={handleNewChat}
-              size="sm" 
-              variant="outline"
-              className="gap-2"
-              data-testid="button-new-chat"
-            >
-              <Plus className="w-4 h-4" />
-              New Chat
-            </Button>
-            
-            {/* Model Selection */}
+          <div className="flex items-center justify-between w-full">
+            {/* Model Selection - Far Left */}
             <div className="flex items-center gap-2">
               <Brain className="w-4 h-4 text-muted-foreground" />
               <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
@@ -216,6 +204,18 @@ export default function ChatInterface() {
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* New Chat Button - Far Right */}
+            <Button 
+              onClick={handleNewChat}
+              size="sm" 
+              variant="outline"
+              className="gap-2"
+              data-testid="button-new-chat"
+            >
+              <Plus className="w-4 h-4" />
+              New Chat
+            </Button>
           </div>
         </div>
 
