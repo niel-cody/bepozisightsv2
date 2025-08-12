@@ -26,6 +26,7 @@ interface ChatSession {
   title: string;
   timestamp: string;
   preview: string;
+  messages?: Message[]; // Store messages for each session
 }
 
 export default function ChatInterface() {
@@ -50,8 +51,9 @@ export default function ChatInterface() {
     queryKey: ["/api/chat/messages"],
   });
 
-  // Filter messages for current session (for now, show all messages for "current" session, empty for new sessions)
-  const messages = currentChatId === "current" ? allMessages : [];
+  // Get messages for current session
+  const currentSession = chatSessions.find(session => session.id === currentChatId);
+  const messages = currentSession?.messages || (currentChatId === "current" ? allMessages : []);
 
   const sendMessageMutation = useMutation<Message, Error, { message: string }>({
     mutationFn: async ({ message }): Promise<Message> => {
@@ -101,11 +103,17 @@ export default function ChatInterface() {
       const firstMessage = messages[0]?.message || "";
       currentTitle = firstMessage.length > 30 ? firstMessage.substring(0, 30) + "..." : firstMessage || "Previous Chat";
       
-      // Move current chat to history by updating it with the generated title
+      // Move current chat to history by updating it with the generated title and storing its messages
       setChatSessions(prev => 
         prev.map(session => 
           session.id === currentChatId 
-            ? { ...session, title: currentTitle, timestamp: "Just now", preview: firstMessage }
+            ? { 
+                ...session, 
+                title: currentTitle, 
+                timestamp: "Just now", 
+                preview: firstMessage,
+                messages: [...messages] // Store current messages
+              }
             : session
         )
       );
@@ -127,6 +135,24 @@ export default function ChatInterface() {
     
     // Clear messages for the new chat (this will show the welcome screen)
     queryClient.setQueryData(["/api/chat/messages"], []);
+  };
+
+  const handleDeleteChat = (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Remove the session from the list
+    setChatSessions(prev => prev.filter(session => session.id !== sessionId));
+    
+    // If we're deleting the current session, switch to the first remaining session
+    if (currentChatId === sessionId) {
+      const remainingSessions = chatSessions.filter(session => session.id !== sessionId);
+      if (remainingSessions.length > 0) {
+        setCurrentChatId(remainingSessions[0].id);
+      } else {
+        // No sessions left, create a new one
+        handleNewChat();
+      }
+    }
   };
 
   return (
@@ -175,9 +201,11 @@ export default function ChatInterface() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => handleDeleteChat(session.id, e)}
+                      title="Delete chat"
                     >
-                      <MoreHorizontal className="w-3 h-3" />
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
