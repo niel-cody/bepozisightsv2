@@ -60,99 +60,151 @@ export default function ChatInterface() {
   ];
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {/* Welcome Message */}
-        {messages.length === 0 && (
-          <div className="max-w-2xl mx-auto text-center py-20">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-              <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
+    <div className="flex h-full">
+      {/* Chat History Sidebar */}
+      <div className="w-80 border-r border-border bg-card/50 flex flex-col">
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-foreground">Chat History</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 text-xs"
+              onClick={() => {/* TODO: Start new chat */}}
+            >
+              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
-            </div>
-            <h2 className="text-3xl font-semibold mb-6 text-foreground">Hello! I'm Alex</h2>
-            <p className="text-lg text-muted-foreground mb-10 leading-relaxed">Your virtual manager assistant. I help analyze POS data and provide business insights.</p>
-            <div className="space-y-4">
-              {quickQueries.map((query, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="lg"
-                  className="w-full max-w-md font-medium justify-start text-left border-2 hover:bg-accent hover:text-accent-foreground transition-all"
-                  onClick={() => setInputMessage(query)}
-                  data-testid={`button-quick-query-${index}`}
-                >
-                  {query}
-                </Button>
-              ))}
+              New Chat
+            </Button>
+          </div>
+          <div className="text-xs text-muted-foreground mb-2">Today</div>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-2">
+          <div className="space-y-1">
+            <div className="p-3 rounded-lg bg-accent/50 border border-accent cursor-pointer hover:bg-accent/70 transition-colors">
+              <div className="text-sm font-medium text-foreground truncate">Current Chat</div>
+              <div className="text-xs text-muted-foreground mt-1 truncate">Business insights discussion</div>
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Messages */}
-        <div className="space-y-8 max-w-4xl mx-auto">
-          {messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              message={message.content}
-              isUser={message.role === "user"}
-              timestamp={new Date(message.created_at)}
-              chart={message.chart}
-            />
-          ))}
-          
-          {isTyping && (
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Chat Header */}
+        <div className="p-4 border-b border-border bg-background/80 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-md">
+                <svg className="w-5 h-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
                 </svg>
               </div>
-              <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Alex is thinking...</span>
+              <div>
+                <h2 className="font-semibold text-foreground">Alex</h2>
+                <p className="text-xs text-muted-foreground">AI Business Assistant • Online</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Welcome Message */}
+          {messages.length === 0 && (
+            <div className="h-full flex items-center justify-center p-8">
+              <div className="max-w-md text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-foreground">Start a conversation</h3>
+                <p className="text-sm text-muted-foreground mb-6">Ask me anything about your business data and I'll help you find insights.</p>
+                <div className="space-y-2">
+                  {quickQueries.slice(0, 3).map((query, index) => (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-left justify-start text-xs h-auto py-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      onClick={() => setInputMessage(query)}
+                      data-testid={`button-quick-query-${index}`}
+                    >
+                      {query}
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>
           )}
-        </div>
-        
-        <div ref={messagesEndRef} />
-      </div>
 
-      {/* Input Area */}
-      <div className="border-t border-border bg-background/95 backdrop-blur-sm p-6">
-        <form onSubmit={handleSubmit} className="flex space-x-3 max-w-4xl mx-auto">
-          <div className="flex-1">
-            <Input
-              type="text"
-              placeholder="Ask me anything about your business..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              disabled={sendMessageMutation.isPending}
-              className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-5 py-4 text-base bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="input-chat-message"
-            />
-          </div>
-          <Button 
-            type="submit"
-            disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-            className="px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            data-testid="button-send-message"
-          >
-            {sendMessageMutation.isPending ? (
-              <div className="w-5 h-5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
+          {/* Messages */}
+          <div className="p-4 space-y-6">
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message.content}
+                isUser={message.role === "user"}
+                timestamp={new Date(message.created_at)}
+                chart={message.chart}
+              />
+            ))}
+            
+            {isTyping && (
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
+                  </svg>
+                </div>
+                <div className="bg-accent/30 border border-border rounded-2xl p-4 shadow-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">Alex is thinking...</span>
+                  </div>
+                </div>
+              </div>
             )}
-          </Button>
-        </form>
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Input Area */}
+        <div className="border-t border-border bg-background/95 backdrop-blur-sm p-4">
+          <form onSubmit={handleSubmit} className="flex space-x-3">
+            <div className="flex-1">
+              <Input
+                type="text"
+                placeholder="Message Alex..."
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                disabled={sendMessageMutation.isPending}
+                className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-2xl px-4 py-3 text-sm bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                data-testid="input-chat-message"
+              />
+            </div>
+            <Button 
+              type="submit"
+              disabled={!inputMessage.trim() || sendMessageMutation.isPending}
+              size="sm"
+              className="px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="button-send-message"
+            >
+              {sendMessageMutation.isPending ? (
+                <div className="w-4 h-4 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
