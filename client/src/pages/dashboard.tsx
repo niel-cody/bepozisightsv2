@@ -104,6 +104,7 @@ export default function Dashboard() {
               <Button 
                 className="w-full bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground border-0" 
                 size="sm"
+                onClick={() => setCurrentView("chat")}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 New Chat
