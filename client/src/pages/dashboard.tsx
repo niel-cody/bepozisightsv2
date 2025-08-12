@@ -307,7 +307,7 @@ export default function Dashboard() {
                   {currentView === "chat" ? (
                     <div>
                       <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">Your AI assistant always ready with analytics and insights</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">Always available and always ready...</p>
                     </div>
                   ) : (
                     <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
