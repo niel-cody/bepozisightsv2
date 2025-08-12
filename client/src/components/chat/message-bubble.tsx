@@ -2,19 +2,21 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
-// Function to format response text with Markdown-like formatting
+// Function to format response text with Markdown-like formatting and sentiment colors
 function formatResponseText(text: string) {
   // Split text by double asterisks for bold formatting
   const parts = text.split(/(\*\*.*?\*\*)/);
   
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      // Remove the asterisks and render as bold with accent color
+      // Remove the asterisks and determine sentiment
       const boldText = part.slice(2, -2);
+      const sentiment = getSentimentColor(boldText);
+      
       return (
         <span 
           key={index} 
-          className="font-semibold text-[#303F9F]"
+          className={`font-semibold ${sentiment}`}
         >
           {boldText}
         </span>
@@ -22,6 +24,38 @@ function formatResponseText(text: string) {
     }
     return part;
   });
+}
+
+// Function to determine color based on sentiment context
+function getSentimentColor(text: string): string {
+  const lowerText = text.toLowerCase();
+  
+  // Positive indicators (green)
+  const positivePatterns = [
+    /increase/i, /growth/i, /rise/i, /improvement/i, /profit/i, /gain/i,
+    /higher/i, /better/i, /more/i, /up/i, /boost/i, /surge/i,
+    /\+\d+%/, /\d+% increase/, /\d+% growth/, /\d+% improvement/
+  ];
+  
+  // Negative indicators (red)
+  const negativePatterns = [
+    /decrease/i, /decline/i, /drop/i, /fall/i, /loss/i, /lower/i,
+    /worse/i, /less/i, /down/i, /reduction/i, /shrink/i,
+    /\-\d+%/, /\d+% decrease/, /\d+% decline/, /\d+% drop/
+  ];
+  
+  // Check for positive sentiment
+  if (positivePatterns.some(pattern => pattern.test(text))) {
+    return "text-green-600 dark:text-green-400";
+  }
+  
+  // Check for negative sentiment
+  if (negativePatterns.some(pattern => pattern.test(text))) {
+    return "text-red-600 dark:text-red-400";
+  }
+  
+  // Default to Bepoz accent color for neutral/unclear sentiment
+  return "text-[#303F9F]";
 }
 
 interface MessageBubbleProps {
