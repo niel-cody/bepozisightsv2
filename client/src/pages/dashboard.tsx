@@ -92,7 +92,7 @@ export default function Dashboard() {
           {/* Left Sidebar */}
           <Sidebar className="w-64 h-screen border-r border-border/30 bg-sidebar-background flex-shrink-0 flex flex-col">
             <SidebarHeader className="p-4 border-b border-sidebar-border flex-shrink-0">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
                 </div>
@@ -101,14 +101,6 @@ export default function Dashboard() {
                   <p className="text-xs text-sidebar-muted-foreground">AI Assistant</p>
                 </div>
               </div>
-              <Button 
-                className="w-full bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground border-0" 
-                size="sm"
-                onClick={() => setCurrentView("chat")}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Chat
-              </Button>
             </SidebarHeader>
 
             <SidebarContent className="p-2 flex-1 overflow-y-auto">
