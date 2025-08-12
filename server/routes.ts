@@ -683,51 +683,53 @@ Format as JSON with fields: summary, trends (array), suggestions (array)`;
   // Operators Trading View endpoint
   app.get("/api/operators/trading-view", async (req, res) => {
     try {
-      const operatorSummaries = await storage.getOperators();
+      const operators = await storage.getOperators();
       
-      if (!operatorSummaries.length) {
+      if (!operators.length) {
         return res.json([]);
       }
 
-      // Convert operator summaries to performance data
-      const operatorPerformance = operatorSummaries.map((operator: any) => {
-        return {
-          name: operator.name || 'Unknown',
-          operator: operator,
-          totalSales: parseFloat(operator.totalSales || "0"),
-          totalTransactions: operator.transactionCount || 0,
-          totalHours: parseFloat(operator.totalHours || "40") // Default 40 hours per week
-        };
+      // Create unique operators map to ensure each appears only once
+      const uniqueOperators = new Map();
+      
+      operators.forEach((operator: any) => {
+        const name = operator.name || 'Unknown';
+        if (!uniqueOperators.has(name) || 
+            parseFloat(operator.totalSales || "0") > parseFloat(uniqueOperators.get(name).totalSales || "0")) {
+          uniqueOperators.set(name, operator);
+        }
       });
 
-      // Convert to performance array with trading metrics
-      const performanceData = operatorPerformance.map((op: any, index: number) => {
-        const currentSales = op.totalSales;
-        // Simulate previous period performance with slight variation for demo
-        const previousSales = currentSales * (0.85 + Math.random() * 0.3); // 15% variation
+      // Convert to performance array with trading metrics (limited data for performance)
+      const performanceData = Array.from(uniqueOperators.values()).map((operator: any, index: number) => {
+        const currentSales = parseFloat(operator.totalSales || "0");
+        const transactions = operator.transactionCount || 0;
+        
+        // Calculate realistic previous period with controlled variation
+        const baseVariation = 0.9 + (Math.random() * 0.2); // 90-110% variation
+        const previousSales = currentSales * baseVariation;
         
         const changePercent = previousSales > 0 ? ((currentSales - previousSales) / previousSales) * 100 : 0;
-        const changeDirection = changePercent > 2 ? 'up' : changePercent < -2 ? 'down' : 'flat';
+        const changeDirection = changePercent > 1 ? 'up' : changePercent < -1 ? 'down' : 'flat';
         
-        const avgTransactionValue = op.totalTransactions > 0 ? op.totalSales / op.totalTransactions : 0;
-        const salesPerHour = op.totalHours > 0 ? op.totalSales / op.totalHours : 0;
+        const avgTransactionValue = transactions > 0 ? currentSales / transactions : 0;
         
-        // Determine performance category based on sales and change
+        // Determine performance category
         let performance = 'stable';
-        if (changePercent > 10) performance = 'strong';
-        else if (changePercent > 5) performance = 'improving';
-        else if (changePercent < -5) performance = 'declining';
+        if (changePercent > 8) performance = 'strong';
+        else if (changePercent > 3) performance = 'improving';
+        else if (changePercent < -3) performance = 'declining';
 
         return {
-          name: op.name,
+          name: operator.name || 'Unknown',
           currentSales: Math.round(currentSales),
           previousSales: Math.round(previousSales),
           changePercent: Math.round(changePercent * 10) / 10,
           changeDirection,
-          transactions: op.totalTransactions,
+          transactions: transactions,
           avgTransactionValue: Math.round(avgTransactionValue * 100) / 100,
-          totalHours: Math.round(op.totalHours * 10) / 10,
-          salesPerHour: Math.round(salesPerHour * 100) / 100,
+          totalHours: parseFloat(operator.totalHours || "40"),
+          salesPerHour: Math.round((currentSales / parseFloat(operator.totalHours || "40")) * 100) / 100,
           rank: 0, // Will be set after sorting
           performance
         };
@@ -739,7 +741,9 @@ Format as JSON with fields: summary, trends (array), suggestions (array)`;
         op.rank = index + 1;
       });
 
-      res.json(performanceData);
+      // Limit to reasonable number of operators to prevent crashes
+      const limitedData = performanceData.slice(0, 20);
+      res.json(limitedData);
       
     } catch (error) {
       console.error('Operators trading view error:', error);

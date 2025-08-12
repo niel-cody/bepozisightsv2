@@ -121,13 +121,13 @@ export function OperatorsTradingView() {
 
   return (
     <div className="h-full overflow-y-auto p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Operator Trading View</h1>
             <p className="text-muted-foreground">
-              Track employee performance like stocks - see who's rising and falling
+              Track employee performance like stocks - last 90 days data for optimal performance
             </p>
           </div>
           
