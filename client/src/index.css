@@ -31,17 +31,17 @@
   --chart-3: hsl(30, 80%, 55%);
   --chart-4: hsl(280, 65%, 60%);
   --chart-5: hsl(340, 75%, 55%);
-  --sidebar-background: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
-  --sidebar-input: oklch(0.269 0 0);
-  --sidebar-muted: oklch(0.269 0 0);
-  --sidebar-muted-foreground: oklch(0.985 0 0);
+  --sidebar-background: hsl(240, 8%, 14%);
+  --sidebar-foreground: hsl(0, 0%, 98%);
+  --sidebar-primary: hsl(220, 85%, 57%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(240, 8%, 20%);
+  --sidebar-accent-foreground: hsl(0, 0%, 95%);
+  --sidebar-border: hsl(240, 8%, 28%);
+  --sidebar-ring: hsl(220, 85%, 57%);
+  --sidebar-input: hsl(240, 8%, 16%);
+  --sidebar-muted: hsl(240, 8%, 18%);
+  --sidebar-muted-foreground: hsl(0, 0%, 88%);
   --font-sans: 'Inter', 'Open Sans', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -88,6 +88,13 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
     font-family: var(--font-sans);
@@ -106,5 +113,20 @@
   
   .border-gray-25 {
     border-color: oklch(0.985 0 0);
+  }
+  
+  /* Full height utilities */
+  .sidebar-layout {
+    height: 100vh;
+    display: flex;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
