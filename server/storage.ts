@@ -99,7 +99,7 @@ export class MemStorage implements IStorage {
     
     operatorsData.forEach(operatorData => {
       const id = randomUUID();
-      const operator: Operator = { 
+      const operator: OperatorSummary = { 
         id, 
         name: operatorData.name,
         employeeId: operatorData.employeeId || null,
@@ -145,7 +145,7 @@ export class MemStorage implements IStorage {
     
     summariesData.forEach(summaryData => {
       const id = randomUUID();
-      const summary: DailySummary = { id, ...summaryData };
+      const summary: TillSummary = { id, ...summaryData };
       this.dailySummaries.set(summaryData.date, summary);
     });
   }
