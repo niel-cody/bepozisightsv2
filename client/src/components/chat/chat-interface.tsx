@@ -120,16 +120,6 @@ export default function ChatInterface() {
               <MessageSquare className="w-5 h-5 text-primary" />
               <span className="font-semibold text-card-foreground">Chat History</span>
             </div>
-            <Button 
-              onClick={handleNewChat}
-              size="sm" 
-              variant="outline"
-              className="gap-2"
-              data-testid="button-new-chat"
-            >
-              <Plus className="w-4 h-4" />
-              New Chat
-            </Button>
           </div>
         </div>
 
@@ -190,8 +180,21 @@ export default function ChatInterface() {
               <p className="text-sm text-muted-foreground">Your AI assistant for POS analytics and insights</p>
             </div>
             
-            {/* Model Selection */}
+            {/* Controls */}
             <div className="flex items-center gap-3">
+              {/* New Chat Button */}
+              <Button 
+                onClick={handleNewChat}
+                size="sm" 
+                variant="outline"
+                className="gap-2"
+                data-testid="button-new-chat"
+              >
+                <Plus className="w-4 h-4" />
+                New Chat
+              </Button>
+              
+              {/* Model Selection */}
               <div className="flex items-center gap-2">
                 <Brain className="w-4 h-4 text-muted-foreground" />
                 <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
