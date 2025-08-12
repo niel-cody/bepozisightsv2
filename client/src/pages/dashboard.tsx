@@ -17,6 +17,8 @@ export default function Dashboard() {
     queryKey: ["/api/summary"],
   });
 
+  console.log("Dashboard rendering with structure:", { currentView });
+  
   return (
     <SidebarProvider defaultOpen={true}>
       <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />

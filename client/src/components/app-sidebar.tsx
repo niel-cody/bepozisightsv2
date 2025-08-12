@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-interface AppSidebarProps {
+export interface AppSidebarProps {
   currentView: string;
   setCurrentView: (view: string) => void;
 }
