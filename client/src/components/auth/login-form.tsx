@@ -55,33 +55,31 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-accent/5 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-sm">
         {/* Logo/Brand Area */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <div className="w-3 h-3 rounded-sm bg-primary"></div>
-            </div>
+        <div className="text-center mb-12">
+          <div className="w-12 h-12 mx-auto mb-6 rounded-xl bg-foreground flex items-center justify-center">
+            <div className="w-6 h-6 bg-background rounded-md"></div>
           </div>
-          <h1 className="text-2xl font-medium text-foreground mb-1">POS Intelligence</h1>
-          <p className="text-sm text-muted-foreground">AI-powered business insights</p>
+          <h1 className="text-xl font-semibold text-foreground mb-2">POS Intelligence</h1>
+          <p className="text-sm text-muted-foreground">Sign in to continue</p>
         </div>
 
         {/* Login Card */}
-        <Card className="border-0 shadow-lg bg-card/80 backdrop-blur-sm">
-          <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-xl font-medium text-center">Sign in</CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials to access your dashboard
+        <Card className="border border-border/20 shadow-sm bg-card">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-lg font-medium">Welcome back</CardTitle>
+            <CardDescription>
+              Enter your credentials below
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Input */}
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium">
+              <div className="space-y-1">
+                <Label htmlFor="username" className="text-sm">
                   Email
                 </Label>
                 <Input
@@ -89,16 +87,16 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
                   type="email"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="demo@bepoz.com"
-                  className="h-11 bg-background/50 border-border/50 focus:bg-background focus:border-primary/50 transition-all duration-200"
+                  placeholder="Enter your email"
+                  className="h-10"
                   data-testid="input-username"
                   autoComplete="username"
                 />
               </div>
 
               {/* Password Input */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
+              <div className="space-y-1">
+                <Label htmlFor="password" className="text-sm">
                   Password
                 </Label>
                 <div className="relative">
@@ -107,8 +105,8 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="h-11 pr-10 bg-background/50 border-border/50 focus:bg-background focus:border-primary/50 transition-all duration-200"
+                    placeholder="Enter your password"
+                    className="h-10 pr-10"
                     data-testid="input-password"
                     autoComplete="current-password"
                   />
@@ -116,7 +114,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-11 px-3 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-10 px-3 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                     data-testid="button-toggle-password"
                   >
@@ -131,16 +129,20 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
               {/* Error Message */}
               {error && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <span>{error}</span>
+                <div className="rounded-md bg-destructive/10 p-3">
+                  <div className="flex">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <div className="ml-3">
+                      <div className="text-sm text-destructive">{error}</div>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-11 font-medium"
+                className="w-full h-10"
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >
@@ -148,21 +150,16 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
               </Button>
             </form>
 
-            {/* Demo Credentials Hint */}
-            <div className="pt-4 border-t border-border/50">
-              <p className="text-xs text-muted-foreground text-center">
-                Demo: demo@bepoz.com / do4safet
+            {/* Demo Credentials */}
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">
+                Demo: demo@bepoz.com
               </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-xs text-muted-foreground">
-            Secure access to your business intelligence platform
-          </p>
-        </div>
+
       </div>
     </div>
   );
