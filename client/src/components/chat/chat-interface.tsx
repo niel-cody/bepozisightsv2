@@ -153,7 +153,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
                 <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">Welcome to Alex</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">Welcome, I'm  Alex!</h3>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">I'm your virtual assistant manager. I can analyze your sales data, provide insights about trends, operator performance, and help you make data-driven decisions.</p>
               </div>
               <div className="w-full space-y-2">
