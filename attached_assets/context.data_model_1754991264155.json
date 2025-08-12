@@ -1,0 +1,146 @@
+{
+  "dataModel": {
+    "tables": [
+      {
+        "name": "till_summaries",
+        "grain": "venue + date",
+        "requiredColumns": [
+          "Date",
+          "Venue",
+          "Qty Transactions",
+          "DateTime First Trans.",
+          "DateTime Last Trans.",
+          "Gross Sales",
+          "Total Discount",
+          "NettTotal",
+          "% of NettTotal",
+          "Cost of Sales",
+          "ProfitAmt",
+          "Profit%",
+          "Average Sale",
+          "Qty Cancelled",
+          "Cancelled",
+          "Qty Returns",
+          "Returns",
+          "Qty Training",
+          "Training Total",
+          "Qty NoSales",
+          "Qty NoSale After Cancel",
+          "NoSale AfterCancel",
+          "Qty Table Refund After Print",
+          "Table Refund After Print"
+        ],
+        "derived": [
+          {
+            "name": "discount_rate_pct",
+            "formula": "Total Discount / NULLIF(Gross Sales,0) * 100"
+          },
+          {
+            "name": "refund_rate_pct",
+            "formula": "Returns / NULLIF(Qty Transactions,0) * 100"
+          },
+          {
+            "name": "net_margin_pct",
+            "formula": "IF Profit% present THEN Profit% ELSE ProfitAmt / NULLIF(NettTotal,0) * 100"
+          },
+          {
+            "name": "aov",
+            "formula": "IF Average Sale present THEN Average Sale ELSE NettTotal / NULLIF(Qty Transactions,0)"
+          }
+        ]
+      },
+      {
+        "name": "operator_summaries",
+        "grain": "operator + date (+ venue)",
+        "requiredColumns": [
+          "Date",
+          "Operator Name",
+          "Qty Transactions",
+          "Gross Sales",
+          "Total Discount",
+          "NettTotal",
+          "% of NettTotal",
+          "Cost of Sales",
+          "ProfitAmt",
+          "Profit%",
+          "DateTime Last Trans.",
+          "Average Sale",
+          "Cancelled",
+          "NoSale AfterCancel",
+          "Qty Cancelled",
+          "Qty NoSale After Cancel",
+          "Returns",
+          "Qty Returns",
+          "Venue"
+        ],
+        "derived": [
+          {
+            "name": "sales_per_txn",
+            "formula": "NettTotal / NULLIF(Qty Transactions,0)"
+          },
+          {
+            "name": "discount_rate_pct",
+            "formula": "Total Discount / NULLIF(Gross Sales,0) * 100"
+          }
+        ]
+      },
+      {
+        "name": "product_summaries",
+        "grain": "product + date (+ venue)",
+        "requiredColumns": [
+          "Date",
+          "Product Name",
+          "Sort Group",
+          "Sort",
+          "Type Group",
+          "Type",
+          "Size",
+          "Venue",
+          "Qty Units sold",
+          "Nett Sales"
+        ],
+        "derived": [
+          {
+            "name": "avg_price",
+            "formula": "Nett Sales / NULLIF(Qty Units sold,0)"
+          }
+        ]
+      },
+      {
+        "name": "account_summaries",
+        "grain": "account + date (+ venue)",
+        "requiredColumns": [
+          "Date",
+          "Account Name",
+          "Points Start",
+          "Points End",
+          "Payments",
+          "Charges",
+          "Visits",
+          "Nett Sales"
+        ],
+        "derived": [
+          {
+            "name": "points_delta",
+            "formula": "Points End - Points Start"
+          },
+          {
+            "name": "avg_ticket",
+            "formula": "Nett Sales / NULLIF(Visits,0)"
+          }
+        ]
+      }
+    ],
+    "assumptions": [
+      "Monetary values are inclusive of tax unless the field name explicitly indicates otherwise.",
+      "Dates are venue-local; if not present, default to Australia/Sydney.",
+      "Column names must match exactly; use aliases if your warehouse labels differ."
+    ],
+    "aliases": {
+      "Net Sales": "NettTotal",
+      "Net Sales Ex Tax": "NettTotalExTax",
+      "Qty Transactions": "Txn Count",
+      "Average Order Value": "Average Sale"
+    }
+  }
+}

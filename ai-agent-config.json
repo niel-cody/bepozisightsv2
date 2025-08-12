@@ -154,5 +154,11 @@
       "tills": ["till", "register", "counter", "location"],
       "transactions": ["transaction", "payment", "customer", "sale"]
     }
+  },
+  
+  "contextSources": {
+    "base": "context/base.json",
+    "dataModel": "context/data_model.json",
+    "note": "Runtime context is composed from modular sources for maintainability and versioning"
   }
 }
