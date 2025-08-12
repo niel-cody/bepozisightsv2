@@ -47,18 +47,7 @@
   --font-mono: Menlo, monospace;
 }
 
-/* Force sidebar text visibility when open */
-[data-sidebar="sidebar"][data-state="open"] [data-sidebar="menu-button"] span {
-  display: inline !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
 
-[data-sidebar="sidebar"][data-state="open"] .group-data-\[collapsible\=icon\]\:hidden {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-}
 
 .light {
   /* Light theme override */

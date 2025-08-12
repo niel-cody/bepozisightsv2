@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MessageSquare } from "lucide-react";
 import ChatInterface from "@/components/chat/chat-interface";
 import CSVUpload from "@/components/import/csv-upload";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar-new";
 import {
   SidebarInset,
   SidebarProvider,
