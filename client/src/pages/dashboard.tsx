@@ -43,12 +43,6 @@ const mainNavigationItems = [
     view: "chat" as ViewType,
     description: "AI Assistant" 
   },
-  { 
-    title: "Settings", 
-    icon: Settings, 
-    view: "settings" as ViewType,
-    description: "Configuration" 
-  },
 ];
 
 const insightsItems = [
@@ -78,7 +72,14 @@ const insightsItems = [
   },
 ];
 
-const allNavigationItems = [...mainNavigationItems, ...insightsItems];
+const settingsItem = { 
+  title: "Settings", 
+  icon: Settings, 
+  view: "settings" as ViewType,
+  description: "Configuration" 
+};
+
+const allNavigationItems = [...mainNavigationItems, ...insightsItems, settingsItem];
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
@@ -169,6 +170,21 @@ export default function Dashboard() {
                         ))}
                       </div>
                     )}
+                    
+                    {/* Settings */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        isActive={currentView === settingsItem.view}
+                        onClick={() => setCurrentView(settingsItem.view)}
+                        className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                      >
+                        <settingsItem.icon className="w-4 h-4 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="text-sm font-medium">{settingsItem.title}</div>
+                          <div className="text-xs text-sidebar-muted-foreground">{settingsItem.description}</div>
+                        </div>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
