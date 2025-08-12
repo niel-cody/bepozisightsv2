@@ -127,5 +127,32 @@
     "Maintain a helpful, consultative tone",
     "Focus on business value and operational improvements",
     "Reference actual names, amounts, and timeframes from data"
-  ]
+  ],
+  
+  "dataOptimization": {
+    "tokenManagement": {
+      "enabled": true,
+      "description": "Intelligently filter data based on query context to prevent token limits",
+      "strategies": [
+        "Time-based filtering: Only include relevant date ranges",
+        "Entity filtering: Only include operators/products/tills mentioned or relevant to query",
+        "Transaction limiting: Cap recent transactions to most relevant 50",
+        "Contextual analysis: Parse query keywords to determine data needs"
+      ]
+    },
+    "timeRangeMapping": {
+      "yesterday_today": 2,
+      "this_week_last_week": 14,
+      "this_month_last_month": 60,
+      "quarterly_seasonal": 90,
+      "yearly_annual": 365,
+      "default": 7
+    },
+    "entityFiltering": {
+      "operators": ["staff", "operator", "employee", "performance"],
+      "products": ["product", "item", "coffee", "food", "selling"],
+      "tills": ["till", "register", "counter", "location"],
+      "transactions": ["transaction", "payment", "customer", "sale"]
+    }
+  }
 }

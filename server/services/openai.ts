@@ -35,6 +35,54 @@ async function loadAgentConfig(): Promise<any> {
   }
 }
 
+// Intelligent data filtering based on query context
+function filterRelevantData(query: string, context: PosAnalysisContext): PosAnalysisContext {
+  const queryLower = query.toLowerCase();
+  
+  // Determine time range needed based on query keywords
+  let daysNeeded = 7; // default
+  
+  if (queryLower.includes('last month') || queryLower.includes('this month') || queryLower.includes('compare') && queryLower.includes('month')) {
+    daysNeeded = 60; // Need 2 months for comparison
+  } else if (queryLower.includes('last week') || queryLower.includes('this week')) {
+    daysNeeded = 14; // Need 2 weeks for comparison
+  } else if (queryLower.includes('yesterday') || queryLower.includes('today')) {
+    daysNeeded = 2; // Just recent data
+  } else if (queryLower.includes('quarter') || queryLower.includes('seasonal')) {
+    daysNeeded = 90; // 3 months for quarterly analysis
+  } else if (queryLower.includes('year') || queryLower.includes('annual')) {
+    daysNeeded = 365; // Full year data
+  }
+  
+  // Filter daily summaries to only relevant timeframe
+  const filteredDailySummaries = context.allDailySummaries 
+    ? context.allDailySummaries.slice(-daysNeeded)
+    : context.allDailySummaries;
+  
+  // Determine which data types are needed
+  const needsOperatorData = queryLower.includes('staff') || queryLower.includes('operator') || 
+                           queryLower.includes('employee') || queryLower.includes('performance');
+  const needsProductData = queryLower.includes('product') || queryLower.includes('item') || 
+                          queryLower.includes('coffee') || queryLower.includes('food') || queryLower.includes('selling');
+  const needsTillData = queryLower.includes('till') || queryLower.includes('register') || 
+                       queryLower.includes('counter') || queryLower.includes('location');
+  const needsTransactionData = queryLower.includes('transaction') || queryLower.includes('payment') || 
+                              queryLower.includes('customer') || queryLower.includes('sale');
+  
+  // Create filtered context with only relevant data
+  const filteredContext: PosAnalysisContext = {
+    tills: needsTillData ? context.tills : [],
+    operators: needsOperatorData ? context.operators : [],
+    products: needsProductData ? context.products : [],
+    dailySummary: context.dailySummary, // Always include current summary
+    recentTransactions: needsTransactionData ? context.recentTransactions.slice(-50) : [], // Limit transactions
+    allDailySummaries: filteredDailySummaries,
+    importedData: context.importedData
+  };
+  
+  return filteredContext;
+}
+
 export async function analyzePosQuery(
   query: string, 
   context: PosAnalysisContext,
@@ -43,13 +91,16 @@ export async function analyzePosQuery(
   try {
     const agentConfig = await loadAgentConfig();
     
+    // Filter data based on query context to optimize token usage
+    const filteredContext = filterRelevantData(query, context);
+    
     let systemPrompt = `You are an AI assistant for a Point of Sale (POS) system, acting as a virtual manager for venue operations. 
     
 IMPORTANT: You have access to real business data including:
 - Till summaries and cash balances
 - Operator performance metrics  
 - Product sales data and inventory
-- Daily sales summaries (${context.importedData?.hasImportedData ? `${context.importedData.totalDays} days of historical data from ${context.importedData.dateRange?.earliest} to ${context.importedData.dateRange?.latest}` : 'sample data only'})
+- Daily sales summaries (${filteredContext.importedData?.hasImportedData ? `${filteredContext.allDailySummaries?.length || 0} days of filtered historical data` : 'sample data only'})
 - Transaction history
 
 ${context.importedData?.hasImportedData ? 'REAL DATA AVAILABLE: You have access to actual historical business data. Use specific dates, amounts, and trends from this real data in your responses.' : 'SAMPLE DATA: Currently using sample data only. Encourage user to import their real business data for better insights.'}
@@ -68,7 +119,7 @@ When responding:
 - Focus on actionable insights from real business performance
 - Highlight notable changes, patterns, or concerns in the data
 
-Current context data: ${JSON.stringify(context)}
+Current context data: ${JSON.stringify(filteredContext)}
 
 Respond in JSON format with this structure:
 {
@@ -93,7 +144,7 @@ Business Context:
 - Staff Roles: ${agentConfig.businessContext.staffRoles.join(', ')}
 - Product Categories: ${agentConfig.businessContext.productCategories.join(', ')}
 
-DATA CONTEXT: ${context.importedData?.hasImportedData ? `You have access to ${context.importedData.totalDays} days of real McBrew - QLD business data from ${context.importedData.dateRange?.earliest} to ${context.importedData.dateRange?.latest}. Use this actual data to provide specific insights.` : 'Currently using sample data only. Recommend importing real business data for better insights.'}
+DATA CONTEXT: ${filteredContext.importedData?.hasImportedData ? `You have access to ${filteredContext.allDailySummaries?.length || 0} days of filtered real McBrew - QLD business data relevant to this query. Use this actual data to provide specific insights.` : 'Currently using sample data only. Recommend importing real business data for better insights.'}
 
 Communication Style: ${agentConfig.communicationStyle.tone}. ${agentConfig.communicationStyle.language}
 Requirements: ${agentConfig.communicationStyle.requirements.join('. ')}
