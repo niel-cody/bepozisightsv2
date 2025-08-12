@@ -67,10 +67,11 @@ The system models core POS entities:
 
 ### AI Integration
 - **OpenAI Integration**: GPT-4o model for natural language processing and business insights
-- **Context-Aware Analysis**: AI receives real-time POS data from PostgreSQL database including tills, operators, products, and transaction history
+- **Context-Aware Analysis**: AI receives real-time POS data from PostgreSQL database including tills, operators, products, transaction history, and customer spending data
 - **Structured Responses**: AI returns both conversational responses and structured data for dashboard visualization
 - **Business Intelligence**: AI acts as a virtual manager providing actionable recommendations and trend analysis
 - **Real Data Analysis**: AI now analyzes authentic POS data from the database for accurate insights
+- **Customer Analytics**: AI can analyze customer spending patterns, identify top customers, and provide customer-specific insights from customer_summaries table (Updated: August 12, 2025)
 - **Comprehensive Modular Context System**: 7-module context architecture with base configuration, data models, term dictionary, routing hints, response templates, alerting thresholds, and few-shot examples (Updated: August 12, 2025)
 - **Compiled Context Runtime**: Modular context files automatically merge into optimized compiled configuration for production use
 - **Context Compilation Script**: Automated build process merges individual modules without editing compiled files directly

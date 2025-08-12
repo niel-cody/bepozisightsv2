@@ -45,6 +45,8 @@ export interface IStorage {
   getDailySummaries(): Promise<TillSummary[]>;
   getDailySummary(date: string): Promise<TillSummary | undefined>;
   
+  getCustomerSummaries(): Promise<any[]>;
+  
   getConversations(): Promise<Conversation[]>;
   getConversation(id: string): Promise<Conversation | undefined>;
   createConversation(conversation: InsertConversation): Promise<Conversation>;
@@ -319,6 +321,11 @@ export class MemStorage implements IStorage {
 
   async getDailySummary(date: string): Promise<TillSummary | undefined> {
     return this.dailySummaries.get(date);
+  }
+
+  async getCustomerSummaries(): Promise<any[]> {
+    // For in-memory storage, return empty array as customer data is primarily in database
+    return [];
   }
 
   async getConversations(): Promise<Conversation[]> {

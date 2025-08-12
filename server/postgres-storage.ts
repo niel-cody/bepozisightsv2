@@ -21,6 +21,7 @@ import {
   products,
   transactions,
   tillSummaries,
+  customerSummaries,
   conversations,
   chatMessages
 } from '@shared/schema';
@@ -113,6 +114,10 @@ export class PostgresStorage implements IStorage {
   async getDailySummary(date: string): Promise<TillSummary | undefined> {
     const result = await db.select().from(tillSummaries).where(eq(tillSummaries.date, date)).limit(1);
     return result[0];
+  }
+
+  async getCustomerSummaries(): Promise<any[]> {
+    return await db.select().from(customerSummaries).orderBy(customerSummaries.date);
   }
 
   async getConversations(): Promise<Conversation[]> {

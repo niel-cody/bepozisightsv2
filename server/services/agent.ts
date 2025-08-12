@@ -105,6 +105,46 @@ const tools = [
         }
       }
     }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getTopSpendingCustomers",
+      description: "Get customers who spent the most money in a given time period",
+      parameters: {
+        type: "object",
+        properties: {
+          period: {
+            type: "string",
+            description: "Time period to analyze: 'week', 'month', '30days', 'quarter', 'year'",
+            enum: ["week", "month", "30days", "quarter", "year"]
+          },
+          limit: {
+            type: "number",
+            description: "Number of top customers to return",
+            default: 10
+          }
+        },
+        required: ["period"]
+      }
+    }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getCustomerDetails",
+      description: "Get detailed information about a specific customer including transaction history and spending patterns",
+      parameters: {
+        type: "object",
+        properties: {
+          customerName: {
+            type: "string",
+            description: "Name or partial name of the customer to look up"
+          }
+        },
+        required: ["customerName"]
+      }
+    }
   }
 ];
 
@@ -385,6 +425,139 @@ const functions = {
       console.error("Error getting business summary:", error);
       return { error: "Could not retrieve business summary data" };
     }
+  },
+
+  getTopSpendingCustomers: async (args: { period: string; limit?: number }) => {
+    try {
+      const customers = await storage.getCustomerSummaries();
+      const now = new Date();
+      
+      let periodStart: Date;
+      
+      switch (args.period) {
+        case "week":
+          periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case "month":
+          periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case "30days":
+          periodStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        case "quarter":
+          const quarterStart = Math.floor(now.getMonth() / 3) * 3;
+          periodStart = new Date(now.getFullYear(), quarterStart, 1);
+          break;
+        case "year":
+          periodStart = new Date(now.getFullYear(), 0, 1);
+          break;
+        default:
+          periodStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      }
+      
+      // Filter customers by period and calculate spending
+      const filteredCustomers = customers
+        .filter(c => new Date(c.date) >= periodStart)
+        .reduce((acc: any[], customer) => {
+          const existing = acc.find(c => c.account_id === customer.account_id);
+          if (existing) {
+            existing.totalSpending += parseFloat(customer.nett_turnover || "0");
+            existing.totalVisits += customer.visits || 0;
+            existing.totalPayments += parseFloat(customer.payments || "0");
+            existing.totalCharges += parseFloat(customer.charges || "0");
+          } else {
+            acc.push({
+              account_id: customer.account_id,
+              account_name: customer.account_name,
+              totalSpending: parseFloat(customer.nett_turnover || "0"),
+              totalVisits: customer.visits || 0,
+              totalPayments: parseFloat(customer.payments || "0"),
+              totalCharges: parseFloat(customer.charges || "0"),
+              avgSpendingPerVisit: customer.visits > 0 ? parseFloat(customer.nett_turnover || "0") / customer.visits : 0
+            });
+          }
+          return acc;
+        }, [])
+        .sort((a, b) => b.totalSpending - a.totalSpending)
+        .slice(0, args.limit || 10);
+
+      return {
+        period: args.period,
+        topCustomers: filteredCustomers,
+        totalCustomers: filteredCustomers.length,
+        periodStart: periodStart.toISOString().split('T')[0]
+      };
+    } catch (error) {
+      console.error("Error getting top spending customers:", error);
+      return { error: "Could not retrieve customer spending data" };
+    }
+  },
+
+  getCustomerDetails: async (args: { customerName: string }) => {
+    try {
+      const customers = await storage.getCustomerSummaries();
+      
+      // Find customers matching the name (case insensitive partial match)
+      const matchingCustomers = customers.filter(c => 
+        c.account_name?.toLowerCase().includes(args.customerName.toLowerCase())
+      );
+      
+      if (matchingCustomers.length === 0) {
+        return { error: `No customers found matching "${args.customerName}"` };
+      }
+      
+      // Group by account_id and aggregate data
+      const customerData = matchingCustomers.reduce((acc: any, customer) => {
+        if (!acc[customer.account_id]) {
+          acc[customer.account_id] = {
+            account_id: customer.account_id,
+            account_name: customer.account_name,
+            transactions: [],
+            totalSpending: 0,
+            totalVisits: 0,
+            totalPayments: 0,
+            totalCharges: 0,
+            dateRange: {
+              earliest: customer.date,
+              latest: customer.date
+            }
+          };
+        }
+        
+        acc[customer.account_id].transactions.push({
+          date: customer.date,
+          spending: parseFloat(customer.nett_turnover || "0"),
+          visits: customer.visits || 0,
+          payments: parseFloat(customer.payments || "0"),
+          charges: parseFloat(customer.charges || "0"),
+          balance_start: parseFloat(customer.balance_start || "0"),
+          balance_end: parseFloat(customer.balance_end || "0")
+        });
+        
+        acc[customer.account_id].totalSpending += parseFloat(customer.nett_turnover || "0");
+        acc[customer.account_id].totalVisits += customer.visits || 0;
+        acc[customer.account_id].totalPayments += parseFloat(customer.payments || "0");
+        acc[customer.account_id].totalCharges += parseFloat(customer.charges || "0");
+        
+        // Update date range
+        if (customer.date < acc[customer.account_id].dateRange.earliest) {
+          acc[customer.account_id].dateRange.earliest = customer.date;
+        }
+        if (customer.date > acc[customer.account_id].dateRange.latest) {
+          acc[customer.account_id].dateRange.latest = customer.date;
+        }
+        
+        return acc;
+      }, {});
+      
+      return {
+        matchingCustomers: Object.values(customerData),
+        searchTerm: args.customerName
+      };
+    } catch (error) {
+      console.error("Error getting customer details:", error);
+      return { error: "Could not retrieve customer details" };
+    }
   }
 };
 
@@ -407,6 +580,8 @@ You have access to these functions to get real business data:
 - getBusinessSummary: Get overall business metrics and today's performance  
 - getTopPerformingStaff: Get information about top performing staff members
 - getStaffDetails: Get detailed information about a specific staff member
+- getTopSpendingCustomers: Get customers who spent the most money in a given time period
+- getCustomerDetails: Get detailed information about a specific customer including transaction history
 
 IMPORTANT: Maintain conversation context. When users ask follow-up questions like "did he also do refunds?" or mention names like "Brendan Catering", refer back to previous messages in the conversation to understand what they're referring to. Use getStaffDetails to get specific information about staff members mentioned in conversation.
 
@@ -415,7 +590,9 @@ Use these functions to answer questions with real data. Be conversational, frien
 When users ask about revenue comparisons, use getRevenueComparison.
 When users ask for general business overview, use getBusinessSummary.
 When users ask about staff performance, use getTopPerformingStaff.
-When users ask about specific staff members or refunds, use getStaffDetails.`
+When users ask about specific staff members or refunds, use getStaffDetails.
+When users ask about top spending customers or customer spending patterns, use getTopSpendingCustomers.
+When users ask about specific customers, use getCustomerDetails.`
       }
     ];
 
