@@ -9,7 +9,10 @@ import {
   Settings,
   Plus,
   Search,
-  Menu
+  Menu,
+  ChevronDown,
+  ChevronRight,
+  TrendingUp
 } from "lucide-react";
 import { 
   Sidebar,
@@ -33,13 +36,22 @@ import CSVUpload from "@/components/import/csv-upload";
 
 type ViewType = "chat" | "sales" | "operators" | "products" | "accounts" | "settings";
 
-const navigationItems = [
+const mainNavigationItems = [
   { 
     title: "Chat", 
     icon: MessageSquare, 
     view: "chat" as ViewType,
     description: "AI Assistant" 
   },
+  { 
+    title: "Settings", 
+    icon: Settings, 
+    view: "settings" as ViewType,
+    description: "Configuration" 
+  },
+];
+
+const insightsItems = [
   { 
     title: "Sales", 
     icon: BarChart3, 
@@ -64,16 +76,13 @@ const navigationItems = [
     view: "accounts" as ViewType,
     description: "Customer Accounts" 
   },
-  { 
-    title: "Settings", 
-    icon: Settings, 
-    view: "settings" as ViewType,
-    description: "Configuration" 
-  },
 ];
+
+const allNavigationItems = [...mainNavigationItems, ...insightsItems];
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
+  const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
     <div className="h-screen w-screen bg-background overflow-hidden">
@@ -104,7 +113,8 @@ export default function Dashboard() {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
-                    {navigationItems.map((item) => (
+                    {/* Main Navigation Items */}
+                    {mainNavigationItems.map((item) => (
                       <SidebarMenuItem key={item.view}>
                         <SidebarMenuButton
                           isActive={currentView === item.view}
@@ -119,6 +129,46 @@ export default function Dashboard() {
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
+                    
+                    {/* Insights Menu */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        onClick={() => setInsightsOpen(!insightsOpen)}
+                        className="w-full justify-start p-3 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                      >
+                        <TrendingUp className="w-4 h-4 mr-3" />
+                        <div className="flex-1 text-left">
+                          <div className="text-sm font-medium">Insights</div>
+                          <div className="text-xs text-sidebar-muted-foreground">Reports & Analytics</div>
+                        </div>
+                        {insightsOpen ? (
+                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground" />
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    
+                    {/* Insights Submenu */}
+                    {insightsOpen && (
+                      <div className="ml-4 space-y-1">
+                        {insightsItems.map((item) => (
+                          <SidebarMenuItem key={item.view}>
+                            <SidebarMenuButton
+                              isActive={currentView === item.view}
+                              onClick={() => setCurrentView(item.view)}
+                              className="w-full justify-start p-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
+                            >
+                              <item.icon className="w-4 h-4 mr-3" />
+                              <div className="flex-1 text-left">
+                                <div className="text-sm font-medium">{item.title}</div>
+                                <div className="text-xs text-sidebar-muted-foreground">{item.description}</div>
+                              </div>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                      </div>
+                    )}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
@@ -144,7 +194,7 @@ export default function Dashboard() {
               <SidebarTrigger className="lg:hidden" />
               <div className="flex-1">
                 <h2 className="text-lg font-semibold text-foreground">
-                  {navigationItems.find(item => item.view === currentView)?.title}
+                  {allNavigationItems.find(item => item.view === currentView)?.title}
                 </h2>
               </div>
               <div className="flex items-center gap-2">
@@ -238,11 +288,11 @@ export default function Dashboard() {
                           <div className="space-y-4">
                             <div>
                               <label className="text-sm font-medium">Assistant Name</label>
-                              <Input value="Alex" className="mt-1" />
+                              <Input defaultValue="Alex" className="mt-1" readOnly />
                             </div>
                             <div>
                               <label className="text-sm font-medium">Response Style</label>
-                              <Input value="Professional" className="mt-1" />
+                              <Input defaultValue="Professional" className="mt-1" readOnly />
                             </div>
                           </div>
                         </div>
