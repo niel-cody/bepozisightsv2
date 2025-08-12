@@ -140,7 +140,6 @@ export default function ChatInterface({ currentConversationId: propConversationI
           </div>
         </div>
       </div>
-
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" data-testid="messages-container">
           {loadingMessages ? (
@@ -149,18 +148,14 @@ export default function ChatInterface({ currentConversationId: propConversationI
             </div>
           ) : messages.length === 0 ? (
             /* Welcome State */
-            <div className="flex flex-col items-center justify-center h-full space-y-4 sm:space-y-6 text-center max-w-sm sm:max-w-md mx-auto px-4">
+            (<div className="flex flex-col items-center justify-center h-full space-y-4 sm:space-y-6 text-center max-w-sm sm:max-w-md mx-auto px-4">
               <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/20 flex items-center justify-center">
                 <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              
               <div className="space-y-2">
                 <h3 className="text-lg sm:text-xl font-semibold text-card-foreground">Welcome to Alex</h3>
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                  I'm your virtual manager assistant. I can analyze your POS data, provide insights about sales trends, operator performance, and help you make data-driven decisions.
-                </p>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">I'm your virtual assistant manager. I can analyze your sales data, provide insights about trends, operator performance, and help you make data-driven decisions.</p>
               </div>
-
               <div className="w-full space-y-2">
                 <p className="text-sm font-medium text-card-foreground mb-3">Try asking me:</p>
                 <div className="grid gap-2">
@@ -178,17 +173,17 @@ export default function ChatInterface({ currentConversationId: propConversationI
                   ))}
                 </div>
               </div>
-            </div>
+            </div>)
           ) : (
             /* Messages */
-            messages.map((message) => (
+            (messages.map((message) => (
               <MessageBubble
                 key={message.id}
                 message={message.message}
                 response={message.response || ""}
                 timestamp={message.timestamp}
               />
-            ))
+            )))
           )}
           
           {isTyping && (
@@ -204,7 +199,6 @@ export default function ChatInterface({ currentConversationId: propConversationI
           )}
           <div ref={messagesEndRef} />
         </div>
-
       {/* Input Area */}
       <div className="p-3 sm:p-4 border-t border-border bg-card/50 backdrop-blur-sm">
         <form onSubmit={handleSubmit} className="flex gap-2">
