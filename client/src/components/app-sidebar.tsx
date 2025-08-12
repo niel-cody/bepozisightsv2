@@ -56,21 +56,19 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    asChild
                     isActive={currentView === item.view}
                     onClick={() => onViewChange(item.view)}
                     tooltip={item.title}
+                    className="transition-colors"
                   >
-                    <button>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </button>
+                    <item.icon className="h-4 w-4" />
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

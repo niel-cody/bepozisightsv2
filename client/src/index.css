@@ -39,6 +39,9 @@
   --sidebar-accent-foreground: hsl(0, 0%, 90%);
   --sidebar-border: hsl(240, 8%, 25%);
   --sidebar-ring: hsl(220, 85%, 57%);
+  --sidebar-input: hsl(240, 8%, 16%);
+  --sidebar-muted: hsl(240, 8%, 18%);
+  --sidebar-muted-foreground: hsl(0, 0%, 88%);
   --font-sans: 'Inter', 'Open Sans', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -73,6 +76,9 @@
   --sidebar-accent-foreground: hsl(240, 5.9%, 10%);
   --sidebar-border: hsl(240, 5.9%, 90%);
   --sidebar-ring: hsl(220, 85%, 57%);
+  --sidebar-input: hsl(240, 5.9%, 96%);
+  --sidebar-muted: hsl(240, 4.8%, 95.9%);
+  --sidebar-muted-foreground: hsl(240, 3.8%, 46.1%);
 }
 
 @layer base {
