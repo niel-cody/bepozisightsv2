@@ -18,7 +18,7 @@ export default function Dashboard() {
   });
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={true} open={true}>
       <AppSidebar currentView={currentView} onViewChange={setCurrentView} />
       <SidebarInset>
         {/* Header */}

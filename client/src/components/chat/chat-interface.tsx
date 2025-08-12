@@ -8,9 +8,10 @@ import { apiRequest } from "@/lib/queryClient";
 
 interface Message {
   id: string;
-  role: "user" | "assistant";
-  content: string;
-  created_at: string;
+  message: string;
+  response: string;
+  timestamp: string;
+  userId?: string | null;
   chart?: any;
 }
 
@@ -26,7 +27,7 @@ export default function ChatInterface() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const response = await apiRequest("/api/chat/messages", "POST", { content });
+      const response = await apiRequest("/api/chat/message", "POST", { message: content });
       return response;
     },
     onMutate: () => {
@@ -143,15 +144,24 @@ export default function ChatInterface() {
 
           {/* Messages */}
           <div className="p-4 space-y-6">
-            {messages.map((message) => (
+            {messages.flatMap((message) => [
+              // User message
               <MessageBubble
-                key={message.id}
-                message={message.content}
-                isUser={message.role === "user"}
-                timestamp={new Date(message.created_at)}
+                key={`${message.id}-user`}
+                message={message.message}
+                isUser={true}
+                timestamp={new Date(message.timestamp)}
+                chart={undefined}
+              />,
+              // AI response
+              <MessageBubble
+                key={`${message.id}-ai`}
+                message={message.response}
+                isUser={false}
+                timestamp={new Date(message.timestamp)}
                 chart={message.chart}
               />
-            ))}
+            ])}
             
             {isTyping && (
               <div className="flex items-start space-x-3">

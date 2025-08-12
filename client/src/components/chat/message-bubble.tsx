@@ -54,7 +54,10 @@ export default function MessageBubble({ message, isUser, timestamp, chart }: Mes
             isUser ? "justify-end" : "justify-start"
           )}>
             <span>
-              {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {timestamp && !isNaN(timestamp.getTime()) 
+                ? timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : 'Now'
+              }
             </span>
           </div>
         </div>
