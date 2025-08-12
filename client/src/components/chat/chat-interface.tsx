@@ -126,10 +126,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
                   </div>
                 </SelectItem>
                 <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
-                  <div className="flex flex-col">
-                    <span>Detailed</span>
-                    <span className="text-xs text-muted-foreground">Balanced analysis and insights</span>
-                  </div>
+                  <span>Detailed</span>
                 </SelectItem>
                 <SelectItem value="gpt-4o" data-testid="model-scientific">
                   <div className="flex flex-col">
