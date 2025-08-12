@@ -680,6 +680,88 @@ Format as JSON with fields: summary, trends (array), suggestions (array)`;
     }
   });
 
+  // Operators Trading View endpoint
+  app.get("/api/operators/trading-view", async (req, res) => {
+    try {
+      const operatorSummaries = await storage.getOperatorSummaries();
+      
+      if (!operatorSummaries.length) {
+        return res.json([]);
+      }
+
+      // Group summaries by operator and calculate performance metrics
+      const operatorPerformance = operatorSummaries.reduce((acc: any, summary: any) => {
+        const name = summary.operator || 'Unknown';
+        
+        if (!acc[name]) {
+          acc[name] = {
+            name,
+            summaries: [],
+            totalSales: 0,
+            totalTransactions: 0,
+            totalHours: 0
+          };
+        }
+        
+        acc[name].summaries.push(summary);
+        acc[name].totalSales += parseFloat(summary.nettTotal || "0");
+        acc[name].totalTransactions += summary.transactionCount || 0;
+        acc[name].totalHours += parseFloat(summary.totalHours || "8"); // Default 8 hours if not specified
+        
+        return acc;
+      }, {});
+
+      // Convert to performance array with trading metrics
+      const performanceData = Object.values(operatorPerformance).map((op: any, index: number) => {
+        const recentSummaries = op.summaries.slice(-7); // Last 7 entries
+        const olderSummaries = op.summaries.slice(-14, -7); // Previous 7 entries
+        
+        const currentSales = recentSummaries.reduce((sum: number, s: any) => sum + parseFloat(s.nettTotal || "0"), 0);
+        const previousSales = olderSummaries.length > 0 
+          ? olderSummaries.reduce((sum: number, s: any) => sum + parseFloat(s.nettTotal || "0"), 0)
+          : currentSales * 0.9; // Fallback comparison
+        
+        const changePercent = previousSales > 0 ? ((currentSales - previousSales) / previousSales) * 100 : 0;
+        const changeDirection = changePercent > 2 ? 'up' : changePercent < -2 ? 'down' : 'flat';
+        
+        const avgTransactionValue = op.totalTransactions > 0 ? op.totalSales / op.totalTransactions : 0;
+        const salesPerHour = op.totalHours > 0 ? op.totalSales / op.totalHours : 0;
+        
+        // Determine performance category
+        let performance = 'stable';
+        if (changePercent > 10) performance = 'strong';
+        else if (changePercent > 5) performance = 'improving';
+        else if (changePercent < -5) performance = 'declining';
+
+        return {
+          name: op.name,
+          currentSales: Math.round(currentSales),
+          previousSales: Math.round(previousSales),
+          changePercent: Math.round(changePercent * 10) / 10,
+          changeDirection,
+          transactions: op.totalTransactions,
+          avgTransactionValue: Math.round(avgTransactionValue * 100) / 100,
+          totalHours: Math.round(op.totalHours * 10) / 10,
+          salesPerHour: Math.round(salesPerHour * 100) / 100,
+          rank: 0, // Will be set after sorting
+          performance
+        };
+      });
+
+      // Sort by current sales and assign ranks
+      performanceData.sort((a, b) => b.currentSales - a.currentSales);
+      performanceData.forEach((op, index) => {
+        op.rank = index + 1;
+      });
+
+      res.json(performanceData);
+      
+    } catch (error) {
+      console.error('Operators trading view error:', error);
+      res.status(500).json({ error: "Failed to fetch operator trading view data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

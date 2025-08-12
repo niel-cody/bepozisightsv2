@@ -43,6 +43,7 @@ import { CalendarHeatmap } from "@/components/sales/calendar-heatmap";
 import { VenueBreakdown } from "@/components/sales/venue-breakdown";
 import { SalesInsightsButton } from "@/components/sales/sales-insights-button";
 import { SalesInsightsDisplay } from "@/components/sales/sales-insights-display";
+import { OperatorsTradingView } from "@/components/operators/operators-trading-view";
 
 // Create a separate sales page component to manage shared state
 function SalesPage() {
@@ -413,17 +414,7 @@ export default function Dashboard() {
                 )}
 
                 {currentView === "operators" && (
-                  <div className="h-full flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-semibold mb-2">Operator Reports</h3>
-                      <p className="text-muted-foreground mb-4">Monitor staff performance and productivity</p>
-                      <Button onClick={() => setCurrentView("chat")}>
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Ask AI for Staff Insights
-                      </Button>
-                    </div>
-                  </div>
+                  <OperatorsTradingView />
                 )}
 
                 {currentView === "products" && (
