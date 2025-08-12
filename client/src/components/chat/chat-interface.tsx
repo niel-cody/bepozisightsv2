@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import MessageBubble from "./message-bubble";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface Message {
@@ -56,83 +56,74 @@ export default function ChatInterface() {
 
   const quickQueries = [
     "What happened yesterday?",
-    "Show me top products",
-    "Till performance"
+    "Show me top products", 
+    "Till performance summary"
   ];
 
   return (
-    <div className="flex h-full min-h-0">
-      {/* Chat History Sidebar */}
-      <div className="w-80 border-r bg-card/50 flex flex-col">
-        <div className="p-4 border-b border-border">
+    <div className="flex h-full bg-background">
+      {/* Left Sidebar - Chat History */}
+      <div className="w-80 border-r border-border bg-muted/30 flex flex-col">
+        <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-foreground">Chat History</h3>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-3 text-xs"
-              onClick={() => {/* TODO: Start new chat */}}
-            >
-              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
+            <h2 className="text-lg font-semibold text-foreground">Chat History</h2>
+            <Button variant="outline" size="sm" className="gap-2 h-8 px-3">
+              <Plus className="w-4 h-4" />
               New Chat
             </Button>
           </div>
-          <div className="text-xs text-muted-foreground mb-2">Today</div>
+          <div className="text-sm text-muted-foreground">Today</div>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-2">
-              <div className="space-y-1">
-                <div className="p-3 rounded-md bg-accent/50 border cursor-pointer hover:bg-accent/70 transition-colors">
-              <div className="text-sm font-medium text-foreground truncate">Current Chat</div>
-              <div className="text-xs text-muted-foreground mt-1 truncate">Business insights discussion</div>
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-2">
+            <div className="p-3 rounded-lg bg-accent/50 border border-border/50 cursor-pointer hover:bg-accent/70 transition-colors">
+              <div className="text-sm font-medium text-foreground">Current Chat</div>
+              <div className="text-xs text-muted-foreground mt-1">Business insights discussion</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-background">
         {/* Chat Header */}
-        <div className="p-4 border-b border-border bg-background/80 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-md">
-                <svg className="w-5 h-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
-                </svg>
-              </div>
-              <div>
-                <h2 className="font-semibold text-foreground">Alex</h2>
-                <p className="text-xs text-muted-foreground">AI Business Assistant • Online</p>
-              </div>
+        <div className="px-6 py-4 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg">
+              <svg className="w-5 h-5 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Alex</h2>
+              <p className="text-sm text-muted-foreground">AI Business Assistant • Online</p>
             </div>
           </div>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {/* Welcome Message */}
-          {messages.length === 0 && (
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 ? (
+            /* Welcome State */
             <div className="h-full flex items-center justify-center p-8">
-              <div className="max-w-md text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="max-w-lg text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold mb-3 text-foreground">Start a conversation</h3>
-                <p className="text-sm text-muted-foreground mb-6">Ask me anything about your business data and I'll help you find insights.</p>
-                <div className="space-y-2">
-                  {quickQueries.slice(0, 3).map((query, index) => (
+                <h3 className="text-2xl font-semibold mb-4 text-foreground">Welcome to Alex</h3>
+                <p className="text-muted-foreground mb-8 text-lg">Your AI business assistant is ready to help you analyze your POS data and provide insights.</p>
+                
+                <div className="grid gap-3 max-w-sm mx-auto">
+                  <p className="text-sm font-medium text-foreground mb-2">Try asking:</p>
+                  {quickQueries.map((query, index) => (
                     <Button
                       key={index}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-left justify-start text-xs h-auto py-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                      variant="outline"
+                      className="justify-start text-left h-auto py-3 px-4 text-muted-foreground hover:text-foreground"
                       onClick={() => setInputMessage(query)}
-                      data-testid={`button-quick-query-${index}`}
                     >
                       {query}
                     </Button>
@@ -140,45 +131,31 @@ export default function ChatInterface() {
                 </div>
               </div>
             </div>
-          )}
-
-          {/* Messages - Only show when there are messages */}
-          {messages.length > 0 && (
-            <div className="p-4 space-y-6 pb-6">
-              {messages.flatMap((message) => [
-                // User message
+          ) : (
+            /* Messages */
+            <div className="p-6 space-y-6">
+              {messages.map((message) => (
                 <MessageBubble
-                  key={`${message.id}-user`}
+                  key={message.id}
                   message={message.message}
-                  isUser={true}
-                  timestamp={new Date(message.timestamp)}
-                  chart={undefined}
-                />,
-                // AI response
-                <MessageBubble
-                  key={`${message.id}-ai`}
-                  message={message.response}
-                  isUser={false}
-                  timestamp={new Date(message.timestamp)}
+                  response={message.response}
+                  timestamp={message.timestamp}
                   chart={message.chart}
                 />
-              ])}
+              ))}
               
               {isTyping && (
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846-.813a4.5 4.5 0 00-3.09 3.09z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
                     </svg>
                   </div>
-                  <div className="bg-accent/30 border border-border rounded-2xl p-4 shadow-sm">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                      </div>
-                      <span className="text-sm text-muted-foreground">Alex is thinking...</span>
+                  <div className="bg-muted/50 rounded-2xl p-4 max-w-xs">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -189,33 +166,31 @@ export default function ChatInterface() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t bg-background/95 backdrop-blur-sm p-4">
-          <form onSubmit={handleSubmit} className="flex space-x-3">
-            <div className="flex-1">
+        <div className="p-6 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <form onSubmit={handleSubmit} className="flex gap-3">
+            <div className="flex-1 relative">
               <Input
-                type="text"
-                placeholder="Message Alex..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
+                placeholder="Ask Alex about your business data..."
+                className="pr-12 h-12 text-base bg-background border-border focus:border-primary transition-colors"
                 disabled={sendMessageMutation.isPending}
-                className="rounded-md px-4 py-3 text-sm bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="input-chat-message"
+                data-testid="input-message"
               />
-            </div>
-            <Button 
-              type="submit"
-              disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-              size="sm"
-              className="px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="button-send-message"
-            >
-              {sendMessageMutation.isPending ? (
-                <div className="w-4 h-4 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
-              ) : (
+              <Button
+                type="submit"
+                size="sm"
+                className="absolute right-2 top-2 h-8 w-8 p-0"
+                disabled={!inputMessage.trim() || sendMessageMutation.isPending}
+                data-testid="button-send"
+              >
                 <Send className="w-4 h-4" />
-              )}
-            </Button>
+              </Button>
+            </div>
           </form>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Alex can make mistakes. Check important information.
+          </p>
         </div>
       </div>
     </div>
