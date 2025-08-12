@@ -1,0 +1,90 @@
+{
+  "routingHints": [
+    {
+      "intent": "venue_daily_summary",
+      "patterns": [
+        "how did we do",
+        "yesterday",
+        "today",
+        "daily summary",
+        "sales summary"
+      ],
+      "tables": [
+        "till_summaries"
+      ],
+      "select": [
+        "NettTotal",
+        "Qty Transactions",
+        "Average Sale",
+        "Total Discount",
+        "Returns"
+      ]
+    },
+    {
+      "intent": "operator_performance",
+      "patterns": [
+        "which operator",
+        "who needs coaching",
+        "top operator",
+        "staff performance"
+      ],
+      "tables": [
+        "operator_summaries"
+      ],
+      "select": [
+        "Operator Name",
+        "NettTotal",
+        "Qty Transactions",
+        "Average Sale",
+        "Profit%"
+      ]
+    },
+    {
+      "intent": "product_performance",
+      "patterns": [
+        "best sellers",
+        "top products",
+        "category mix",
+        "price",
+        "units"
+      ],
+      "tables": [
+        "product_summaries"
+      ],
+      "select": [
+        "Product Name",
+        "Nett Sales",
+        "Qty Units sold",
+        "Sort Group",
+        "Type Group",
+        "Type",
+        "Size"
+      ]
+    },
+    {
+      "intent": "customer_accounts",
+      "patterns": [
+        "loyalty",
+        "accounts",
+        "visits",
+        "points",
+        "returning customers"
+      ],
+      "tables": [
+        "account_summaries"
+      ],
+      "select": [
+        "Account Name",
+        "Visits",
+        "Nett Sales",
+        "Points Start",
+        "Points End"
+      ]
+    }
+  ],
+  "disambiguation": {
+    "whenMultipleTablesMatch": "If both operator and product are mentioned, prefer operator_summaries when the subject is people; product_summaries when the subject is items.",
+    "missingVenue": "If user belongs to one venue, assume it; else ask: \u2018Which venue should I use?\u2019",
+    "missingTimeframe": "Default to last 7 days and state the assumption."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "alertThresholds": {
+    "high": {
+      "dailySalesDeclinePct": 30,
+      "operatorZeroSalesDuringAssignedShift": true,
+      "tillCashRange": {
+        "min": 100,
+        "max": 2000
+      },
+      "systemErrorsAny": true
+    },
+    "medium": {
+      "lowStockQty": 10,
+      "operatorUnderperformancePct": 20,
+      "unusualPaymentPattern": true,
+      "tillMaintenanceFlag": true
+    },
+    "low": {
+      "minorInventoryFluctuations": true,
+      "smallPerformanceVariations": true,
+      "seasonalAdjustmentSuggestions": true
+    }
+  }
+}
