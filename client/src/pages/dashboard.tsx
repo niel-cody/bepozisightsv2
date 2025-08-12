@@ -153,11 +153,7 @@ export default function Dashboard() {
                               onClick={() => setCurrentView(item.view)}
                               className="w-full justify-start p-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
                             >
-                              <item.icon className="w-4 h-4 mr-3" />
-                              <div className="flex-1 text-left">
-                                <div className="text-sm font-medium">{item.title}</div>
-                                <div className="text-xs text-sidebar-muted-foreground">{item.description}</div>
-                              </div>
+                              <div className="text-sm font-medium">{item.title}</div>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
                         ))}
