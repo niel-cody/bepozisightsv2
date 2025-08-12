@@ -27,10 +27,10 @@ export default function MessageBubble({ message, isUser, timestamp, chart }: Mes
       <div className={cn("flex-1", isUser ? "flex justify-end" : "max-w-2xl")}>
         <div>
           <Card className={cn(
-            "p-6 max-w-lg shadow-none rounded-2xl",
+            "p-4 max-w-lg shadow-sm rounded-xl border-2 transition-colors",
             isUser 
-              ? "bg-primary text-primary-foreground border border-primary/20" 
-              : "bg-card border border-border"
+              ? "bg-primary text-primary-foreground border-primary/30 shadow-primary/10" 
+              : "bg-card border-border hover:border-border/60"
           )}>
             <p className={cn(
               "text-base leading-relaxed",

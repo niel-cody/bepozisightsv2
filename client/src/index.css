@@ -6,25 +6,25 @@
 
 :root {
   --radius: 0.65rem;
-  /* Improved dark theme with better contrast */
+  /* High contrast dark theme for better visibility */
   --background: hsl(240, 10%, 8%);
-  --foreground: hsl(0, 0%, 95%);
-  --card: hsl(240, 10%, 16%);
-  --card-foreground: hsl(0, 0%, 95%);
-  --popover: hsl(240, 10%, 16%);
-  --popover-foreground: hsl(0, 0%, 95%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 8%, 14%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(240, 8%, 14%);
+  --popover-foreground: hsl(0, 0%, 98%);
   --primary: hsl(220, 85%, 57%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(240, 8%, 22%);
-  --secondary-foreground: hsl(0, 0%, 90%);
+  --secondary: hsl(240, 8%, 20%);
+  --secondary-foreground: hsl(0, 0%, 95%);
   --muted: hsl(240, 8%, 18%);
-  --muted-foreground: hsl(240, 5%, 85%);
+  --muted-foreground: hsl(0, 0%, 88%);
   --accent: hsl(220, 85%, 57%);
   --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 75%, 60%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(240, 8%, 25%);
-  --input: hsl(240, 8%, 22%);
+  --border: hsl(240, 8%, 28%);
+  --input: hsl(240, 8%, 16%);
   --ring: hsl(220, 85%, 57%);
   --chart-1: hsl(220, 85%, 57%);
   --chart-2: hsl(160, 70%, 50%);

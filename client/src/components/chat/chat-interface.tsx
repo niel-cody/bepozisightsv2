@@ -68,20 +68,21 @@ export default function ChatInterface() {
       <div className="flex-1 overflow-y-auto p-6">
         {/* Welcome Message */}
         {messages.length === 0 && (
-          <div className="max-w-2xl mx-auto text-center py-16">
-            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="max-w-2xl mx-auto text-center py-20">
+            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <svg className="w-10 h-10 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
               </svg>
             </div>
-            <h2 className="text-2xl font-medium mb-4 text-foreground">Hello! I'm Alex</h2>
-            <p className="text-foreground/80 mb-8 leading-relaxed">Your virtual manager assistant. I help analyze POS data and provide business insights.</p>
-            <div className="space-y-3">
+            <h2 className="text-3xl font-semibold mb-6 text-foreground">Hello! I'm Alex</h2>
+            <p className="text-lg text-muted-foreground mb-10 leading-relaxed">Your virtual manager assistant. I help analyze POS data and provide business insights.</p>
+            <div className="space-y-4">
               {quickQueries.map((query, index) => (
                 <Button
                   key={index}
                   variant="outline"
-                  className="w-full max-w-md font-normal justify-start"
+                  size="lg"
+                  className="w-full max-w-md font-medium justify-start text-left border-2 hover:bg-accent hover:text-accent-foreground transition-all"
                   onClick={() => setInputMessage(query)}
                   data-testid={`button-quick-query-${index}`}
                 >
@@ -117,8 +118,8 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-border p-6">
-        <form onSubmit={handleSubmit} className="flex space-x-4 max-w-4xl mx-auto">
+      <div className="border-t border-border bg-background/95 backdrop-blur-sm p-6">
+        <form onSubmit={handleSubmit} className="flex space-x-3 max-w-4xl mx-auto">
           <div className="flex-1">
             <Input
               type="text"
@@ -126,17 +127,17 @@ export default function ChatInterface() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={sendMessageMutation.isPending}
-              className="border-border focus:border-ring focus:ring-1 rounded-lg px-4 py-3 text-base bg-input text-foreground placeholder:text-foreground/50"
+              className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-5 py-4 text-base bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
               data-testid="input-chat-message"
             />
           </div>
           <Button 
             type="submit"
             disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-            className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+            className="px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all"
             data-testid="button-send-message"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </Button>
         </form>
       </div>
