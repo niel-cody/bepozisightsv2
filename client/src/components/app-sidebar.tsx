@@ -42,7 +42,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
   return (
-    <Sidebar variant="sidebar" collapsible="icon">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-3 px-3 py-4">
           <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-md">
@@ -56,17 +56,19 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
+                    asChild 
                     isActive={currentView === item.view}
-                    onClick={() => onViewChange(item.view)}
                   >
-                    <item.icon />
-                    <span>{item.title}</span>
+                    <button onClick={() => onViewChange(item.view)}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
