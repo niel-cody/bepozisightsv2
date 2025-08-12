@@ -120,19 +120,19 @@ export default function ChatInterface() {
   ];
 
   return (
-    <div className="flex-1 flex bg-white">
+    <div className="flex-1 flex bg-background">
       {/* Minimal Chat Sidebar */}
       {showSidebar && (
-        <div className="w-72 border-r border-gray-50 flex flex-col bg-white">
+        <div className="w-72 border-r border-border flex flex-col bg-card">
           {/* Sidebar Header */}
-          <div className="p-6 border-b border-gray-50">
+          <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-light text-gray-900 tracking-tight">History</h3>
+              <h3 className="text-lg font-light text-card-foreground tracking-tight">History</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowSidebar(false)}
-                className="p-1 hover:bg-gray-50 rounded"
+                className="p-1 hover:bg-muted rounded"
                 data-testid="button-hide-sidebar"
               >
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,7 +143,7 @@ export default function ChatInterface() {
             <Button
               onClick={startNewChat}
               variant="outline"
-              className="w-full border-gray-200 hover:bg-gray-50 font-normal"
+              className="w-full border-border hover:bg-muted font-normal"
               data-testid="button-new-chat"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -154,25 +154,25 @@ export default function ChatInterface() {
           {/* Chat Sessions List */}
           <div className="flex-1 overflow-y-auto px-6 space-y-2">
             {chatSessions.length === 0 ? (
-              <div className="text-center text-gray-400 py-12">
+              <div className="text-center text-muted-foreground py-12">
                 <p className="text-sm font-light">No conversations yet</p>
               </div>
             ) : (
               chatSessions.map((session) => (
                 <div
                   key={session.id}
-                  className={`p-4 cursor-pointer hover:bg-gray-25 transition-colors rounded-lg border ${
-                    currentSessionId === session.id ? 'bg-gray-25 border-gray-100' : 'border-transparent hover:border-gray-100'
+                  className={`p-4 cursor-pointer hover:bg-muted transition-colors rounded-lg border ${
+                    currentSessionId === session.id ? 'bg-muted border-border' : 'border-transparent hover:border-border'
                   }`}
                   onClick={() => setCurrentSessionId(session.id)}
                   data-testid={`chat-session-${session.id}`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="text-sm font-normal text-gray-900 mb-2 truncate leading-relaxed">
+                      <h4 className="text-sm font-normal text-card-foreground mb-2 truncate leading-relaxed">
                         {session.title}
                       </h4>
-                      <p className="text-xs text-gray-400 font-light">
+                      <p className="text-xs text-muted-foreground font-light">
                         {new Date(session.lastMessage).toLocaleDateString()}
                       </p>
                     </div>
@@ -184,12 +184,12 @@ export default function ChatInterface() {
           
           {/* Sidebar Footer */}
           {messages.length > 0 && (
-            <div className="p-6 border-t border-gray-50">
+            <div className="p-6 border-t border-border">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearChatHistory}
-                className="w-full text-gray-400 hover:text-red-500 font-normal"
+                className="w-full text-muted-foreground hover:text-destructive font-normal"
                 data-testid="button-clear-history"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
@@ -203,7 +203,7 @@ export default function ChatInterface() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Minimal Chat Header */}
-        <div className="border-b border-gray-50 px-8 py-6">
+        <div className="border-b border-border px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               {!showSidebar && (
@@ -211,14 +211,14 @@ export default function ChatInterface() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowSidebar(true)}
-                  className="p-2 hover:bg-gray-50 rounded"
+                  className="p-2 hover:bg-muted rounded"
                   data-testid="button-show-sidebar"
                 >
-                  <MessageSquare className="w-4 h-4 text-gray-400" />
+                  <MessageSquare className="w-4 h-4 text-muted-foreground" />
                 </Button>
               )}
               <div>
-                <p className="text-sm text-gray-400 font-light">AI Assistant</p>
+                <p className="text-sm text-muted-foreground font-light">AI Assistant</p>
               </div>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Minimal Input Area */}
-        <div className="border-t border-gray-50 px-8 py-6">
+        <div className="border-t border-border px-8 py-6">
           <form onSubmit={handleSubmit} className="flex space-x-4">
             <div className="flex-1">
               <Input
@@ -281,14 +281,14 @@ export default function ChatInterface() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 disabled={sendMessageMutation.isPending}
-                className="border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-3 text-base"
+                className="border-border focus:border-ring focus:ring-0 rounded-lg px-4 py-3 text-base bg-input"
                 data-testid="input-chat-message"
               />
             </div>
             <Button 
               type="submit"
               disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-              className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg"
+              className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
               data-testid="button-send-message"
             >
               <Send className="w-4 h-4" />

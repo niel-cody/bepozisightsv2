@@ -18,8 +18,8 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
       isUser ? "justify-end" : ""
     )}>
       {!isUser && (
-        <div className="flex-shrink-0 w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+          <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
           </svg>
         </div>
@@ -30,12 +30,12 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
           <Card className={cn(
             "p-6 max-w-lg border-0 shadow-none rounded-2xl",
             isUser 
-              ? "bg-gray-900 text-white" 
-              : "bg-gray-50"
+              ? "bg-primary text-primary-foreground" 
+              : "bg-card border border-border"
           )}>
             <p className={cn(
               "text-base leading-relaxed",
-              isUser ? "text-white" : "text-gray-900"
+              isUser ? "text-primary-foreground" : "text-card-foreground"
             )}>
               {message}
             </p>
@@ -57,15 +57,15 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
               </div>
             )}
           </Card>
-          <p className="text-xs text-gray-400 mt-2 font-light">
+          <p className="text-xs text-muted-foreground mt-2 font-light">
             {formatDistanceToNow(timestamp, { addSuffix: true })}
           </p>
         </div>
       </div>
 
       {isUser && (
-        <div className="flex-shrink-0 w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-          <span className="text-sm font-medium text-gray-700">SM</span>
+        <div className="flex-shrink-0 w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+          <span className="text-sm font-medium text-muted-foreground">SM</span>
         </div>
       )}
     </div>
