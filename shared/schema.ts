@@ -59,11 +59,28 @@ export const transactions = pgTable("transactions", {
 export const dailySummaries = pgTable("daily_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   date: text("date").notNull(),
-  totalSales: decimal("total_sales", { precision: 10, scale: 2 }).notNull(),
+  name: text("name").notNull(), // McBrew - QLD
   transactionCount: integer("transaction_count").notNull(),
-  averageTransaction: decimal("average_transaction", { precision: 10, scale: 2 }).notNull(),
-  topProduct: text("top_product"),
-  topOperator: text("top_operator"),
+  dateTimeFirstTrans: timestamp("datetime_first_trans"),
+  dateTimeLastTrans: timestamp("datetime_last_trans"),
+  grossSales: decimal("gross_sales", { precision: 10, scale: 2 }),
+  totalDiscount: decimal("total_discount", { precision: 10, scale: 2 }),
+  nettTotal: decimal("nett_total", { precision: 10, scale: 2 }).notNull(),
+  percentOfNettTotal: decimal("percent_of_nett_total", { precision: 10, scale: 4 }),
+  costOfSales: decimal("cost_of_sales", { precision: 10, scale: 2 }),
+  profitAmount: decimal("profit_amount", { precision: 10, scale: 2 }),
+  profitPercent: decimal("profit_percent", { precision: 10, scale: 2 }),
+  quantityCancelled: integer("quantity_cancelled"),
+  cancelled: decimal("cancelled", { precision: 10, scale: 2 }),
+  quantityReturns: integer("quantity_returns"),
+  returns: decimal("returns", { precision: 10, scale: 2 }),
+  quantityTraining: integer("quantity_training"),
+  trainingTotal: decimal("training_total", { precision: 10, scale: 2 }),
+  quantityNoSales: integer("quantity_no_sales"),
+  quantityNoSaleAfterCancel: integer("quantity_no_sale_after_cancel"),
+  noSaleAfterCancel: decimal("no_sale_after_cancel", { precision: 10, scale: 2 }),
+  quantityTableRefundAfterPrint: integer("quantity_table_refund_after_print"),
+  tableRefundAfterPrint: decimal("table_refund_after_print", { precision: 10, scale: 2 }),
 });
 
 export const chatMessages = pgTable("chat_messages", {

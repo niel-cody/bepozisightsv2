@@ -25,14 +25,15 @@ export class SimpleCSVImporter {
         case 'tills':
           for (const record of records) {
             try {
-              // This data appears to be daily summaries, not individual tills
-              // Parse the date from TimeSpan or DateTime Last Trans.
-              const dateStr = record['DateTime Last Trans.'] || record.TimeSpan;
+              // Parse the date from TimeSpan
+              const dateStr = record.TimeSpan;
               let parsedDate = new Date().toISOString().split('T')[0]; // Default to today
               
-              if (dateStr && dateStr.includes('-')) {
+              if (dateStr) {
                 try {
-                  const date = new Date(dateStr);
+                  // Handle format like "Thu 06-Jan-2005"
+                  const cleanDate = dateStr.replace(/^[A-Za-z]+ /, ''); // Remove day prefix
+                  const date = new Date(cleanDate);
                   if (!isNaN(date.getTime())) {
                     parsedDate = date.toISOString().split('T')[0];
                   }
@@ -41,18 +42,49 @@ export class SimpleCSVImporter {
                 }
               }
               
-              const netTotal = record.NettTotal || record.netTotal || '0.00';
-              const transactionCount = parseInt(record['Qty Transactions']) || 0;
-              const tillName = record.Name || 'McBrew - QLD';
+              // Parse datetime fields
+              let firstTransDate = null;
+              let lastTransDate = null;
               
-              // Insert as daily summary data
+              if (record['DateTime First Trans.']) {
+                try {
+                  const date = new Date(record['DateTime First Trans.']);
+                  if (!isNaN(date.getTime())) firstTransDate = date;
+                } catch (e) {}
+              }
+              
+              if (record['DateTime Last Trans.']) {
+                try {
+                  const date = new Date(record['DateTime Last Trans.']);
+                  if (!isNaN(date.getTime())) lastTransDate = date;
+                } catch (e) {}
+              }
+              
+              // Insert as daily summary data with all fields
               await db.insert(dailySummaries).values({
                 date: parsedDate,
-                totalSales: netTotal,
-                transactionCount: transactionCount,
-                averageTransaction: transactionCount > 0 ? (parseFloat(netTotal) / transactionCount).toFixed(2) : '0.00',
-                topProduct: null,
-                topOperator: tillName
+                name: record.Name || 'McBrew - QLD',
+                transactionCount: parseInt(record['Qty Transactions']) || 0,
+                dateTimeFirstTrans: firstTransDate,
+                dateTimeLastTrans: lastTransDate,
+                grossSales: record['Gross Sales'] || null,
+                totalDiscount: record['Total Discount'] || null,
+                nettTotal: record.NettTotal || '0.00',
+                percentOfNettTotal: record['% of NettTotal'] || null,
+                costOfSales: record['Cost of Sales'] || null,
+                profitAmount: record.ProfitAmt || null,
+                profitPercent: record['Profit%'] || null,
+                quantityCancelled: parseInt(record['Qty Cancelled']) || null,
+                cancelled: record.Cancelled || null,
+                quantityReturns: parseInt(record['Qty Returns']) || null,
+                returns: record.Returns || null,
+                quantityTraining: parseInt(record['Qty Training']) || null,
+                trainingTotal: record['Training Total'] || null,
+                quantityNoSales: parseInt(record['Qty NoSales']) || null,
+                quantityNoSaleAfterCancel: parseInt(record['Qty NoSale After Cancel']) || null,
+                noSaleAfterCancel: record['NoSale AfterCancel'] || null,
+                quantityTableRefundAfterPrint: parseInt(record['Qty Table Refund After Print']) || null,
+                tableRefundAfterPrint: record['Table Refund After Print'] || null
               });
               importCount++;
             } catch (error: any) {
