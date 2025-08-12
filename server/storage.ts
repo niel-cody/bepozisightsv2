@@ -202,10 +202,18 @@ export class MemStorage implements IStorage {
       id,
       name: insertOperator.name,
       employeeId: insertOperator.employeeId || null,
-      role: insertOperator.role,
+      role: insertOperator.role || 'Staff',
       status: insertOperator.status || 'active',
       totalSales: insertOperator.totalSales || null,
-      transactionCount: insertOperator.transactionCount || null
+      transactionCount: insertOperator.transactionCount || null,
+      grossSales: insertOperator.grossSales || null,
+      totalDiscount: insertOperator.totalDiscount || null,
+      nettTotal: insertOperator.nettTotal || null,
+      profitAmount: insertOperator.profitAmount || null,
+      profitPercent: insertOperator.profitPercent || null,
+      averageSale: insertOperator.averageSale || null,
+      venue: insertOperator.venue || null,
+      lastTransactionDate: insertOperator.lastTransactionDate || null
     };
     this.operators.set(id, operator);
     return operator;

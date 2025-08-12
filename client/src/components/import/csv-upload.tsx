@@ -197,7 +197,7 @@ export default function CSVUpload() {
             <h4 className="font-medium text-blue-900 mb-2">Expected CSV Format for {tableName}:</h4>
             <code className="text-sm text-blue-800 block">
               {tableName === "tills" && "TimeSpan,Name,Qty Transactions,DateTime Last Trans.,NettTotal,Gross Sales..."}
-              {tableName === "operators" && "name,employeeId,role,status,totalSales,transactionCount"}
+              {tableName === "operators" && "TimeSpan,Name,Qty Transactions,Gross Sales,NettTotal,Profit%..."}
               {tableName === "products" && "name,category,price,stock,soldToday,revenue"}
               {tableName === "accounts" && "accountName,accountType,balance,transactions,lastActivity"}
             </code>

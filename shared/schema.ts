@@ -21,11 +21,19 @@ export const tills = pgTable("tills", {
 export const operators = pgTable("operators", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  employeeId: text("employee_id").unique(),
-  role: text("role").notNull(),
+  employeeId: text("employee_id"),
+  role: text("role").notNull().default('Staff'),
   status: text("status").notNull().default("active"),
   totalSales: decimal("total_sales", { precision: 10, scale: 2 }).default("0.00"),
   transactionCount: integer("transaction_count").default(0),
+  grossSales: decimal("gross_sales", { precision: 10, scale: 2 }),
+  totalDiscount: decimal("total_discount", { precision: 10, scale: 2 }),
+  nettTotal: decimal("nett_total", { precision: 10, scale: 2 }),
+  profitAmount: decimal("profit_amount", { precision: 10, scale: 2 }),
+  profitPercent: decimal("profit_percent", { precision: 10, scale: 2 }),
+  averageSale: decimal("average_sale", { precision: 10, scale: 2 }),
+  venue: text("venue"),
+  lastTransactionDate: timestamp("last_transaction_date"),
 });
 
 export const products = pgTable("products", {

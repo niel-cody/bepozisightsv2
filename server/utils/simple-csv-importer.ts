@@ -64,17 +64,40 @@ export class SimpleCSVImporter {
         case 'operators':
           for (const record of records) {
             try {
+              // Parse the date from TimeSpan for date context
+              const dateStr = record.TimeSpan;
+              let parsedDate = null;
+              if (dateStr) {
+                try {
+                  // Try to parse different date formats
+                  const date = new Date(dateStr.replace(/^[A-Za-z]+ /, '')); // Remove day prefix
+                  if (!isNaN(date.getTime())) {
+                    parsedDate = date;
+                  }
+                } catch (e) {
+                  // Use null if parsing fails
+                }
+              }
+              
               await db.insert(operators).values({
-                name: record.name,
-                employeeId: record.employeeId || null,
-                role: record.role || 'Cashier',
-                status: record.status || 'active',
-                totalSales: record.totalSales || '0.00',
-                transactionCount: parseInt(record.transactionCount) || 0
+                name: record.Name || record.name,
+                employeeId: record.Name || record.name, // Use name as employee ID
+                role: 'Staff',
+                status: 'active',
+                totalSales: record.NettTotal || record.totalSales || '0.00',
+                transactionCount: parseInt(record['Qty Transactions']) || 0,
+                grossSales: record['Gross Sales'] || null,
+                totalDiscount: record['Total Discount'] || null,
+                nettTotal: record.NettTotal || null,
+                profitAmount: record.ProfitAmt || null,
+                profitPercent: record['Profit%'] || null,
+                averageSale: record['Average Sale'] || null,
+                venue: record.Venue || null,
+                lastTransactionDate: parsedDate
               });
               importCount++;
             } catch (error: any) {
-              errors.push(`Operator "${record.name}": ${error.message}`);
+              errors.push(`Operator "${record.Name || record.name}": ${error.message}`);
             }
           }
           break;
