@@ -120,7 +120,7 @@ export default function Dashboard() {
                   <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
                 </div>
                 <div>
-                  <h1 className="font-semibold text-sm text-sidebar-foreground">POS Intelligence</h1>
+                  <h1 className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</h1>
                   <p className="text-xs text-sidebar-muted-foreground">AI Assistant</p>
                 </div>
               </div>
