@@ -30,16 +30,20 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
+        console.error("Login response not ok:", response.status, response.statusText);
+        const errorData = await response.json().catch(() => ({ error: "Authentication failed" }));
         throw new Error(errorData.error || "Authentication failed");
       }
       
       return response.json();
     },
     onSuccess: (data) => {
+      console.log("Login success:", data);
+      setError(""); // Clear any existing errors
       onLoginSuccess(data.user);
     },
     onError: (error: any) => {
+      console.error("Login error:", error);
       setError(error.message || "Authentication failed");
     },
   });
