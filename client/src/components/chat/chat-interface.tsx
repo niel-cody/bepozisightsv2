@@ -42,7 +42,8 @@ export default function ChatInterface() {
       id: "current",
       title: "New Chat",
       timestamp: "Now",
-      preview: "Start a conversation with Alex..."
+      preview: "Start a conversation with Alex...",
+      messages: [] // Initialize with empty messages array
     }
   ]);
 
@@ -65,10 +66,27 @@ export default function ChatInterface() {
       setIsTyping(true);
     },
     onSuccess: (newMessage) => {
-      // Only refresh messages if we're in the current session where new messages are being sent
+      // Add the new message to the current session
+      setChatSessions(prev => 
+        prev.map(session => 
+          session.id === currentChatId 
+            ? { 
+                ...session, 
+                messages: [...(session.messages || []), newMessage],
+                title: session.title === "New Chat" && newMessage.message 
+                  ? (newMessage.message.length > 30 ? newMessage.message.substring(0, 30) + "..." : newMessage.message)
+                  : session.title,
+                preview: newMessage.message
+              }
+            : session
+        )
+      );
+      
+      // Also refresh the global messages if we're in the "current" session
       if (currentChatId === "current") {
         queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
       }
+      
       setInputMessage("");
       setIsTyping(false);
     },
@@ -126,7 +144,8 @@ export default function ChatInterface() {
         id: newChatId,
         title: "New Chat",
         timestamp: "Now",
-        preview: "Start a conversation with Alex..."
+        preview: "Start a conversation with Alex...",
+        messages: [] // Initialize with empty messages array
       }
     ]);
     
