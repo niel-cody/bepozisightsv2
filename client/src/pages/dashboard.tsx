@@ -52,7 +52,7 @@ const mainNavigationItems = [
 
 const insightsItems = [
   { 
-    title: "Sales", 
+    title: "Sales Trends", 
     icon: BarChart3, 
     view: "sales" as ViewType,
     description: "Sales Reports" 
