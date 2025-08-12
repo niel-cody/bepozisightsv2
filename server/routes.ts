@@ -323,6 +323,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get today's sales data
+  app.get("/api/sales/today", async (req, res) => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const todaySummary = await storage.getDailySummary(today);
+      res.json(todaySummary || {
+        grossSales: 0,
+        nettTotal: 0,
+        transactionCount: 0,
+        discounts: 0
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch today's sales data" });
+    }
+  });
+
+  // Get daily sales data for heatmap
+  app.get("/api/sales/daily", async (req, res) => {
+    try {
+      const summaries = await storage.getDailySummaries();
+      res.json(summaries);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch daily sales data" });
+    }
+  });
+
+  // Get venue sales breakdown
+  app.get("/api/sales/venues", async (req, res) => {
+    try {
+      // Use the agent function to get venue data
+      const agentResponse = await agentChat("Get venue sales comparison for all locations", 'venue-sales', 'gpt-4o-mini');
+      
+      // For now, return mock structured data - in production this would parse the agent response
+      const summaries = await storage.getDailySummaries();
+      
+      // Group by venue
+      const venueStats = summaries.reduce((acc: any, summary: any) => {
+        const venue = summary.venue || 'Unknown Venue';
+        if (!acc[venue]) {
+          acc[venue] = {
+            venue: venue,
+            totalSales: 0,
+            totalTransactions: 0,
+            days: 0,
+            grossSales: 0
+          };
+        }
+        
+        acc[venue].totalSales += parseFloat(summary.nettTotal || "0");
+        acc[venue].grossSales += parseFloat(summary.grossSales || "0");
+        acc[venue].totalTransactions += summary.transactionCount || 0;
+        acc[venue].days += 1;
+        
+        return acc;
+      }, {});
+      
+      // Convert to array and calculate averages
+      const venueComparison = Object.values(venueStats).map((venue: any) => ({
+        venue: venue.venue,
+        totalSales: venue.totalSales,
+        grossSales: venue.grossSales,
+        totalTransactions: venue.totalTransactions,
+        days: venue.days,
+        avgDailySales: venue.days > 0 ? venue.totalSales / venue.days : 0,
+        avgTransactionValue: venue.totalTransactions > 0 ? venue.totalSales / venue.totalTransactions : 0
+      })).sort((a, b) => b.totalSales - a.totalSales);
+      
+      res.json({ 
+        venueComparison,
+        totalVenues: venueComparison.length,
+        summary: {
+          totalSales: venueComparison.reduce((sum, v) => sum + v.totalSales, 0),
+          totalTransactions: venueComparison.reduce((sum, v) => sum + v.totalTransactions, 0),
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch venue sales data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

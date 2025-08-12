@@ -38,6 +38,9 @@ import { Input } from "@/components/ui/input";
 import ChatInterface from "@/components/chat/chat-interface";
 import CSVUpload from "@/components/import/csv-upload";
 import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/useConversations";
+import { SalesOverview } from "@/components/sales/sales-overview";
+import { CalendarHeatmap } from "@/components/sales/calendar-heatmap";
+import { VenueBreakdown } from "@/components/sales/venue-breakdown";
 
 type ViewType = "chat" | "sales" | "operators" | "products" | "accounts" | "settings";
 
@@ -350,15 +353,18 @@ export default function Dashboard() {
                 )}
 
                 {currentView === "sales" && (
-                  <div className="h-full flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <BarChart3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-semibold mb-2">Sales Reports</h3>
-                      <p className="text-muted-foreground mb-4">View detailed sales analytics and performance metrics</p>
-                      <Button onClick={() => setCurrentView("chat")}>
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Ask AI for Sales Insights
-                      </Button>
+                  <div className="h-full overflow-y-auto p-6">
+                    <div className="max-w-7xl mx-auto space-y-6">
+                      <SalesOverview />
+                      <CalendarHeatmap />
+                      <VenueBreakdown />
+                      
+                      <div className="flex justify-center pt-4">
+                        <Button onClick={() => setCurrentView("chat")} size="lg">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Ask AI for Detailed Sales Insights
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}
