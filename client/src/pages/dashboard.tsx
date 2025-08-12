@@ -14,7 +14,9 @@ import {
   ChevronDown,
   ChevronRight,
   TrendingUp,
-  LogOut
+  LogOut,
+  Calendar,
+  Trash2
 } from "lucide-react";
 import { 
   Sidebar,
@@ -35,6 +37,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ChatInterface from "@/components/chat/chat-interface";
 import CSVUpload from "@/components/import/csv-upload";
+import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/useConversations";
 
 type ViewType = "chat" | "sales" | "operators" | "products" | "accounts" | "settings";
 
@@ -85,7 +88,14 @@ const allNavigationItems = [...mainNavigationItems, ...insightsItems, settingsIt
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
+  const [chatOpen, setChatOpen] = useState(true);
   const { user, logout } = useAuth();
+
+  // Chat-related hooks
+  const { data: conversations = [], isLoading: loadingConversations } = useConversations();
+  const createConversation = useCreateConversation();
+  const deleteConversation = useDeleteConversation();
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -106,6 +116,29 @@ export default function Dashboard() {
   const handleLogout = () => {
     logoutMutation.mutate();
   };
+  
+  const handleNewChat = async () => {
+    try {
+      const newConv = await createConversation.mutateAsync({ title: "New Chat" });
+      setCurrentConversationId(newConv.id);
+      setCurrentView("chat");
+    } catch (error) {
+      console.error("Failed to create new chat:", error);
+    }
+  };
+
+  const handleDeleteChat = async (conversationId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await deleteConversation.mutateAsync(conversationId);
+      if (currentConversationId === conversationId) {
+        setCurrentConversationId(undefined);
+      }
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
+    }
+  };
+
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
@@ -130,18 +163,75 @@ export default function Dashboard() {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
-                    {/* Main Navigation Items */}
-                    {mainNavigationItems.map((item) => (
-                      <SidebarMenuItem key={item.view}>
-                        <SidebarMenuButton
-                          isActive={currentView === item.view}
-                          onClick={() => setCurrentView(item.view)}
-                          className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
-                        >
-                          <div className="text-sm font-normal">{item.title}</div>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
+                    {/* Chat Navigation with Conversations */}
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        onClick={() => setChatOpen(!chatOpen)}
+                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        <div className="text-sm font-normal">Chat</div>
+                        {chatOpen ? (
+                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    
+                    {/* Chat Conversations Submenu */}
+                    {chatOpen && (
+                      <div className="ml-4 space-y-0.5 max-h-60 overflow-y-auto">
+                        {/* New Chat Button */}
+                        <SidebarMenuItem>
+                          <SidebarMenuButton
+                            onClick={handleNewChat}
+                            className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground border-dashed border border-sidebar-border"
+                          >
+                            <Plus className="w-3 h-3 mr-2" />
+                            <div className="text-xs font-normal">New Chat</div>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        {/* Existing Conversations */}
+                        {loadingConversations ? (
+                          <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
+                        ) : conversations.length === 0 ? (
+                          <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
+                        ) : (
+                          conversations.map((conversation) => (
+                            <SidebarMenuItem key={conversation.id}>
+                              <SidebarMenuButton
+                                isActive={currentView === "chat" && currentConversationId === conversation.id}
+                                onClick={() => {
+                                  setCurrentView("chat");
+                                  setCurrentConversationId(conversation.id);
+                                }}
+                                className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground group"
+                              >
+                                <div className="flex-1 min-w-0 pr-1">
+                                  <div className="flex items-center gap-1 mb-0.5">
+                                    <Calendar className="w-2 h-2 text-sidebar-muted-foreground flex-shrink-0" />
+                                    <span className="text-xs text-sidebar-muted-foreground">
+                                      {new Date(conversation.updatedAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs font-normal text-sidebar-foreground truncate">
+                                    {conversation.title}
+                                  </div>
+                                </div>
+                                <div
+                                  onClick={(e) => handleDeleteChat(conversation.id, e)}
+                                  className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 flex-shrink-0 rounded cursor-pointer flex items-center justify-center"
+                                >
+                                  <Trash2 className="w-2 h-2 text-destructive" />
+                                </div>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          ))
+                        )}
+                      </div>
+                    )}
                     
                     {/* Insights Menu */}
                     <SidebarMenuItem>
@@ -251,7 +341,7 @@ export default function Dashboard() {
             <main className="flex-1 overflow-hidden min-h-0">
                 {currentView === "chat" && (
                   <div className="h-full">
-                    <ChatInterface />
+                    <ChatInterface currentConversationId={currentConversationId} />
                   </div>
                 )}
 

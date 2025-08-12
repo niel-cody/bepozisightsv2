@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,13 +18,22 @@ const quickQueries = [
 
 type ModelType = "gpt-3.5-turbo" | "gpt-4o-mini" | "gpt-4o";
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+  currentConversationId?: string;
+}
+
+export default function ChatInterface({ currentConversationId: propConversationId }: ChatInterfaceProps) {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(propConversationId);
   const [selectedModel, setSelectedModel] = useState<ModelType>("gpt-4o-mini");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setCurrentConversationId(propConversationId);
+  }, [propConversationId]);
 
   // Use conversation hooks
   const { data: conversations = [], isLoading: loadingConversations } = useConversations();
@@ -89,138 +98,51 @@ export default function ChatInterface() {
     }
   };
 
-  const handleNewChat = async () => {
-    const newConv = await createConversation.mutateAsync({ title: "New Chat" });
-    setCurrentConversationId(newConv.id);
-  };
-
-  const handleDeleteChat = (conversationId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    deleteConversation.mutate(conversationId);
-    
-    // If we're deleting the current conversation, switch to another
-    if (conversationId === currentConversationId) {
-      const remaining = conversations.filter(c => c.id !== conversationId);
-      setCurrentConversationId(remaining.length > 0 ? remaining[0].id : undefined);
-    }
-  };
+  // These handlers are now managed by the parent Dashboard component
 
   const handleQuickQuery = (query: string) => {
     setInputMessage(query);
   };
 
   return (
-    <div className="flex h-full bg-background" data-testid="chat-interface">
-      {/* Chat History Sidebar */}
-      <div className="w-80 border-r border-border bg-card/30 backdrop-blur-sm flex flex-col" data-testid="chat-sidebar">
-        {/* Header */}
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-primary" />
-              <span className="font-semibold text-card-foreground">Chat History</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Chat Sessions List */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1" data-testid="conversations-list">
-          {loadingConversations ? (
-            <div className="text-muted-foreground text-sm p-4">Loading conversations...</div>
-          ) : conversations.length === 0 ? (
-            <div className="text-muted-foreground text-sm p-4">No conversations yet</div>
-          ) : (
-            conversations.map((conversation) => (
-              <div
-                key={conversation.id}
-                onClick={() => setCurrentConversationId(conversation.id)}
-                className={`flex items-start justify-between p-3 rounded-lg cursor-pointer transition-all group ${
-                  currentConversationId === conversation.id
-                    ? "bg-primary/20 border border-primary/30 shadow-sm"
-                    : "hover:bg-accent/50 border border-transparent"
-                }`}
-                data-testid={`conversation-${conversation.id}`}
-              >
-                <div className="flex-1 min-w-0 pr-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Calendar className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(conversation.updatedAt).toLocaleDateString()}
-                    </span>
+    <div className="h-full flex flex-col bg-background" data-testid="chat-interface">
+      {/* Chat Header */}
+      <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between w-full">
+          {/* Model Selection - Far Left */}
+          <div className="flex items-center gap-2">
+            <Brain className="w-4 h-4 text-muted-foreground" />
+            <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
+              <SelectTrigger className="w-32" data-testid="select-model">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
+                  <div className="flex flex-col">
+                    <span>Standard</span>
+                    <span className="text-xs text-muted-foreground">Fast, cost-efficient responses</span>
                   </div>
-                  <h4 className="text-sm font-medium text-card-foreground truncate leading-tight">
-                    {conversation.title}
-                  </h4>
-                </div>
-                
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    onClick={(e) => handleDeleteChat(conversation.id, e)}
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 w-6 p-0 hover:bg-destructive/20"
-                    data-testid={`button-delete-${conversation.id}`}
-                  >
-                    <Trash2 className="w-3 h-3 text-destructive" />
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
+                </SelectItem>
+                <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
+                  <div className="flex flex-col">
+                    <span>Detailed</span>
+                    <span className="text-xs text-muted-foreground">Balanced analysis and insights</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="gpt-4o" data-testid="model-scientific">
+                  <div className="flex flex-col">
+                    <span>Scientific</span>
+                    <span className="text-xs text-muted-foreground">Deep reasoning and analysis</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Chat Header */}
-        <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between w-full">
-            {/* Model Selection - Far Left */}
-            <div className="flex items-center gap-2">
-              <Brain className="w-4 h-4 text-muted-foreground" />
-              <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-                <SelectTrigger className="w-32" data-testid="select-model">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
-                    <div className="flex flex-col">
-                      <span>Standard</span>
-                      <span className="text-xs text-muted-foreground">Fast, cost-efficient responses</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
-                    <div className="flex flex-col">
-                      <span>Detailed</span>
-                      <span className="text-xs text-muted-foreground">Balanced analysis and insights</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="gpt-4o" data-testid="model-scientific">
-                    <div className="flex flex-col">
-                      <span>Scientific</span>
-                      <span className="text-xs text-muted-foreground">Deep reasoning and analysis</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {/* New Chat Button - Far Right */}
-            <Button 
-              onClick={handleNewChat}
-              size="sm" 
-              variant="outline"
-              className="gap-2"
-              data-testid="button-new-chat"
-            >
-              <Plus className="w-4 h-4" />
-              New Chat
-            </Button>
-          </div>
-        </div>
-
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="messages-container">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" data-testid="messages-container">
           {loadingMessages ? (
             <div className="flex justify-center py-8">
               <div className="text-muted-foreground">Loading messages...</div>
@@ -283,26 +205,25 @@ export default function ChatInterface() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Ask me about your business data..."
-              disabled={sendMessageMutation.isPending}
-              className="flex-1"
-              data-testid="input-message"
-            />
-            <Button 
-              type="submit" 
-              disabled={sendMessageMutation.isPending || !inputMessage.trim()}
-              data-testid="button-send"
-            >
-              {sendMessageMutation.isPending ? "Sending..." : "Send"}
-            </Button>
-          </form>
-        </div>
+      {/* Input Area */}
+      <div className="p-4 border-t border-border bg-card/50 backdrop-blur-sm">
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Input
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Ask me about your business data..."
+            disabled={sendMessageMutation.isPending}
+            className="flex-1"
+            data-testid="input-message"
+          />
+          <Button 
+            type="submit" 
+            disabled={sendMessageMutation.isPending || !inputMessage.trim()}
+            data-testid="button-send"
+          >
+            {sendMessageMutation.isPending ? "Sending..." : "Send"}
+          </Button>
+        </form>
       </div>
     </div>
   );
