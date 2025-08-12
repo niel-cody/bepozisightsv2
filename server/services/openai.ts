@@ -43,11 +43,13 @@ async function loadAgentConfig(): Promise<any> {
       const dataModelConfig = JSON.parse(dataModelFile);
       composedConfig.dataModel = dataModelConfig.dataModel;
       
-      console.log('Loaded modular AI context from context/ folder');
+      console.log('✓ Loaded modular AI context from context/ folder');
+      console.log('Agent name:', composedConfig.agent?.name);
+      console.log('Agent role:', composedConfig.agent?.role);
       return composedConfig;
     } catch (contextError) {
       // Fall back to legacy ai-agent-config.json
-      console.log('Modular context not found, falling back to ai-agent-config.json');
+      console.log('⚠ Modular context not found, falling back to ai-agent-config.json');
       const configPath = path.join(process.cwd(), 'ai-agent-config.json');
       const configFile = await fs.readFile(configPath, 'utf-8');
       return JSON.parse(configFile);
