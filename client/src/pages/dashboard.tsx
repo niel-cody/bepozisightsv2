@@ -13,10 +13,10 @@ import {
   Menu,
   ChevronDown,
   ChevronRight,
-  TrendingUp,
   LogOut,
   Calendar,
-  Trash2
+  Trash2,
+  TrendingUp
 } from "lucide-react";
 import { 
   Sidebar,
@@ -285,6 +285,7 @@ export default function Dashboard() {
                         onClick={() => setInsightsOpen(!insightsOpen)}
                         className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                       >
+                        <TrendingUp className="w-4 h-4 mr-2" />
                         <div className="text-sm font-normal">Insights</div>
                         {insightsOpen ? (
                           <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
