@@ -23,11 +23,11 @@ export default function CSVUpload() {
 
   const importMutation = useMutation<ImportResult, Error, { csvData: string; tableName: string }>({
     mutationFn: async ({ csvData, tableName }) => {
-      const response = await apiRequest("POST", "/api/import/csv", {
+      const response = await apiRequest("/api/import/csv", "POST", {
         csvData,
         tableName
       });
-      return await response.json();
+      return response;
     },
     onSuccess: (result) => {
       if (result.success) {

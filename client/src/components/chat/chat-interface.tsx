@@ -26,10 +26,7 @@ export default function ChatInterface() {
 
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      const response = await apiRequest("/api/chat/messages", {
-        method: "POST",
-        body: { content },
-      });
+      const response = await apiRequest("/api/chat/messages", "POST", { content });
       return response;
     },
     onMutate: () => {
@@ -106,11 +103,23 @@ export default function ChatInterface() {
           ))}
           
           {isTyping && (
-            <MessageBubble
-              message="Thinking..."
-              isUser={false}
-              timestamp={new Date()}
-            />
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
+                </svg>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Alex is thinking...</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
         
@@ -127,17 +136,21 @@ export default function ChatInterface() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={sendMessageMutation.isPending}
-              className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-5 py-4 text-base bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all"
+              className="border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-5 py-4 text-base bg-input text-foreground placeholder:text-muted-foreground shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="input-chat-message"
             />
           </div>
           <Button 
             type="submit"
             disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-            className="px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all"
+            className="px-6 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             data-testid="button-send-message"
           >
-            <Send className="w-5 h-5" />
+            {sendMessageMutation.isPending ? (
+              <div className="w-5 h-5 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
           </Button>
         </form>
       </div>

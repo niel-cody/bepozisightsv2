@@ -44,13 +44,14 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-md">
-            <MessageSquare className="w-4 h-4 text-primary-foreground" />
+        <div className="flex items-center gap-3 px-3 py-4">
+          <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-md">
+            <MessageSquare className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-            Alex
-          </span>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <span className="font-bold text-sidebar-foreground text-lg tracking-tight">Alex</span>
+            <p className="text-xs text-sidebar-foreground/70 font-medium">AI Assistant</p>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -78,13 +79,13 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-2 py-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-muted-foreground">SM</span>
+        <div className="px-3 py-4 border-t border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-md">
+              <span className="text-sm font-semibold text-primary-foreground">SM</span>
             </div>
-            <div className="group-data-[collapsible=icon]:hidden">
-              <p className="text-sm font-medium text-sidebar-foreground">Store Manager</p>
+            <div className="group-data-[collapsible=icon]:hidden flex-1">
+              <p className="text-sm font-semibold text-sidebar-foreground">Store Manager</p>
               <p className="text-xs text-sidebar-foreground/70">admin@store.com</p>
             </div>
           </div>
