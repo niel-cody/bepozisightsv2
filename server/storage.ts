@@ -48,10 +48,10 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private tills: Map<string, Till>;
-  private operators: Map<string, Operator>;
+  private operators: Map<string, OperatorSummary>;
   private products: Map<string, Product>;
   private transactions: Map<string, Transaction>;
-  private dailySummaries: Map<string, DailySummary>;
+  private dailySummaries: Map<string, TillSummary>;
   private chatMessages: Map<string, ChatMessage>;
 
   constructor() {
@@ -188,17 +188,17 @@ export class MemStorage implements IStorage {
     return till;
   }
 
-  async getOperators(): Promise<Operator[]> {
+  async getOperators(): Promise<OperatorSummary[]> {
     return Array.from(this.operators.values());
   }
 
-  async getOperator(id: string): Promise<Operator | undefined> {
+  async getOperator(id: string): Promise<OperatorSummary | undefined> {
     return this.operators.get(id);
   }
 
-  async createOperator(insertOperator: InsertOperator): Promise<Operator> {
+  async createOperator(insertOperator: InsertOperatorSummary): Promise<OperatorSummary> {
     const id = randomUUID();
-    const operator: Operator = { 
+    const operator: OperatorSummary = { 
       id,
       name: insertOperator.name,
       employeeId: insertOperator.employeeId || null,
@@ -263,11 +263,11 @@ export class MemStorage implements IStorage {
     return transaction;
   }
 
-  async getDailySummaries(): Promise<DailySummary[]> {
+  async getDailySummaries(): Promise<TillSummary[]> {
     return Array.from(this.dailySummaries.values());
   }
 
-  async getDailySummary(date: string): Promise<DailySummary | undefined> {
+  async getDailySummary(date: string): Promise<TillSummary | undefined> {
     return this.dailySummaries.get(date);
   }
 
