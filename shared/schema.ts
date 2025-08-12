@@ -18,7 +18,7 @@ export const tills = pgTable("tills", {
   lastTransaction: timestamp("last_transaction"),
 });
 
-export const operators = pgTable("operators", {
+export const operatorSummaries = pgTable("operator_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
   employeeId: text("employee_id"),
@@ -49,14 +49,14 @@ export const products = pgTable("products", {
 export const transactions = pgTable("transactions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   tillId: varchar("till_id").notNull().references(() => tills.id),
-  operatorId: varchar("operator_id").notNull().references(() => operators.id),
+  operatorId: varchar("operator_id").notNull().references(() => operatorSummaries.id),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   items: jsonb("items").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   paymentMethod: text("payment_method").notNull(),
 });
 
-export const dailySummaries = pgTable("daily_summaries", {
+export const tillSummaries = pgTable("till_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   date: text("date").notNull(),
   name: text("name").notNull(), // McBrew - QLD
@@ -100,7 +100,11 @@ export const insertTillSchema = createInsertSchema(tills).omit({
   id: true,
 });
 
-export const insertOperatorSchema = createInsertSchema(operators).omit({
+export const insertOperatorSummarySchema = createInsertSchema(operatorSummaries).omit({
+  id: true,
+});
+
+export const insertTillSummarySchema = createInsertSchema(tillSummaries).omit({
   id: true,
 });
 
@@ -118,16 +122,37 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
   timestamp: true,
 }).partial({ response: true });
 
+// Customer data table for future use
+export const customers = pgTable("customers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  address: text("address"),
+  customerType: text("customer_type").default("regular"), // regular, vip, corporate
+  totalSpent: decimal("total_spent", { precision: 10, scale: 2 }).default("0.00"),
+  visitCount: integer("visit_count").default(0),
+  lastVisit: timestamp("last_visit"),
+  notes: text("notes"),
+});
+
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertTill = z.infer<typeof insertTillSchema>;
 export type Till = typeof tills.$inferSelect;
-export type InsertOperator = z.infer<typeof insertOperatorSchema>;
-export type Operator = typeof operators.$inferSelect;
+export type InsertOperatorSummary = z.infer<typeof insertOperatorSummarySchema>;
+export type OperatorSummary = typeof operatorSummaries.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type Transaction = typeof transactions.$inferSelect;
-export type DailySummary = typeof dailySummaries.$inferSelect;
+export type TillSummary = typeof tillSummaries.$inferSelect;
+export type InsertTillSummary = z.infer<typeof insertTillSummarySchema>;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
+export type Customer = typeof customers.$inferSelect;
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;

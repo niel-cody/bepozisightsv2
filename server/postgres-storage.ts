@@ -4,21 +4,21 @@ import {
   type InsertUser, 
   type Till, 
   type InsertTill,
-  type Operator,
-  type InsertOperator,
+  type OperatorSummary,
+  type InsertOperatorSummary,
   type Product,
   type InsertProduct,
   type Transaction,
   type InsertTransaction,
-  type DailySummary,
+  type TillSummary,
   type ChatMessage,
   type InsertChatMessage,
   users,
   tills,
-  operators,
+  operatorSummaries,
   products,
   transactions,
-  dailySummaries,
+  tillSummaries,
   chatMessages
 } from '@shared/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -54,17 +54,17 @@ export class PostgresStorage implements IStorage {
     return result[0];
   }
 
-  async getOperators(): Promise<Operator[]> {
-    return await db.select().from(operators);
+  async getOperators(): Promise<OperatorSummary[]> {
+    return await db.select().from(operatorSummaries);
   }
 
-  async getOperator(id: string): Promise<Operator | undefined> {
-    const result = await db.select().from(operators).where(eq(operators.id, id)).limit(1);
+  async getOperator(id: string): Promise<OperatorSummary | undefined> {
+    const result = await db.select().from(operatorSummaries).where(eq(operatorSummaries.id, id)).limit(1);
     return result[0];
   }
 
-  async createOperator(operator: InsertOperator): Promise<Operator> {
-    const result = await db.insert(operators).values(operator).returning();
+  async createOperator(operator: InsertOperatorSummary): Promise<OperatorSummary> {
+    const result = await db.insert(operatorSummaries).values(operator).returning();
     return result[0];
   }
 
@@ -98,12 +98,12 @@ export class PostgresStorage implements IStorage {
     return result[0];
   }
 
-  async getDailySummaries(): Promise<DailySummary[]> {
-    return await db.select().from(dailySummaries).orderBy(dailySummaries.date);
+  async getDailySummaries(): Promise<TillSummary[]> {
+    return await db.select().from(tillSummaries).orderBy(tillSummaries.date);
   }
 
-  async getDailySummary(date: string): Promise<DailySummary | undefined> {
-    const result = await db.select().from(dailySummaries).where(eq(dailySummaries.date, date)).limit(1);
+  async getDailySummary(date: string): Promise<TillSummary | undefined> {
+    const result = await db.select().from(tillSummaries).where(eq(tillSummaries.date, date)).limit(1);
     return result[0];
   }
 

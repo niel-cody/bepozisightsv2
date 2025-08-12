@@ -3,13 +3,13 @@ import {
   type InsertUser, 
   type Till, 
   type InsertTill,
-  type Operator,
-  type InsertOperator,
+  type OperatorSummary,
+  type InsertOperatorSummary,
   type Product,
   type InsertProduct,
   type Transaction,
   type InsertTransaction,
-  type DailySummary,
+  type TillSummary,
   type ChatMessage,
   type InsertChatMessage
 } from "@shared/schema";
@@ -26,9 +26,9 @@ export interface IStorage {
   getTill(id: string): Promise<Till | undefined>;
   createTill(till: InsertTill): Promise<Till>;
   
-  getOperators(): Promise<Operator[]>;
-  getOperator(id: string): Promise<Operator | undefined>;
-  createOperator(operator: InsertOperator): Promise<Operator>;
+  getOperators(): Promise<OperatorSummary[]>;
+  getOperator(id: string): Promise<OperatorSummary | undefined>;
+  createOperator(operator: InsertOperatorSummary): Promise<OperatorSummary>;
   
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
@@ -38,8 +38,8 @@ export interface IStorage {
   getTransactionsByDate(date: string): Promise<Transaction[]>;
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   
-  getDailySummaries(): Promise<DailySummary[]>;
-  getDailySummary(date: string): Promise<DailySummary | undefined>;
+  getDailySummaries(): Promise<TillSummary[]>;
+  getDailySummary(date: string): Promise<TillSummary | undefined>;
   
   getChatMessages(): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;

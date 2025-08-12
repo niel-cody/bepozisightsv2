@@ -38,10 +38,11 @@ Preferred communication style: Simple, everyday language.
 The system models core POS entities:
 - **Users**: Authentication and user management
 - **Tills**: Cash register terminals with balance tracking
-- **Operators**: Staff members with performance metrics
+- **Operator Summaries**: Staff performance metrics and historical data with comprehensive financial tracking
+- **Till Summaries**: Daily business summaries with complete financial metrics (renamed from Daily Summaries)
 - **Products**: Inventory items with sales tracking
 - **Transactions**: Complete transaction records with itemized details
-- **Daily Summaries**: Aggregated daily business metrics
+- **Customers**: Customer data and profiles for future CRM features
 - **Chat Messages**: AI conversation history and context
 
 ### Authentication and Authorization

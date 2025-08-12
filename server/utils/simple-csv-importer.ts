@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { tills, operators, products, transactions, dailySummaries } from '../../shared/schema';
+import { tills, operatorSummaries, products, transactions, tillSummaries, customers } from '../../shared/schema';
 import { parse } from 'csv-parse/sync';
 
 interface ImportResult {
@@ -60,8 +60,8 @@ export class SimpleCSVImporter {
                 } catch (e) {}
               }
               
-              // Insert as daily summary data with all fields
-              await db.insert(dailySummaries).values({
+              // Insert as till summary data with all fields
+              await db.insert(tillSummaries).values({
                 date: parsedDate,
                 name: record.Name || 'McBrew - QLD',
                 transactionCount: parseInt(record['Qty Transactions']) || 0,
@@ -111,7 +111,7 @@ export class SimpleCSVImporter {
                 }
               }
               
-              await db.insert(operators).values({
+              await db.insert(operatorSummaries).values({
                 name: record.Name || record.name,
                 employeeId: record.Name || record.name, // Use name as employee ID
                 role: 'Staff',
@@ -152,20 +152,23 @@ export class SimpleCSVImporter {
           }
           break;
 
-        case 'accounts':
+        case 'customers':
           for (const record of records) {
             try {
-              await db.insert(dailySummaries).values({
-                date: new Date().toISOString().split('T')[0], // Use today's date for accounts
-                totalSales: record.balance || '0.00',
-                transactionCount: parseInt(record.transactions) || 0,
-                averageTransaction: record.averageTransaction || '0.00',
-                topProduct: record.topAccount || null,
-                topOperator: record.accountName || null
+              await db.insert(customers).values({
+                name: record.name || record.customerName,
+                email: record.email,
+                phone: record.phone,
+                address: record.address,
+                customerType: record.customerType || 'regular',
+                totalSpent: record.totalSpent || '0.00',
+                visitCount: parseInt(record.visitCount) || 0,
+                lastVisit: record.lastVisit ? new Date(record.lastVisit) : null,
+                notes: record.notes
               });
               importCount++;
             } catch (error: any) {
-              errors.push(`Account "${record.accountName}": ${error.message}`);
+              errors.push(`Customer "${record.name}": ${error.message}`);
             }
           }
           break;
