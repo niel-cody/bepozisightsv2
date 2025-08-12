@@ -91,6 +91,7 @@ export default function Dashboard() {
     mutationFn: async () => {
       const response = await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "include", // Include cookies for session
       });
       if (!response.ok) {
         throw new Error("Logout failed");
