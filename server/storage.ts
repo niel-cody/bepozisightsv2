@@ -301,7 +301,5 @@ export const storage = process.env.DATABASE_URL
   ? new PostgresStorage()
   : new MemStorage();
 
-// Initialize database with sample data if using PostgreSQL
-if (process.env.DATABASE_URL) {
-  seedDatabase().catch(console.error);
-}
+// Database is ready - your imported data will persist between restarts
+// No automatic seeding to preserve your uploaded CSV data
