@@ -28,13 +28,14 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
       <div className={cn("flex-1", isUser ? "flex justify-end" : "max-w-2xl")}>
         <div>
           <Card className={cn(
-            "p-4 max-w-md",
+            "p-6 max-w-lg border-0 shadow-none rounded-2xl",
             isUser 
-              ? "bg-primary-600 text-white" 
+              ? "bg-gray-900 text-white" 
               : "bg-gray-50"
           )}>
             <p className={cn(
-              isUser ? "text-white" : "text-gray-800"
+              "text-base leading-relaxed",
+              isUser ? "text-white" : "text-gray-900"
             )}>
               {message}
             </p>
@@ -56,7 +57,7 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
               </div>
             )}
           </Card>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-2 font-light">
             {formatDistanceToNow(timestamp, { addSuffix: true })}
           </p>
         </div>

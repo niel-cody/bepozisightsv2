@@ -121,81 +121,79 @@ export default function ChatInterface() {
 
   return (
     <div className="flex-1 flex bg-white">
-      {/* Chat Sidebar */}
+      {/* Minimal Chat Sidebar */}
       {showSidebar && (
-        <div className="w-80 border-r border-gray-200 flex flex-col bg-gray-50">
+        <div className="w-72 border-r border-gray-50 flex flex-col bg-white">
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Chat History</h3>
+          <div className="p-6 border-b border-gray-50">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-light text-gray-900 tracking-tight">History</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowSidebar(false)}
+                className="p-1 hover:bg-gray-50 rounded"
                 data-testid="button-hide-sidebar"
               >
-                ×
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
               </Button>
             </div>
             <Button
               onClick={startNewChat}
-              className="w-full"
+              variant="outline"
+              className="w-full border-gray-200 hover:bg-gray-50 font-normal"
               data-testid="button-new-chat"
             >
               <Plus className="w-4 h-4 mr-2" />
-              New Chat
+              New Conversation
             </Button>
           </div>
           
           {/* Chat Sessions List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <div className="flex-1 overflow-y-auto px-6 space-y-2">
             {chatSessions.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <MessageSquare className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                <p className="text-sm">No conversations yet</p>
-                <p className="text-xs">Start a new chat to get insights</p>
+              <div className="text-center text-gray-400 py-12">
+                <p className="text-sm font-light">No conversations yet</p>
               </div>
             ) : (
               chatSessions.map((session) => (
-                <Card
+                <div
                   key={session.id}
-                  className={`p-3 cursor-pointer hover:bg-gray-100 transition-colors ${
-                    currentSessionId === session.id ? 'bg-blue-50 border-blue-200' : ''
+                  className={`p-4 cursor-pointer hover:bg-gray-25 transition-colors rounded-lg border ${
+                    currentSessionId === session.id ? 'bg-gray-25 border-gray-100' : 'border-transparent hover:border-gray-100'
                   }`}
                   onClick={() => setCurrentSessionId(session.id)}
                   data-testid={`chat-session-${session.id}`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900 mb-1 truncate">
+                      <h4 className="text-sm font-normal text-gray-900 mb-2 truncate leading-relaxed">
                         {session.title}
                       </h4>
-                      <p className="text-xs text-gray-500">
-                        {session.messageCount} messages
-                      </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 font-light">
                         {new Date(session.lastMessage).toLocaleDateString()}
                       </p>
                     </div>
-                    <MessageSquare className="w-4 h-4 text-gray-400 mt-1" />
                   </div>
-                </Card>
+                </div>
               ))
             )}
           </div>
           
           {/* Sidebar Footer */}
           {messages.length > 0 && (
-            <div className="p-4 border-t border-gray-200">
+            <div className="p-6 border-t border-gray-50">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={clearChatHistory}
-                className="w-full text-red-600 hover:text-red-700"
+                className="w-full text-gray-400 hover:text-red-500 font-normal"
                 data-testid="button-clear-history"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Clear All History
+                Clear History
               </Button>
             </div>
           )}
@@ -204,35 +202,29 @@ export default function ChatInterface() {
       
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {/* Chat Header */}
-        <div className="border-b border-gray-200 px-6 py-4">
+        {/* Minimal Chat Header */}
+        <div className="border-b border-gray-50 px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               {!showSidebar && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowSidebar(true)}
+                  className="p-2 hover:bg-gray-50 rounded"
                   data-testid="button-show-sidebar"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <MessageSquare className="w-4 h-4 text-gray-400" />
                 </Button>
               )}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Alex</h2>
-                <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your data</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">Online</span>
+                <p className="text-sm text-gray-400 font-light">AI Assistant</p>
               </div>
             </div>
           </div>
         </div>
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
         {/* Welcome Message */}
         <MessageBubble
           type="ai"
@@ -279,43 +271,29 @@ export default function ChatInterface() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
-        <div className="border-t border-gray-200 px-6 py-4">
-        <form onSubmit={handleSubmit} className="flex space-x-3">
-          <div className="flex-1">
-            <Input
-              type="text"
-              placeholder="Ask me about your POS data..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              disabled={sendMessageMutation.isPending}
-              data-testid="input-chat-message"
-            />
-          </div>
-          <Button 
-            type="submit"
-            disabled={!inputMessage.trim() || sendMessageMutation.isPending}
-            data-testid="button-send-message"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-        
-        {/* Quick Action Buttons */}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {quickQueries.map((query, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              size="sm"
-              className="text-sm"
-              onClick={() => handleQuickQuery(query)}
-              data-testid={`button-quick-query-${index}`}
+        {/* Minimal Input Area */}
+        <div className="border-t border-gray-50 px-8 py-6">
+          <form onSubmit={handleSubmit} className="flex space-x-4">
+            <div className="flex-1">
+              <Input
+                type="text"
+                placeholder="Ask me anything..."
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                disabled={sendMessageMutation.isPending}
+                className="border-gray-200 focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-3 text-base"
+                data-testid="input-chat-message"
+              />
+            </div>
+            <Button 
+              type="submit"
+              disabled={!inputMessage.trim() || sendMessageMutation.isPending}
+              className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg"
+              data-testid="button-send-message"
             >
-              {query}
+              <Send className="w-4 h-4" />
             </Button>
-          ))}
-          </div>
+          </form>
         </div>
       </div>
     </div>
