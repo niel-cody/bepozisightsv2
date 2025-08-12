@@ -112,7 +112,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {/* Welcome Message */}
           {messages.length === 0 && (
             <div className="h-full flex items-center justify-center p-8">
@@ -142,48 +142,50 @@ export default function ChatInterface() {
             </div>
           )}
 
-          {/* Messages */}
-          <div className="p-4 space-y-6">
-            {messages.flatMap((message) => [
-              // User message
-              <MessageBubble
-                key={`${message.id}-user`}
-                message={message.message}
-                isUser={true}
-                timestamp={new Date(message.timestamp)}
-                chart={undefined}
-              />,
-              // AI response
-              <MessageBubble
-                key={`${message.id}-ai`}
-                message={message.response}
-                isUser={false}
-                timestamp={new Date(message.timestamp)}
-                chart={message.chart}
-              />
-            ])}
-            
-            {isTyping && (
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"></path>
-                  </svg>
-                </div>
-                <div className="bg-accent/30 border border-border rounded-2xl p-4 shadow-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          {/* Messages - Only show when there are messages */}
+          {messages.length > 0 && (
+            <div className="p-4 space-y-6 pb-6">
+              {messages.flatMap((message) => [
+                // User message
+                <MessageBubble
+                  key={`${message.id}-user`}
+                  message={message.message}
+                  isUser={true}
+                  timestamp={new Date(message.timestamp)}
+                  chart={undefined}
+                />,
+                // AI response
+                <MessageBubble
+                  key={`${message.id}-ai`}
+                  message={message.response}
+                  isUser={false}
+                  timestamp={new Date(message.timestamp)}
+                  chart={message.chart}
+                />
+              ])}
+              
+              {isTyping && (
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846-.813a4.5 4.5 0 00-3.09 3.09z"></path>
+                    </svg>
+                  </div>
+                  <div className="bg-accent/30 border border-border rounded-2xl p-4 shadow-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                      </div>
+                      <span className="text-sm text-muted-foreground">Alex is thinking...</span>
                     </div>
-                    <span className="text-sm text-muted-foreground">Alex is thinking...</span>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
         </div>
 
         {/* Input Area */}
