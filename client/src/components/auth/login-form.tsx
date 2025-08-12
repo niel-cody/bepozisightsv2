@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import bepozLogo from "@assets/bepoz-positive_1754981127623.png";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -59,11 +60,13 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
       <div className="w-full max-w-sm">
         {/* Logo/Brand Area */}
         <div className="text-center mb-12">
-          <div className="w-12 h-12 mx-auto mb-6 rounded-xl bg-foreground flex items-center justify-center">
-            <div className="w-6 h-6 bg-background rounded-md"></div>
+          <div className="mb-6">
+            <img 
+              src={bepozLogo} 
+              alt="Bepoz" 
+              className="h-12 mx-auto"
+            />
           </div>
-          <h1 className="text-xl font-semibold text-foreground mb-2">POS Intelligence</h1>
-          <p className="text-sm text-muted-foreground">Sign in to continue</p>
         </div>
 
         {/* Login Card */}
