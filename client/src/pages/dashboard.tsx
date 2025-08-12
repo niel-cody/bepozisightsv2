@@ -76,11 +76,11 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
 
   return (
-    <div className="h-screen w-full bg-background">
+    <div className="h-screen w-screen bg-background overflow-hidden">
       <SidebarProvider defaultOpen={true}>
-        <div className="flex h-full">
+        <div className="flex h-full w-full">
           {/* Left Sidebar */}
-          <Sidebar className="w-64 border-r border-border/30 bg-sidebar-background">
+          <Sidebar className="w-64 h-full border-r border-border/30 bg-sidebar-background flex-shrink-0">
             <SidebarHeader className="p-4 border-b border-sidebar-border">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
@@ -138,10 +138,10 @@ export default function Dashboard() {
           </Sidebar>
 
           {/* Main Content */}
-          <SidebarInset className="flex-1">
+          <SidebarInset className="flex-1 h-full min-w-0">
             <div className="flex h-full flex-col">
               {/* Header */}
-              <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur">
+              <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur flex-shrink-0">
                 <SidebarTrigger className="lg:hidden" />
                 <div className="flex-1">
                   <h2 className="text-lg font-semibold text-foreground">
@@ -155,7 +155,7 @@ export default function Dashboard() {
               </header>
 
               {/* Main Content Area */}
-              <main className="flex-1 overflow-hidden">
+              <main className="flex-1 overflow-auto min-h-0">
                 {currentView === "chat" && (
                   <div className="h-full">
                     <ChatInterface />
