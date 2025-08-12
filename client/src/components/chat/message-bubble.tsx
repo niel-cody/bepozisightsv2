@@ -3,14 +3,13 @@ import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
 interface MessageBubbleProps {
-  type: "user" | "ai";
   message: string;
+  isUser: boolean;
   timestamp: Date;
-  data?: any;
+  chart?: any;
 }
 
-export default function MessageBubble({ type, message, timestamp, data }: MessageBubbleProps) {
-  const isUser = type === "user";
+export default function MessageBubble({ message, isUser, timestamp, chart }: MessageBubbleProps) {
 
   return (
     <div className={cn(
@@ -40,25 +39,15 @@ export default function MessageBubble({ type, message, timestamp, data }: Messag
               {message}
             </p>
 
-            {/* Display data if available (for AI responses) */}
-            {data && data.metrics && (
-              <div className="mt-3 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  {data.metrics.slice(0, 4).map((metric: any, index: number) => (
-                    <div key={index} className="bg-white p-3 rounded border">
-                      <p className="text-xs text-gray-500 uppercase tracking-wider">{metric.label}</p>
-                      <p className="text-lg font-semibold text-gray-900">{metric.value}</p>
-                      {metric.change && (
-                        <p className="text-xs text-green-600">{metric.change}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {/* Display chart if available (for AI responses) */}
+            {chart && (
+              <div className="mt-4">
+                {chart}
               </div>
             )}
           </Card>
           <p className="text-xs text-muted-foreground mt-2 font-light">
-            {formatDistanceToNow(timestamp, { addSuffix: true })}
+            {timestamp && !isNaN(timestamp.getTime()) ? formatDistanceToNow(timestamp, { addSuffix: true }) : ""}
           </p>
         </div>
       </div>
