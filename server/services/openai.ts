@@ -118,7 +118,7 @@ ${systemPrompt}`;
     }
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini", // Using gpt-4o-mini for better token limits and cost efficiency
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: query }
@@ -148,7 +148,7 @@ ${JSON.stringify(context)}
 Respond with JSON: {"insights": ["insight 1", "insight 2", ...]}`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini", // Using gpt-4o-mini for better token limits and cost efficiency
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
     });

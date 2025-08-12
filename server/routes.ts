@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         products,
         dailySummary: todaySummary,
         recentTransactions: recentTransactions.slice(-10), // Last 10 transactions
-        allDailySummaries: allDailySummaries.slice(-30), // Last 30 days of summaries
+        allDailySummaries: allDailySummaries.slice(-7), // Last 7 days only to avoid token limits
         importedData: {
           hasImportedData: allDailySummaries.length > 7, // More than seed data
           totalDays: allDailySummaries.length,
