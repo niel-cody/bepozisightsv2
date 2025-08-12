@@ -86,7 +86,7 @@ function filterRelevantData(query: string, context: PosAnalysisContext): PosAnal
 export async function analyzePosQuery(
   query: string, 
   context: PosAnalysisContext,
-  model: string = 'gpt-4o-mini'
+  model: string = 'gpt-5-mini'
 ): Promise<{ response: string; data?: any }> {
   try {
     const agentConfig = await loadAgentConfig();

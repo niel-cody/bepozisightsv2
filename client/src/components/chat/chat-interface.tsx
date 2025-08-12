@@ -16,13 +16,13 @@ const quickQueries = [
   "Which staff members had the highest sales last week?"
 ];
 
-type ModelType = "gpt-3.5-turbo" | "gpt-4o-mini" | "gpt-4o";
+type ModelType = "gpt-5-nano" | "gpt-5-mini" | "gpt-5";
 
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
-  const [selectedModel, setSelectedModel] = useState<ModelType>("gpt-4o-mini");
+  const [selectedModel, setSelectedModel] = useState<ModelType>("gpt-5-mini");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -199,22 +199,22 @@ export default function ChatInterface() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
+                    <SelectItem value="gpt-5-nano" data-testid="model-standard">
                       <div className="flex flex-col">
                         <span>Standard</span>
-                        <span className="text-xs text-muted-foreground">Fast responses</span>
+                        <span className="text-xs text-muted-foreground">Fastest, most cost-efficient</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
+                    <SelectItem value="gpt-5-mini" data-testid="model-detailed">
                       <div className="flex flex-col">
                         <span>Detailed</span>
-                        <span className="text-xs text-muted-foreground">Balanced analysis</span>
+                        <span className="text-xs text-muted-foreground">Faster, cost-efficient analysis</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="gpt-4o" data-testid="model-scientific">
+                    <SelectItem value="gpt-5" data-testid="model-scientific">
                       <div className="flex flex-col">
                         <span>Scientific</span>
-                        <span className="text-xs text-muted-foreground">Deep insights</span>
+                        <span className="text-xs text-muted-foreground">Best model for complex tasks</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
