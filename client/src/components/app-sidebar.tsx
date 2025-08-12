@@ -42,9 +42,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
-  const { state } = useSidebar()
-  const isCollapsed = state === "closed"
-  
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader>
@@ -60,7 +57,7 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -68,11 +65,9 @@ export function AppSidebar({ currentView, onViewChange }: AppSidebarProps) {
                   <SidebarMenuButton 
                     isActive={currentView === item.view}
                     onClick={() => onViewChange(item.view)}
-                    tooltip={item.title}
-                    className="transition-colors group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sidebar-accent"
                   >
-                    <item.icon className="h-4 w-4 text-sidebar-foreground" />
-                    <span className="text-sm font-medium text-sidebar-foreground group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    <item.icon />
+                    <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
