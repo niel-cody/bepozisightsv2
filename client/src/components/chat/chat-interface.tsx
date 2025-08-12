@@ -111,9 +111,9 @@ export default function ChatInterface({ currentConversationId: propConversationI
         <div className="flex items-center justify-between w-full">
           {/* Model Selection - Far Left */}
           <div className="flex items-center gap-2">
-            <Brain className="w-4 h-4 text-muted-foreground" />
             <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-              <SelectTrigger className="w-32" data-testid="select-model">
+              <SelectTrigger className="w-32 gap-2" data-testid="select-model">
+                <Brain className="w-4 h-4 text-muted-foreground" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
