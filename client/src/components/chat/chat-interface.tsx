@@ -114,10 +114,10 @@ export default function ChatInterface() {
             </div>
             
             {chatSessions.map((session) => (
-              <button
+              <div
                 key={session.id}
                 onClick={() => setCurrentChatId(session.id)}
-                className={`w-full text-left p-3 rounded-lg transition-colors group ${
+                className={`w-full text-left p-3 rounded-lg transition-colors group cursor-pointer ${
                   currentChatId === session.id
                     ? "bg-primary/10 border border-primary/20"
                     : "hover:bg-muted/50"
@@ -138,7 +138,10 @@ export default function ChatInterface() {
                       {session.timestamp}
                     </span>
                   </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div 
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Button
                       variant="ghost"
                       size="sm"
@@ -148,7 +151,7 @@ export default function ChatInterface() {
                     </Button>
                   </div>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
