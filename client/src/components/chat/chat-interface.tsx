@@ -26,14 +26,14 @@ export default function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  const { data: messages = [], isLoading } = useQuery({
+  const { data: messages = [], isLoading } = useQuery<Message[]>({
     queryKey: ["/api/chat/messages"],
   });
 
   const sendMessageMutation = useMutation<Message, Error, { message: string }>({
-    mutationFn: async ({ message }) => {
+    mutationFn: async ({ message }): Promise<Message> => {
       const response = await apiRequest("/api/chat/send", "POST", { message });
-      return response;
+      return response as Message;
     },
     onMutate: () => {
       setIsTyping(true);

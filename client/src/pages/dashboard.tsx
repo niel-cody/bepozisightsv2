@@ -78,10 +78,10 @@ export default function Dashboard() {
   return (
     <div className="h-screen w-screen bg-background overflow-hidden">
       <SidebarProvider defaultOpen={true}>
-        <div className="flex h-full w-full">
+        <div className="flex h-screen w-full">
           {/* Left Sidebar */}
-          <Sidebar className="w-64 h-full border-r border-border/30 bg-sidebar-background flex-shrink-0">
-            <SidebarHeader className="p-4 border-b border-sidebar-border">
+          <Sidebar className="w-64 h-screen border-r border-border/30 bg-sidebar-background flex-shrink-0 flex flex-col">
+            <SidebarHeader className="p-4 border-b border-sidebar-border flex-shrink-0">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
                   <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
@@ -100,10 +100,10 @@ export default function Dashboard() {
               </Button>
             </SidebarHeader>
 
-            <SidebarContent className="p-2">
+            <SidebarContent className="p-2 flex-1 overflow-y-auto">
               <SidebarGroup>
                 <SidebarGroupContent>
-                  <SidebarMenu>
+                  <SidebarMenu className="space-y-1">
                     {navigationItems.map((item) => (
                       <SidebarMenuItem key={item.view}>
                         <SidebarMenuButton
@@ -124,7 +124,7 @@ export default function Dashboard() {
               </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="p-4 border-t border-sidebar-border">
+            <SidebarFooter className="p-4 border-t border-sidebar-border flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
                   <span className="text-xs font-semibold text-sidebar-accent-foreground">SM</span>
@@ -138,24 +138,23 @@ export default function Dashboard() {
           </Sidebar>
 
           {/* Main Content */}
-          <SidebarInset className="flex-1 h-full min-w-0">
-            <div className="flex h-full flex-col">
-              {/* Header */}
-              <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur flex-shrink-0">
-                <SidebarTrigger className="lg:hidden" />
-                <div className="flex-1">
-                  <h2 className="text-lg font-semibold text-foreground">
-                    {navigationItems.find(item => item.view === currentView)?.title}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-xs text-muted-foreground font-medium">Online</span>
-                </div>
-              </header>
+          <SidebarInset className="flex-1 h-screen min-w-0 flex flex-col">
+            {/* Header */}
+            <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur flex-shrink-0">
+              <SidebarTrigger className="lg:hidden" />
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-foreground">
+                  {navigationItems.find(item => item.view === currentView)?.title}
+                </h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs text-muted-foreground font-medium">Online</span>
+              </div>
+            </header>
 
-              {/* Main Content Area */}
-              <main className="flex-1 overflow-auto min-h-0">
+            {/* Main Content Area */}
+            <main className="flex-1 overflow-hidden min-h-0">
                 {currentView === "chat" && (
                   <div className="h-full">
                     <ChatInterface />
@@ -252,7 +251,6 @@ export default function Dashboard() {
                   </div>
                 )}
               </main>
-            </div>
           </SidebarInset>
         </div>
       </SidebarProvider>
