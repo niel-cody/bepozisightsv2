@@ -226,9 +226,22 @@ export default function Dashboard() {
             <header className="flex h-14 items-center gap-4 border-b border-border/30 px-4 bg-background/95 backdrop-blur flex-shrink-0">
               <SidebarTrigger className="lg:hidden" />
               <div className="flex-1">
-                <h2 className="text-lg font-semibold text-foreground">
-                  {allNavigationItems.find(item => item.view === currentView)?.title}
-                </h2>
+                <div>
+                  {currentView === "chat" ? (
+                    <div>
+                      <h2 className="text-lg font-semibold text-foreground">
+                        Alex - Virtual Manager
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        Your AI assistant for POS analytics and insights
+                      </p>
+                    </div>
+                  ) : (
+                    <h2 className="text-lg font-semibold text-foreground">
+                      {allNavigationItems.find(item => item.view === currentView)?.title}
+                    </h2>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
