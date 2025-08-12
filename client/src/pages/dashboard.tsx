@@ -16,9 +16,9 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Minimal Header */}
-      <header className="border-b border-gray-100 bg-white">
+      <header className="border-b border-border bg-card">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
@@ -31,12 +31,12 @@ export default function Dashboard() {
               >
                 <Menu className="w-5 h-5 text-gray-600" />
               </Button>
-              <h1 className="text-2xl font-light text-gray-900 tracking-tight">Alex</h1>
+              <h1 className="text-2xl font-light text-foreground tracking-tight">Alex</h1>
             </div>
             
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">SM</span>
+              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                <span className="text-sm font-medium text-muted-foreground">SM</span>
               </div>
             </div>
           </div>
@@ -44,12 +44,12 @@ export default function Dashboard() {
       </header>
       <div className="flex h-screen">
         {/* Clean Navigation Sidebar */}
-        <aside className={`w-64 bg-white border-r border-gray-100 transition-transform duration-300 lg:translate-x-0 ${
+        <aside className={`w-64 bg-sidebar border-r border-sidebar-border transition-transform duration-300 lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } fixed lg:relative z-30 h-full`}>
           <div className="p-6">
             <div className="mb-8">
-              <h2 className="text-lg font-medium text-gray-900 mb-6">Navigation</h2>
+              <h2 className="text-lg font-medium text-sidebar-foreground mb-6">Navigation</h2>
               <nav className="space-y-2">
                 <Button
                   variant={currentView === "chat" ? "default" : "ghost"}
