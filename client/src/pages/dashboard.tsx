@@ -28,13 +28,13 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-semibold text-foreground tracking-tight">
                 {currentView === "chat" && "AI Assistant"}
-                {currentView === "import" && "Import Data"} 
+                {currentView === "import" && "Settings"} 
                 {currentView === "analytics" && "Analytics"}
               </h1>
               <div className="h-4 w-px bg-border" />
               <span className="text-sm text-muted-foreground">
                 {currentView === "chat" && "Chat with Alex for business insights"}
-                {currentView === "import" && "Upload your CSV data files"}
+                {currentView === "import" && "Configure your data sources"}
                 {currentView === "analytics" && "Explore your business data"}
               </span>
             </div>
@@ -62,8 +62,8 @@ export default function Dashboard() {
             <div className="flex-1 overflow-y-auto bg-gradient-to-br from-background to-accent/5">
               <div className="max-w-3xl mx-auto p-8">
                 <div className="mb-8">
-                  <h2 className="text-3xl font-semibold text-foreground mb-4 tracking-tight">Import Your Data</h2>
-                  <p className="text-muted-foreground text-lg leading-relaxed">Upload CSV files to unlock powerful AI-driven business insights and analytics.</p>
+                  <h2 className="text-3xl font-semibold text-foreground mb-4 tracking-tight">Data Settings</h2>
+                  <p className="text-muted-foreground text-lg leading-relaxed">Configure your data sources and import CSV files to unlock powerful AI-driven business insights.</p>
                 </div>
                 <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
                   <CSVUpload />

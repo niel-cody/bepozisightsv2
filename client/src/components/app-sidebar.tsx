@@ -1,4 +1,4 @@
-import { MessageSquare, Upload, BarChart3 } from "lucide-react"
+import { MessageSquare, BarChart3, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -23,16 +23,16 @@ const items = [
     view: "chat",
   },
   {
-    title: "Import Data",
-    url: "#",
-    icon: Upload,
-    view: "import",
-  },
-  {
     title: "Analytics",
     url: "#",
     icon: BarChart3,
     view: "analytics",
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    view: "import",
   },
 ]
 
