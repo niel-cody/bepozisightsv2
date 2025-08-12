@@ -27,9 +27,9 @@ export default function MessageBubble({ message, isUser, timestamp, chart }: Mes
       <div className={cn("flex-1", isUser ? "flex justify-end" : "max-w-2xl")}>
         <div>
           <Card className={cn(
-            "p-6 max-w-lg border-0 shadow-none rounded-2xl",
+            "p-6 max-w-lg shadow-none rounded-2xl",
             isUser 
-              ? "bg-primary text-primary-foreground" 
+              ? "bg-primary text-primary-foreground border border-primary/20" 
               : "bg-card border border-border"
           )}>
             <p className={cn(

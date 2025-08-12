@@ -126,7 +126,7 @@ export default function ChatInterface() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={sendMessageMutation.isPending}
-              className="border-border focus:border-ring focus:ring-0 rounded-lg px-4 py-3 text-base bg-input"
+              className="border-border focus:border-ring focus:ring-1 rounded-lg px-4 py-3 text-base bg-input placeholder:text-muted-foreground"
               data-testid="input-chat-message"
             />
           </div>

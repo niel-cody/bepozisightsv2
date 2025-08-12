@@ -6,25 +6,25 @@
 
 :root {
   --radius: 0.65rem;
-  /* Dark theme by default to match the image */
+  /* Improved dark theme with better contrast */
   --background: hsl(240, 10%, 8%);
   --foreground: hsl(0, 0%, 95%);
-  --card: hsl(240, 10%, 12%);
+  --card: hsl(240, 10%, 16%);
   --card-foreground: hsl(0, 0%, 95%);
-  --popover: hsl(240, 10%, 12%);
+  --popover: hsl(240, 10%, 16%);
   --popover-foreground: hsl(0, 0%, 95%);
   --primary: hsl(220, 85%, 57%);
   --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(240, 8%, 18%);
+  --secondary: hsl(240, 8%, 22%);
   --secondary-foreground: hsl(0, 0%, 90%);
-  --muted: hsl(240, 8%, 15%);
-  --muted-foreground: hsl(240, 5%, 65%);
+  --muted: hsl(240, 8%, 18%);
+  --muted-foreground: hsl(240, 5%, 70%);
   --accent: hsl(220, 85%, 57%);
   --accent-foreground: hsl(0, 0%, 100%);
   --destructive: hsl(0, 75%, 60%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(240, 8%, 20%);
-  --input: hsl(240, 8%, 15%);
+  --border: hsl(240, 8%, 25%);
+  --input: hsl(240, 8%, 20%);
   --ring: hsl(220, 85%, 57%);
   --chart-1: hsl(220, 85%, 57%);
   --chart-2: hsl(160, 70%, 50%);
@@ -37,7 +37,7 @@
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
   --sidebar-accent: hsl(240, 8%, 18%);
   --sidebar-accent-foreground: hsl(0, 0%, 90%);
-  --sidebar-border: hsl(240, 8%, 18%);
+  --sidebar-border: hsl(240, 8%, 25%);
   --sidebar-ring: hsl(220, 85%, 57%);
   --font-sans: 'Inter', 'Open Sans', sans-serif;
   --font-serif: Georgia, serif;
