@@ -306,7 +306,7 @@ export default function Dashboard() {
                 <div>
                   {currentView === "chat" ? (
                     <div>
-                      <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">Your Virtual Manager</h2>
+                      <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
                       <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">Your AI assistant always ready with analytics and insights</p>
                     </div>
                   ) : (
