@@ -50,7 +50,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen overflow-hidden">
-      <SidebarProvider defaultOpen={true} open={true}>
+      <SidebarProvider defaultOpen={true}>
         <Sidebar collapsible="icon">
           <SidebarHeader>
             <div className="flex items-center gap-3 px-3 py-4">
