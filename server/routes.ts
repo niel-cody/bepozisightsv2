@@ -473,16 +473,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get venue sales breakdown
-  app.get("/api/sales/venues", async (req, res) => {
+  app.get("/api/sales/venues/:period/:metric", async (req, res) => {
     try {
-      // Use the agent function to get venue data
-      const agentResponse = await agentChat("Get venue sales comparison for all locations", 'venue-sales', 'gpt-4o-mini');
-      
-      // For now, return mock structured data - in production this would parse the agent response
+      const { period = 'ytd', metric = 'nettTotal' } = req.params;
       const summaries = await storage.getDailySummaries();
+      const now = new Date();
       
-      // Group by venue
-      const venueStats = summaries.reduce((acc: any, summary: any) => {
+      // Apply same period filtering as the period endpoint
+      let periodStart: Date;
+      
+      switch (period) {
+        case 'today':
+          periodStart = new Date(now.getTime());
+          periodStart.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case 'month':
+          periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'quarter':
+          const currentQuarter = Math.floor(now.getMonth() / 3);
+          periodStart = new Date(now.getFullYear(), currentQuarter * 3, 1);
+          break;
+        case 'ytd':
+        case 'year':
+          periodStart = new Date(now.getFullYear(), 0, 1);
+          break;
+        default:
+          periodStart = new Date(now.getFullYear(), 0, 1);
+      }
+      
+      // Filter summaries for the selected period
+      const filteredSummaries = summaries.filter(s => {
+        const date = new Date(s.date);
+        return date >= periodStart && date <= now;
+      });
+      
+      // Group by venue with selected metric
+      const venueStats = filteredSummaries.reduce((acc: any, summary: any) => {
         const venue = summary.venue || 'Unknown Venue';
         if (!acc[venue]) {
           acc[venue] = {
@@ -490,13 +520,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             totalSales: 0,
             totalTransactions: 0,
             days: 0,
-            grossSales: 0
+            grossSales: 0,
+            totalDiscounts: 0
           };
         }
         
         acc[venue].totalSales += parseFloat(summary.nettTotal || "0");
         acc[venue].grossSales += parseFloat(summary.grossSales || "0");
         acc[venue].totalTransactions += summary.transactionCount || 0;
+        acc[venue].totalDiscounts += parseFloat(summary.totalDiscount || "0");
         acc[venue].days += 1;
         
         return acc;
@@ -508,17 +540,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalSales: venue.totalSales,
         grossSales: venue.grossSales,
         totalTransactions: venue.totalTransactions,
+        totalDiscounts: venue.totalDiscounts,
         days: venue.days,
         avgDailySales: venue.days > 0 ? venue.totalSales / venue.days : 0,
         avgTransactionValue: venue.totalTransactions > 0 ? venue.totalSales / venue.totalTransactions : 0
-      })).sort((a, b) => b.totalSales - a.totalSales);
+      })).sort((a, b) => {
+        // Sort by the selected metric
+        const getMetricValue = (venue: any) => {
+          switch (metric) {
+            case 'nettTotal': return venue.totalSales;
+            case 'grossSales': return venue.grossSales;
+            case 'transactionCount': return venue.totalTransactions;
+            case 'totalDiscount': return venue.totalDiscounts;
+            default: return venue.totalSales;
+          }
+        };
+        return getMetricValue(b) - getMetricValue(a);
+      });
       
       res.json({ 
         venueComparison,
         totalVenues: venueComparison.length,
+        period: period,
+        metric: metric,
         summary: {
           totalSales: venueComparison.reduce((sum, v) => sum + v.totalSales, 0),
           totalTransactions: venueComparison.reduce((sum, v) => sum + v.totalTransactions, 0),
+          totalDiscounts: venueComparison.reduce((sum, v) => sum + v.totalDiscounts, 0),
         }
       });
     } catch (error) {

@@ -73,8 +73,24 @@ const PERIOD_OPTIONS = [
   { value: 'year', label: 'This Year' },
 ];
 
-export function SalesOverview() {
-  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('ytd');
+interface SalesOverviewProps {
+  selectedPeriod?: PeriodType;
+  onPeriodChange?: (period: PeriodType) => void;
+}
+
+export function SalesOverview({ selectedPeriod: propPeriod, onPeriodChange }: SalesOverviewProps) {
+  const [localPeriod, setLocalPeriod] = useState<PeriodType>('ytd');
+  
+  // Use prop period if provided, otherwise use local state
+  const selectedPeriod = propPeriod || localPeriod;
+  
+  const handlePeriodChange = (period: PeriodType) => {
+    if (onPeriodChange) {
+      onPeriodChange(period);
+    } else {
+      setLocalPeriod(period);
+    }
+  };
 
   const { data: periodStats, isLoading: periodLoading } = useQuery({
     queryKey: ['/api/sales/period', selectedPeriod],
@@ -105,7 +121,7 @@ export function SalesOverview() {
           </h2>
           <p className="text-muted-foreground">Performance metrics with period-over-period comparison</p>
         </div>
-        <Select value={selectedPeriod} onValueChange={(value: PeriodType) => setSelectedPeriod(value)}>
+        <Select value={selectedPeriod} onValueChange={(value: PeriodType) => handlePeriodChange(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>

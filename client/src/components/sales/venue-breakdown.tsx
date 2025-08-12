@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
-import { MapPin, TrendingUp } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, TrendingUp, Settings2 } from 'lucide-react';
 
 interface VenueData {
   venue: string;
@@ -15,9 +16,38 @@ interface VenueData {
   percentage: number;
 }
 
-export function VenueBreakdown() {
+type PeriodType = 'today' | 'week' | 'month' | 'quarter' | 'ytd' | 'year';
+type MetricType = 'nettTotal' | 'grossSales' | 'transactionCount' | 'totalDiscount';
+
+const PERIOD_OPTIONS = [
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'This Week' },
+  { value: 'month', label: 'This Month' },
+  { value: 'quarter', label: 'This Quarter' },
+  { value: 'ytd', label: 'Year to Date' },
+  { value: 'year', label: 'This Year' },
+];
+
+const METRIC_OPTIONS = [
+  { value: 'nettTotal', label: 'Net Sales', format: 'currency' },
+  { value: 'grossSales', label: 'Gross Sales', format: 'currency' },
+  { value: 'transactionCount', label: 'Transactions', format: 'number' },
+  { value: 'totalDiscount', label: 'Discounts', format: 'currency' },
+];
+
+interface VenueBreakdownProps {
+  selectedPeriod?: PeriodType;
+}
+
+export function VenueBreakdown({ selectedPeriod = 'ytd' }: VenueBreakdownProps) {
+  const [localPeriod, setLocalPeriod] = useState<PeriodType>(selectedPeriod);
+  const [selectedMetric, setSelectedMetric] = useState<MetricType>('nettTotal');
+  
+  // Use local period if no prop is passed, otherwise use the prop
+  const activePeriod = selectedPeriod;
+  
   const { data: venueData, isLoading } = useQuery({
-    queryKey: ['/api/sales/venues'],
+    queryKey: ['/api/sales/venues', activePeriod, selectedMetric],
     refetchInterval: 30000,
   });
 
@@ -45,18 +75,34 @@ export function VenueBreakdown() {
     );
   }
 
-  // Process venue data
+  // Process venue data based on selected metric
   const venues = venueData?.venueComparison || [];
-  const totalSales = venues.reduce((sum: number, venue: any) => sum + venue.totalSales, 0);
+  const selectedMetricOption = METRIC_OPTIONS.find(m => m.value === selectedMetric)!;
   
-  const processedVenues: VenueData[] = venues.map((venue: any) => ({
-    venue: venue.venue,
-    totalSales: venue.totalSales,
-    totalTransactions: venue.totalTransactions,
-    avgDailySales: venue.avgDailySales,
-    days: venue.days,
-    percentage: totalSales > 0 ? (venue.totalSales / totalSales) * 100 : 0,
-  }));
+  // Calculate total based on selected metric
+  const getMetricValue = (venue: any) => {
+    switch (selectedMetric) {
+      case 'nettTotal': return venue.totalSales || 0;
+      case 'grossSales': return venue.grossSales || 0;
+      case 'transactionCount': return venue.totalTransactions || 0;
+      case 'totalDiscount': return venue.totalDiscounts || 0;
+      default: return venue.totalSales || 0;
+    }
+  };
+  
+  const totalValue = venues.reduce((sum: number, venue: any) => sum + getMetricValue(venue), 0);
+  
+  const processedVenues: VenueData[] = venues.map((venue: any) => {
+    const metricValue = getMetricValue(venue);
+    return {
+      venue: venue.venue,
+      totalSales: metricValue,
+      totalTransactions: venue.totalTransactions,
+      avgDailySales: venue.avgDailySales,
+      days: venue.days,
+      percentage: totalValue > 0 ? (metricValue / totalValue) * 100 : 0,
+    };
+  });
 
   const getVenueColor = (index: number) => {
     const colors = [
@@ -75,13 +121,31 @@ export function VenueBreakdown() {
       {/* Venue Performance */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Venue Performance
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Sales distribution across all locations
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Venue Performance - {PERIOD_OPTIONS.find(p => p.value === activePeriod)?.label}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {selectedMetricOption.label} distribution across all locations
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Select value={selectedMetric} onValueChange={(value: MetricType) => setSelectedMetric(value)}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {METRIC_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -96,7 +160,10 @@ export function VenueBreakdown() {
                     </Badge>
                   </div>
                   <span className="text-sm font-medium">
-                    ${venue.totalSales.toLocaleString()}
+                    {selectedMetricOption.format === 'currency' 
+                      ? `$${venue.totalSales.toLocaleString()}`
+                      : venue.totalSales.toLocaleString()
+                    }
                   </span>
                 </div>
                 <Progress 
@@ -113,15 +180,15 @@ export function VenueBreakdown() {
         </CardContent>
       </Card>
 
-      {/* Monthly Analytics */}
+      {/* Period Analytics */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Monthly Analytics
+            {PERIOD_OPTIONS.find(p => p.value === activePeriod)?.label} Analytics
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Watch key monthly performance & YoY growth
+            Key {selectedMetricOption.label.toLowerCase()} performance & growth
           </p>
         </CardHeader>
         <CardContent>
@@ -140,10 +207,13 @@ export function VenueBreakdown() {
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-sm">
-                    ${(venue.totalSales / 1000).toFixed(0)}k
+                    {selectedMetricOption.format === 'currency' 
+                      ? `$${(venue.totalSales / 1000).toFixed(0)}k`
+                      : (venue.totalSales > 1000 ? `${(venue.totalSales / 1000).toFixed(1)}k` : venue.totalSales.toLocaleString())
+                    }
                   </p>
                   <p className="text-xs text-green-600">
-                    +{venue.percentage.toFixed(0)}%
+                    {venue.percentage.toFixed(1)}%
                   </p>
                 </div>
               </div>
@@ -160,9 +230,12 @@ export function VenueBreakdown() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold">
-                    ${(totalSales / 1000).toFixed(0)}k
+                    {selectedMetricOption.format === 'currency' 
+                      ? `$${(totalValue / 1000).toFixed(0)}k`
+                      : totalValue.toLocaleString()
+                    }
                   </p>
-                  <p className="text-xs text-muted-foreground">Total Sales</p>
+                  <p className="text-xs text-muted-foreground">Total {selectedMetricOption.label}</p>
                 </div>
               </div>
             </div>

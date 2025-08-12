@@ -42,6 +42,39 @@ import { SalesOverview } from "@/components/sales/sales-overview";
 import { CalendarHeatmap } from "@/components/sales/calendar-heatmap";
 import { VenueBreakdown } from "@/components/sales/venue-breakdown";
 
+// Create a separate sales page component to manage shared state
+function SalesPage() {
+  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month' | 'quarter' | 'ytd' | 'year'>('ytd');
+
+  return (
+    <div className="h-full overflow-y-auto p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <SalesOverview 
+          selectedPeriod={selectedPeriod} 
+          onPeriodChange={setSelectedPeriod}
+        />
+        <CalendarHeatmap />
+        <VenueBreakdown selectedPeriod={selectedPeriod} />
+        
+        <div className="flex justify-center pt-4">
+          <Button 
+            onClick={() => {
+              const dashboardElement = document.querySelector('[data-testid="dashboard-main"]');
+              if (dashboardElement) {
+                (dashboardElement as any).setCurrentView("chat");
+              }
+            }} 
+            size="lg"
+          >
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Ask AI for Detailed Sales Insights
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ViewType = "chat" | "sales" | "operators" | "products" | "accounts" | "settings";
 
 const mainNavigationItems = [
@@ -353,20 +386,7 @@ export default function Dashboard() {
                 )}
 
                 {currentView === "sales" && (
-                  <div className="h-full overflow-y-auto p-6">
-                    <div className="max-w-7xl mx-auto space-y-6">
-                      <SalesOverview />
-                      <CalendarHeatmap />
-                      <VenueBreakdown />
-                      
-                      <div className="flex justify-center pt-4">
-                        <Button onClick={() => setCurrentView("chat")} size="lg">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Ask AI for Detailed Sales Insights
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <SalesPage />
                 )}
 
                 {currentView === "operators" && (
