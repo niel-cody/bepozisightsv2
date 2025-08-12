@@ -20,6 +20,8 @@ import { PostgresStorage } from "./postgres-storage";
 import { seedDatabase } from "./seed-data";
 
 export interface IStorage {
+  // Users
+  getUsers(): Promise<User[]>;
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
@@ -55,6 +57,9 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  async getUsers(): Promise<User[]> {
+    return [];
+  }
   private users: Map<string, User>;
   private tills: Map<string, Till>;
   private operators: Map<string, OperatorSummary>;

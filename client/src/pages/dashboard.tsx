@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   MessageSquare, 
   BarChart3, 
@@ -12,7 +13,8 @@ import {
   Menu,
   ChevronDown,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  LogOut
 } from "lucide-react";
 import { 
   Sidebar,
@@ -83,6 +85,26 @@ const allNavigationItems = [...mainNavigationItems, ...insightsItems, settingsIt
 
 export default function Dashboard() {
   const [currentView, setCurrentView] = useState<ViewType>("chat");
+  const { user, logout } = useAuth();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      logout();
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
@@ -168,14 +190,32 @@ export default function Dashboard() {
             </SidebarContent>
 
             <SidebarFooter className="p-4 border-t border-sidebar-border flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
-                  <span className="text-xs font-semibold text-sidebar-accent-foreground">SM</span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
+                    <span className="text-xs font-semibold text-sidebar-accent-foreground">
+                      {user?.username?.slice(0, 2).toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-sidebar-foreground truncate">
+                      {user?.username || 'User'}
+                    </div>
+                    <div className="text-xs text-sidebar-muted-foreground">
+                      Authenticated
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-sidebar-foreground">Store Manager</div>
-                  <div className="text-xs text-sidebar-muted-foreground">admin@store.com</div>
-                </div>
+                <Button 
+                  onClick={handleLogout}
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start text-muted-foreground hover:text-destructive h-8"
+                  disabled={logoutMutation.isPending}
+                >
+                  <LogOut className="w-3 h-3 mr-2" />
+                  {logoutMutation.isPending ? 'Signing out...' : 'Sign Out'}
+                </Button>
               </div>
             </SidebarFooter>
           </Sidebar>

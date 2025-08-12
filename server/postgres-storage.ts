@@ -28,6 +28,11 @@ import { eq, desc } from 'drizzle-orm';
 import type { IStorage } from './storage';
 
 export class PostgresStorage implements IStorage {
+  private db = db;
+
+  async getUsers(): Promise<User[]> {
+    return await this.db.select().from(users);
+  }
   async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0];

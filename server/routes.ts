@@ -7,6 +7,81 @@ import { insertChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+
+      // Get user from database
+      const allUsers = await storage.getUsers();
+      const user = allUsers.find((u: any) => u.username === username && u.password === password);
+
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Store user in session
+      (req as any).session.userId = user.id;
+      (req as any).session.username = user.username;
+
+      res.json({ 
+        user: { 
+          id: user.id, 
+          username: user.username 
+        },
+        message: "Login successful" 
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      (req as any).session.destroy((err: any) => {
+        if (err) {
+          console.error("Logout error:", err);
+          return res.status(500).json({ error: "Logout failed" });
+        }
+        res.clearCookie("connect.sid");
+        res.json({ message: "Logout successful" });
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Logout failed" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const userId = (req as any).session?.userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+
+      const allUsers = await storage.getUsers();
+      const user = allUsers.find((u: any) => u.id === userId);
+      
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      res.json({ 
+        user: { 
+          id: user.id, 
+          username: user.username 
+        } 
+      });
+    } catch (error) {
+      console.error("Auth check error:", error);
+      res.status(500).json({ error: "Authentication check failed" });
+    }
+  });
   // Get all tills
   app.get("/api/tills", async (req, res) => {
     try {
