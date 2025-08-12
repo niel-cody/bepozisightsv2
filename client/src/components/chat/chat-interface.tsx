@@ -120,7 +120,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
                 <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
                   <div className="flex flex-col">
                     <span>Standard</span>
-                    <span className="text-xs text-muted-foreground">Fast, cost-efficient responses</span>
+                    <span className="text-xs text-muted-foreground">Fast on the fly answers</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
