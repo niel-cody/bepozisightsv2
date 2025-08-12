@@ -46,7 +46,7 @@ export default function MessageBubble({ message, isUser, timestamp, chart }: Mes
               </div>
             )}
           </Card>
-          <p className="text-xs text-muted-foreground mt-2 font-light">
+          <p className="text-xs text-foreground/60 mt-2 font-light">
             {timestamp && !isNaN(timestamp.getTime()) ? formatDistanceToNow(timestamp, { addSuffix: true }) : ""}
           </p>
         </div>

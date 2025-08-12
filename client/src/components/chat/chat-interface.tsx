@@ -75,7 +75,7 @@ export default function ChatInterface() {
               </svg>
             </div>
             <h2 className="text-2xl font-medium mb-4 text-foreground">Hello! I'm Alex</h2>
-            <p className="text-muted-foreground mb-8 leading-relaxed">Your virtual manager assistant. I help analyze POS data and provide business insights.</p>
+            <p className="text-foreground/80 mb-8 leading-relaxed">Your virtual manager assistant. I help analyze POS data and provide business insights.</p>
             <div className="space-y-3">
               {quickQueries.map((query, index) => (
                 <Button
@@ -126,7 +126,7 @@ export default function ChatInterface() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={sendMessageMutation.isPending}
-              className="border-border focus:border-ring focus:ring-1 rounded-lg px-4 py-3 text-base bg-input placeholder:text-muted-foreground"
+              className="border-border focus:border-ring focus:ring-1 rounded-lg px-4 py-3 text-base bg-input text-foreground placeholder:text-foreground/50"
               data-testid="input-chat-message"
             />
           </div>
