@@ -25,16 +25,38 @@ export class SimpleCSVImporter {
         case 'tills':
           for (const record of records) {
             try {
-              await db.insert(tills).values({
-                name: record.name,
-                location: record.location || null,
-                status: record.status || 'active',
-                cashBalance: record.cashBalance || '0.00',
-                lastTransaction: record.lastTransaction ? new Date(record.lastTransaction) : null
+              // This data appears to be daily summaries, not individual tills
+              // Parse the date from TimeSpan or DateTime Last Trans.
+              const dateStr = record['DateTime Last Trans.'] || record.TimeSpan;
+              let parsedDate = new Date().toISOString().split('T')[0]; // Default to today
+              
+              if (dateStr && dateStr.includes('-')) {
+                try {
+                  const date = new Date(dateStr);
+                  if (!isNaN(date.getTime())) {
+                    parsedDate = date.toISOString().split('T')[0];
+                  }
+                } catch (e) {
+                  // Use default date if parsing fails
+                }
+              }
+              
+              const netTotal = record.NettTotal || record.netTotal || '0.00';
+              const transactionCount = parseInt(record['Qty Transactions']) || 0;
+              const tillName = record.Name || 'McBrew - QLD';
+              
+              // Insert as daily summary data
+              await db.insert(dailySummaries).values({
+                date: parsedDate,
+                totalSales: netTotal,
+                transactionCount: transactionCount,
+                averageTransaction: transactionCount > 0 ? (parseFloat(netTotal) / transactionCount).toFixed(2) : '0.00',
+                topProduct: null,
+                topOperator: tillName
               });
               importCount++;
             } catch (error: any) {
-              errors.push(`Till "${record.name}": ${error.message}`);
+              errors.push(`Record "${record.Name || 'Unknown'}": ${error.message}`);
             }
           }
           break;

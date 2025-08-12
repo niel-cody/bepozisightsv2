@@ -183,7 +183,7 @@ export default function CSVUpload() {
               <SelectValue placeholder="Select data type to import" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="tills">Till Summaries (TS)</SelectItem>
+              <SelectItem value="tills">Till Summaries (TS) - Daily Sales Data</SelectItem>
               <SelectItem value="operators">Operator Summaries (OS)</SelectItem>
               <SelectItem value="products">Product Summaries (PS)</SelectItem>
               <SelectItem value="accounts">Account Summaries (AC)</SelectItem>
@@ -196,7 +196,7 @@ export default function CSVUpload() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">Expected CSV Format for {tableName}:</h4>
             <code className="text-sm text-blue-800 block">
-              {tableName === "tills" && "name,location,status,cashBalance,lastTransaction"}
+              {tableName === "tills" && "TimeSpan,Name,Qty Transactions,DateTime Last Trans.,NettTotal,Gross Sales..."}
               {tableName === "operators" && "name,employeeId,role,status,totalSales,transactionCount"}
               {tableName === "products" && "name,category,price,stock,soldToday,revenue"}
               {tableName === "accounts" && "accountName,accountType,balance,transactions,lastActivity"}
