@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import MessageBubble from "./message-bubble";
-import { MessageSquare, Plus, Calendar, MoreHorizontal, Trash2, Settings } from "lucide-react";
+import { MessageSquare, Plus, Calendar, MoreHorizontal, Trash2, Brain } from "lucide-react";
 import { useConversations, useCreateConversation, useDeleteConversation, useConversationMessages } from "@/hooks/useConversations";
 import type { Conversation, ChatMessage } from "@shared/schema";
 
@@ -193,7 +193,7 @@ export default function ChatInterface() {
             {/* Model Selection */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <Settings className="w-4 h-4 text-muted-foreground" />
+                <Brain className="w-4 h-4 text-muted-foreground" />
                 <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
                   <SelectTrigger className="w-32" data-testid="select-model">
                     <SelectValue />
