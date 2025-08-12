@@ -99,7 +99,7 @@ export class PostgresStorage implements IStorage {
   }
 
   async getDailySummaries(): Promise<DailySummary[]> {
-    return await db.select().from(dailySummaries);
+    return await db.select().from(dailySummaries).orderBy(dailySummaries.date);
   }
 
   async getDailySummary(date: string): Promise<DailySummary | undefined> {

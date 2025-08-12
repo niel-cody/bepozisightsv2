@@ -107,12 +107,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const messageData = insertChatMessageSchema.parse(req.body);
       
-      // Get context data for AI analysis
-      const [tills, operators, products, todaySummary] = await Promise.all([
+      // Get comprehensive context data for AI analysis
+      const [tills, operators, products, todaySummary, recentTransactions, allDailySummaries] = await Promise.all([
         storage.getTills(),
         storage.getOperators(),
         storage.getProducts(),
-        storage.getDailySummary(new Date().toISOString().split('T')[0])
+        storage.getDailySummary(new Date().toISOString().split('T')[0]),
+        storage.getTransactions(),
+        storage.getDailySummaries()
       ]);
 
       const context: PosAnalysisContext = {
@@ -120,7 +122,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         operators,
         products,
         dailySummary: todaySummary,
-        recentTransactions: []
+        recentTransactions: recentTransactions.slice(-10), // Last 10 transactions
+        allDailySummaries: allDailySummaries.slice(-30), // Last 30 days of summaries
+        importedData: {
+          hasImportedData: allDailySummaries.length > 7, // More than seed data
+          totalDays: allDailySummaries.length,
+          dateRange: allDailySummaries.length > 0 ? {
+            earliest: allDailySummaries[0]?.date,
+            latest: allDailySummaries[allDailySummaries.length - 1]?.date
+          } : null
+        }
       };
 
       // Get AI response
