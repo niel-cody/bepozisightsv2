@@ -172,7 +172,7 @@ export class MemStorage implements IStorage {
       const summary: TillSummary = { 
         id, 
         date: summaryData.date,
-        name: "McBrew - QLD",
+        venue: "McBrew - QLD",
         transactionCount: summaryData.transactionCount,
         dateTimeFirstTrans: null,
         dateTimeLastTrans: null,

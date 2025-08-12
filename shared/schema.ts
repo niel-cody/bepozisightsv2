@@ -59,7 +59,7 @@ export const transactions = pgTable("transactions", {
 export const tillSummaries = pgTable("till_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   date: text("date").notNull(),
-  name: text("name").notNull(), // McBrew - QLD
+  venue: text("venue").notNull(), // McBrew - QLD
   transactionCount: integer("transaction_count").notNull(),
   dateTimeFirstTrans: timestamp("datetime_first_trans"),
   dateTimeLastTrans: timestamp("datetime_last_trans"),

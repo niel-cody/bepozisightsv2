@@ -41,7 +41,7 @@ The system models core POS entities:
 - **Users**: Authentication and user management
 - **Tills**: Cash register terminals with balance tracking
 - **Operator Summaries**: Staff performance metrics and historical data with comprehensive financial tracking
-- **Till Summaries**: Daily business summaries with complete financial metrics (renamed from Daily Summaries)
+- **Till Summaries**: Daily business summaries with complete financial metrics (renamed from Daily Summaries, venue field updated August 12, 2025)
 - **Products**: Inventory items with sales tracking
 - **Transactions**: Complete transaction records with itemized details
 - **Customer Summaries**: Customer account transaction summaries with financial metrics, points, and visit tracking
