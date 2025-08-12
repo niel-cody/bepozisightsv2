@@ -35,31 +35,23 @@ export default function ChatInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  // Mock chat sessions for demo
-  const chatSessions: ChatSession[] = [
+  // Chat sessions state - manage dynamically
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([
     {
       id: "current",
-      title: "McBrew Analytics Discussion",
-      timestamp: "Today",
-      preview: "What happened yesterday at McBrew..."
-    },
-    {
-      id: "yesterday",
-      title: "Sales Performance Review",
-      timestamp: "Yesterday",
-      preview: "Show me the best performing products..."
-    },
-    {
-      id: "lastweek",
-      title: "Staff Performance Analysis",
-      timestamp: "Last week",
-      preview: "How are my operators doing..."
+      title: "New Chat",
+      timestamp: "Now",
+      preview: "Start a conversation with Alex..."
     }
-  ];
+  ]);
 
-  const { data: messages = [], isLoading } = useQuery<Message[]>({
+  // Store messages per session in React Query cache
+  const { data: allMessages = [], isLoading } = useQuery<Message[]>({
     queryKey: ["/api/chat/messages"],
   });
+
+  // Filter messages for current session (for now, show all messages for "current" session, empty for new sessions)
+  const messages = currentChatId === "current" ? allMessages : [];
 
   const sendMessageMutation = useMutation<Message, Error, { message: string }>({
     mutationFn: async ({ message }): Promise<Message> => {
@@ -70,8 +62,11 @@ export default function ChatInterface() {
     onMutate: () => {
       setIsTyping(true);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
+    onSuccess: (newMessage) => {
+      // Only refresh messages if we're in the current session where new messages are being sent
+      if (currentChatId === "current") {
+        queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
+      }
       setInputMessage("");
       setIsTyping(false);
     },
@@ -96,8 +91,42 @@ export default function ChatInterface() {
   };
 
   const handleNewChat = () => {
-    setCurrentChatId("new-" + Date.now());
-    queryClient.setQueryData(["/api/chat/messages", currentChatId], []);
+    // Generate a new chat session ID
+    const newChatId = "chat-" + Date.now();
+    
+    // Create a title from the first message if there are messages, otherwise keep as "New Chat"
+    let currentTitle = "New Chat";
+    if (messages.length > 0) {
+      // Update current session with a meaningful title from first message
+      const firstMessage = messages[0]?.message || "";
+      currentTitle = firstMessage.length > 30 ? firstMessage.substring(0, 30) + "..." : firstMessage || "Previous Chat";
+      
+      // Move current chat to history by updating it with the generated title
+      setChatSessions(prev => 
+        prev.map(session => 
+          session.id === currentChatId 
+            ? { ...session, title: currentTitle, timestamp: "Just now", preview: firstMessage }
+            : session
+        )
+      );
+    }
+    
+    // Add new chat session
+    setChatSessions(prev => [
+      ...prev,
+      {
+        id: newChatId,
+        title: "New Chat",
+        timestamp: "Now",
+        preview: "Start a conversation with Alex..."
+      }
+    ]);
+    
+    // Switch to the new chat
+    setCurrentChatId(newChatId);
+    
+    // Clear messages for the new chat (this will show the welcome screen)
+    queryClient.setQueryData(["/api/chat/messages"], []);
   };
 
   return (
