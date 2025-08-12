@@ -47,7 +47,10 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
     onSuccess: (data) => {
       console.log("Login mutation success callback:", data);
       setError(""); // Clear any existing errors
-      onLoginSuccess(data.user);
+      // Add small delay to ensure session cookie is set
+      setTimeout(() => {
+        onLoginSuccess(data.user);
+      }, 100);
     },
     onError: (error: any) => {
       console.error("Login mutation error callback:", error);

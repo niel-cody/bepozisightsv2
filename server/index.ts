@@ -30,11 +30,13 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'pos-intelligence-secret-key',
   resave: false,
   saveUninitialized: false,
+  name: 'connect.sid', // Explicit session name
   cookie: { 
-    secure: false, // Disable secure for development even in production mode
+    secure: false, // Disable secure for development
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax' // Use lax for better compatibility
+    sameSite: 'lax', // Use lax for same-origin requests
+    domain: undefined // Don't set domain to allow localhost
   }
 }));
 
