@@ -16,7 +16,7 @@ const quickQueries = [
   "Which staff members had the highest sales last week?"
 ];
 
-type ModelType = "gpt-4o-nano" | "gpt-4o-mini" | "gpt-4o";
+type ModelType = "gpt-3.5-turbo" | "gpt-4o-mini" | "gpt-4o";
 
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState("");
@@ -199,7 +199,7 @@ export default function ChatInterface() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-4o-nano" data-testid="model-standard">
+                    <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
                       <div className="flex flex-col">
                         <span>Standard</span>
                         <span className="text-xs text-muted-foreground">Fast responses</span>
