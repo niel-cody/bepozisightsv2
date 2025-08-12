@@ -199,14 +199,11 @@ export default function Dashboard() {
                                 className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground group"
                               >
                                 <div className="flex-1 min-w-0 pr-1">
-                                  <div className="flex items-center gap-1 mb-0.5">
-                                    <Calendar className="w-2 h-2 text-sidebar-muted-foreground flex-shrink-0" />
-                                    <span className="text-xs text-sidebar-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3 text-sidebar-muted-foreground flex-shrink-0" />
+                                    <span className="text-sm text-sidebar-foreground">
                                       {new Date(conversation.updatedAt).toLocaleDateString()}
                                     </span>
-                                  </div>
-                                  <div className="text-xs font-normal text-sidebar-foreground truncate">
-                                    {conversation.title}
                                   </div>
                                 </div>
                                 <div
