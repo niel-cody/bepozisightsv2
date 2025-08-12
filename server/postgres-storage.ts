@@ -120,4 +120,8 @@ export class PostgresStorage implements IStorage {
     const result = await db.insert(chatMessages).values(messageToInsert).returning();
     return result[0];
   }
+
+  async clearChatHistory(): Promise<void> {
+    await db.delete(chatMessages);
+  }
 }

@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import MessageBubble from "./message-bubble";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Send } from "lucide-react";
+import { Send, Plus, MessageSquare, Trash2 } from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -24,6 +24,8 @@ interface ChatResponse {
 export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -31,6 +33,44 @@ export default function ChatInterface() {
   const { data: messages = [] } = useQuery<ChatMessage[]>({
     queryKey: ["/api/chat/messages"],
   });
+
+  // Group messages by date for chat history
+  const groupedMessages = messages.reduce((groups: { [key: string]: ChatMessage[] }, message) => {
+    const date = new Date(message.timestamp).toDateString();
+    if (!groups[date]) groups[date] = [];
+    groups[date].push(message);
+    return groups;
+  }, {});
+
+  const chatSessions = Object.entries(groupedMessages).map(([date, msgs]) => ({
+    id: date,
+    title: msgs[0]?.message.slice(0, 30) + (msgs[0]?.message.length > 30 ? '...' : '') || 'New Chat',
+    date,
+    messageCount: msgs.length,
+    lastMessage: msgs[msgs.length - 1]?.timestamp
+  }));
+
+  const startNewChat = () => {
+    setCurrentSessionId(null);
+    setInputMessage("");
+  };
+
+  const clearChatHistory = async () => {
+    try {
+      await apiRequest("DELETE", "/api/chat/messages");
+      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
+      toast({
+        title: "Chat history cleared",
+        description: "All conversations have been deleted.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to clear chat history",
+        variant: "destructive",
+      });
+    }
+  };
 
   const sendMessageMutation = useMutation<ChatResponse, Error, { message: string }>({
     mutationFn: async ({ message }) => {
@@ -80,24 +120,119 @@ export default function ChatInterface() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
-      {/* Chat Header */}
-      <div className="border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">Alex</h2>
-            <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your data</p>
+    <div className="flex-1 flex bg-white">
+      {/* Chat Sidebar */}
+      {showSidebar && (
+        <div className="w-80 border-r border-gray-200 flex flex-col bg-gray-50">
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Chat History</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSidebar(false)}
+                data-testid="button-hide-sidebar"
+              >
+                ×
+              </Button>
+            </div>
+            <Button
+              onClick={startNewChat}
+              className="w-full"
+              data-testid="button-new-chat"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Chat
+            </Button>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Online</span>
+          
+          {/* Chat Sessions List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {chatSessions.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                <MessageSquare className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm">No conversations yet</p>
+                <p className="text-xs">Start a new chat to get insights</p>
+              </div>
+            ) : (
+              chatSessions.map((session) => (
+                <Card
+                  key={session.id}
+                  className={`p-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                    currentSessionId === session.id ? 'bg-blue-50 border-blue-200' : ''
+                  }`}
+                  onClick={() => setCurrentSessionId(session.id)}
+                  data-testid={`chat-session-${session.id}`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-gray-900 mb-1 truncate">
+                        {session.title}
+                      </h4>
+                      <p className="text-xs text-gray-500">
+                        {session.messageCount} messages
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(session.lastMessage).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <MessageSquare className="w-4 h-4 text-gray-400 mt-1" />
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+          
+          {/* Sidebar Footer */}
+          {messages.length > 0 && (
+            <div className="p-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearChatHistory}
+                className="w-full text-red-600 hover:text-red-700"
+                data-testid="button-clear-history"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear All History
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Chat Header */}
+        <div className="border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {!showSidebar && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSidebar(true)}
+                  data-testid="button-show-sidebar"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </Button>
+              )}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Alex</h2>
+                <p className="text-sm text-gray-500">Your virtual manager - Ask me anything about your data</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">Online</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {/* Welcome Message */}
         <MessageBubble
           type="ai"
@@ -141,10 +276,11 @@ export default function ChatInterface() {
           </div>
         )}
 
-        <div ref={messagesEndRef} />
-      </div>
-      {/* Chat Input */}
-      <div className="border-t border-gray-200 px-6 py-4">
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <div className="border-t border-gray-200 px-6 py-4">
         <form onSubmit={handleSubmit} className="flex space-x-3">
           <div className="flex-1">
             <Input
@@ -179,6 +315,7 @@ export default function ChatInterface() {
               {query}
             </Button>
           ))}
+          </div>
         </div>
       </div>
     </div>

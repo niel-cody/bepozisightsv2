@@ -102,6 +102,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/chat/messages", async (req, res) => {
+    try {
+      await storage.clearChatHistory();
+      res.json({ success: true, message: "Chat history cleared successfully" });
+    } catch (error) {
+      console.error("Error clearing chat history:", error);
+      res.status(500).json({ error: "Failed to clear chat history" });
+    }
+  });
+
   // Send chat message and get AI response
   app.post("/api/chat/message", async (req, res) => {
     try {
