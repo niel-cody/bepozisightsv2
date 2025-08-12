@@ -21,7 +21,6 @@ export const tills = pgTable("tills", {
 export const operatorSummaries = pgTable("operator_summaries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  employeeId: text("employee_id"),
   role: text("role").notNull().default('Staff'),
   status: text("status").notNull().default("active"),
   totalSales: decimal("total_sales", { precision: 10, scale: 2 }).default("0.00"),
