@@ -54,9 +54,10 @@ function filterRelevantData(query: string, context: PosAnalysisContext): PosAnal
     daysNeeded = 365; // Full year data
   }
   
-  // Filter daily summaries to only relevant timeframe
+  // Filter daily summaries to only relevant timeframe, but cap at maximum 3 to prevent token limits
+  const maxDays = Math.min(daysNeeded, 3);
   const filteredDailySummaries = context.allDailySummaries 
-    ? context.allDailySummaries.slice(-daysNeeded)
+    ? context.allDailySummaries.slice(-maxDays)
     : context.allDailySummaries;
   
   // Determine which data types are needed
@@ -75,7 +76,7 @@ function filterRelevantData(query: string, context: PosAnalysisContext): PosAnal
     operators: needsOperatorData ? context.operators : [],
     products: needsProductData ? context.products : [],
     dailySummary: context.dailySummary, // Always include current summary
-    recentTransactions: needsTransactionData ? context.recentTransactions.slice(-50) : [], // Limit transactions
+    recentTransactions: needsTransactionData ? context.recentTransactions.slice(-5) : [], // Limit to 5 transactions only
     allDailySummaries: filteredDailySummaries,
     importedData: context.importedData
   };
@@ -86,7 +87,7 @@ function filterRelevantData(query: string, context: PosAnalysisContext): PosAnal
 export async function analyzePosQuery(
   query: string, 
   context: PosAnalysisContext,
-  model: string = 'gpt-5-mini'
+  model: string = 'gpt-4o-mini'
 ): Promise<{ response: string; data?: any }> {
   try {
     const agentConfig = await loadAgentConfig();

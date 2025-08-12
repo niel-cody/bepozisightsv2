@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         products,
         dailySummary: todaySummary,
         recentTransactions: recentTransactions.slice(-10), // Last 10 transactions
-        allDailySummaries: allDailySummaries.slice(-7), // Last 7 days only to avoid token limits
+        allDailySummaries: allDailySummaries.slice(-3), // Reduced to 3 days to prevent token limits
         importedData: {
           hasImportedData: allDailySummaries.length > 7, // More than seed data
           totalDays: allDailySummaries.length,
@@ -205,14 +205,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       // Get AI response with selected model
-      const aiResult = await analyzePosQuery(messageData.message, context, messageData.model || 'gpt-5-mini');
+      const aiResult = await analyzePosQuery(messageData.message, context, messageData.model || 'gpt-4o-mini');
       
       // Save message with AI response (include conversationId and model)
       const chatMessage = await storage.createChatMessage({
         conversationId: messageData.conversationId || 'default',
         message: messageData.message,
         response: aiResult.response,
-        model: messageData.model || 'gpt-5-mini',
+        model: messageData.model || 'gpt-4o-mini',
         userId: messageData.userId || null
       });
 
