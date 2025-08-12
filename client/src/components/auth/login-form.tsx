@@ -145,7 +145,7 @@ export function LoginForm({ onLoginSuccess }: LoginFormProps) {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-10"
+                className="w-full h-10 bg-gradient-to-r from-[#002D6A] via-[#303F9F] to-[#002455] hover:from-[#003580] hover:via-[#3A4AB5] hover:to-[#002E66] text-white border-0 shadow-lg transition-all duration-200"
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >
