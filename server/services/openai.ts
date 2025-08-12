@@ -70,15 +70,19 @@ function filterRelevantData(query: string, context: PosAnalysisContext): PosAnal
   const needsTransactionData = queryLower.includes('transaction') || queryLower.includes('payment') || 
                               queryLower.includes('customer') || queryLower.includes('sale');
   
-  // Create filtered context with only relevant data
+  // Create minimal context - remove large datasets entirely
   const filteredContext: PosAnalysisContext = {
-    tills: needsTillData ? context.tills : [],
-    operators: needsOperatorData ? context.operators : [],
-    products: needsProductData ? context.products : [],
-    dailySummary: context.dailySummary, // Always include current summary
-    recentTransactions: needsTransactionData ? context.recentTransactions.slice(-5) : [], // Limit to 5 transactions only
-    allDailySummaries: filteredDailySummaries,
-    importedData: context.importedData
+    tills: [], // Removed to prevent token overflow
+    operators: [], // Removed to prevent token overflow  
+    products: [], // Removed to prevent token overflow
+    dailySummary: context.dailySummary, // Keep current summary only
+    recentTransactions: [], // Removed to prevent token overflow
+    allDailySummaries: [], // Removed to prevent token overflow - use summary stats instead
+    importedData: {
+      hasImportedData: context.importedData?.hasImportedData || false,
+      totalDays: context.importedData?.totalDays || 0,
+      dateRange: context.importedData?.dateRange || null
+    }
   };
   
   return filteredContext;
@@ -120,7 +124,12 @@ When responding:
 - Focus on actionable insights from real business performance
 - Highlight notable changes, patterns, or concerns in the data
 
-Current context data: ${JSON.stringify(filteredContext)}
+Business Summary: 
+- Total historical days: ${context.importedData?.totalDays || 0}
+- Date range: ${context.importedData?.dateRange?.earliest || 'N/A'} to ${context.importedData?.dateRange?.latest || 'N/A'}
+- Today's summary: ${context.dailySummary ? `$${context.dailySummary.totalSales || 0} revenue, ${context.dailySummary.transactionCount || 0} transactions` : 'No data available'}
+
+NOTE: Detailed data filtered to prevent token limits. Provide insights based on available summary information.
 
 Respond in JSON format with this structure:
 {
