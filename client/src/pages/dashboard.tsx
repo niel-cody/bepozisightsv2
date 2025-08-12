@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -49,27 +49,34 @@ function SalesPage() {
   return (
     <div className="h-full overflow-y-auto p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* AI Insights Button at Top */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Sales Analytics</h1>
+            <p className="text-muted-foreground">
+              Comprehensive sales performance and venue analysis
+            </p>
+          </div>
+          <Button 
+            onClick={() => {
+              // Use a ref or context to access setCurrentView from parent
+              const event = new CustomEvent('switchToChat');
+              window.dispatchEvent(event);
+            }} 
+            size="lg"
+            className="bg-primary hover:bg-primary/90"
+          >
+            <MessageSquare className="w-4 h-4 mr-2" />
+            Ask AI for Detailed Insights
+          </Button>
+        </div>
+
         <SalesOverview 
           selectedPeriod={selectedPeriod} 
           onPeriodChange={setSelectedPeriod}
         />
         <CalendarHeatmap />
         <VenueBreakdown selectedPeriod={selectedPeriod} />
-        
-        <div className="flex justify-center pt-4">
-          <Button 
-            onClick={() => {
-              const dashboardElement = document.querySelector('[data-testid="dashboard-main"]');
-              if (dashboardElement) {
-                (dashboardElement as any).setCurrentView("chat");
-              }
-            }} 
-            size="lg"
-          >
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Ask AI for Detailed Sales Insights
-          </Button>
-        </div>
       </div>
     </div>
   );
@@ -127,6 +134,16 @@ export default function Dashboard() {
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>();
   const [chatOpen, setChatOpen] = useState(true);
   const { user, logout } = useAuth();
+
+  // Listen for custom events from sales page
+  React.useEffect(() => {
+    const handleSwitchToChat = () => {
+      setCurrentView("chat");
+    };
+    
+    window.addEventListener('switchToChat', handleSwitchToChat);
+    return () => window.removeEventListener('switchToChat', handleSwitchToChat);
+  }, []);
 
   // Chat-related hooks
   const { data: conversations = [], isLoading: loadingConversations } = useConversations();
