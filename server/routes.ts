@@ -113,9 +113,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send chat message and get AI response
-  app.post("/api/chat/message", async (req, res) => {
+  app.post("/api/chat/send", async (req, res) => {
     try {
+      console.log("Chat send request received:", req.body);
       const messageData = insertChatMessageSchema.parse(req.body);
+      console.log("Message data parsed:", messageData);
       
       // Get comprehensive context data for AI analysis
       const [tills, operators, products, todaySummary, recentTransactions, allDailySummaries] = await Promise.all([
@@ -154,14 +156,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: messageData.userId || null
       });
 
-      res.json({
-        message: chatMessage,
-        data: aiResult.data
-      });
+      console.log("Sending response:", { message: chatMessage, data: aiResult.data });
+      res.json(chatMessage);
     } catch (error) {
       console.error("Chat error:", error);
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Invalid message format" });
+        return res.status(400).json({ error: "Invalid message format", details: error.errors });
       }
       res.status(500).json({ error: "Failed to process message" });
     }
@@ -199,7 +199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const summaries = await storage.getDailySummaries();
       const trends = summaries.map(summary => ({
         date: summary.date,
-        sales: parseFloat(summary.totalSales),
+        sales: parseFloat(summary.nettTotal),
         transactions: summary.transactionCount
       }));
       res.json(trends);
