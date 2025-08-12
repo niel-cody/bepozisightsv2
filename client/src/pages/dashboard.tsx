@@ -108,7 +108,7 @@ const insightsItems = [
     description: "Sales Reports" 
   },
   { 
-    title: "Operators", 
+    title: "Staff Performance", 
     icon: Users, 
     view: "operators" as ViewType,
     description: "Staff Performance" 

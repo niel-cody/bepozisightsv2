@@ -54,6 +54,8 @@ The system models core POS entities:
 - Session persistence across server restarts
 
 ### UI/UX Design System (Updated: August 12, 2025)
+- **Mobile Safari Viewport Fixes**: Comprehensive mobile viewport handling with dvh units and Safari-specific CSS fixes to prevent header cutoff issues
+- **Navigation Improvements**: Chat history now closed by default for cleaner sidebar interface, "Operators" section renamed to "Staff Performance" for better clarity
 - **Professional Interface**: Complete UI/UX overhaul with modern design patterns
 - **High Contrast Theme**: Improved color scheme with 98% white text for maximum readability
 - **Interactive Elements**: Enhanced hover states, focus rings, and micro-interactions
