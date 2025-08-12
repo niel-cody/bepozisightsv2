@@ -182,17 +182,6 @@ export default function Dashboard() {
                     {/* Chat Conversations Submenu */}
                     {chatOpen && (
                       <div className="ml-4 space-y-0.5 max-h-60 overflow-y-auto">
-                        {/* New Chat Button */}
-                        <SidebarMenuItem>
-                          <SidebarMenuButton
-                            onClick={handleNewChat}
-                            className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground border-dashed border border-sidebar-border"
-                          >
-                            <Plus className="w-3 h-3 mr-2" />
-                            <div className="text-xs font-normal">New Chat</div>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
                         {/* Existing Conversations */}
                         {loadingConversations ? (
                           <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
