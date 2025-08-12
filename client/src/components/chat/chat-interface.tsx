@@ -58,7 +58,7 @@ export default function ChatInterface() {
   ];
 
   const { data: messages = [], isLoading } = useQuery<Message[]>({
-    queryKey: ["/api/chat/messages", currentChatId],
+    queryKey: ["/api/chat/messages"],
   });
 
   const sendMessageMutation = useMutation<Message, Error, { message: string }>({
@@ -71,7 +71,7 @@ export default function ChatInterface() {
       setIsTyping(true);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages", currentChatId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages"] });
       setInputMessage("");
       setIsTyping(false);
     },

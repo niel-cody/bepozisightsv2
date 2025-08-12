@@ -92,12 +92,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get chat messages
+  // Get all chat messages (legacy endpoint) - MUST come first to avoid conflicts
   app.get("/api/chat/messages", async (req, res) => {
     try {
       const messages = await storage.getChatMessages();
       res.json(messages);
     } catch (error) {
+      res.status(500).json({ error: "Failed to fetch chat messages" });
+    }
+  });
+
+  // Get chat messages by session - more specific route comes after general one
+  app.get("/api/chat/messages/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      console.log("Fetching messages for session:", sessionId);
+      
+      // For now, return all messages regardless of session
+      // In a full implementation, you'd filter by sessionId
+      const messages = await storage.getChatMessages();
+      console.log("Found messages:", messages.length);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
       res.status(500).json({ error: "Failed to fetch chat messages" });
     }
   });
