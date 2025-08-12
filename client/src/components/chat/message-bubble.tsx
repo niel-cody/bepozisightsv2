@@ -2,6 +2,28 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 
+// Function to format response text with Markdown-like formatting
+function formatResponseText(text: string) {
+  // Split text by double asterisks for bold formatting
+  const parts = text.split(/(\*\*.*?\*\*)/);
+  
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      // Remove the asterisks and render as bold with accent color
+      const boldText = part.slice(2, -2);
+      return (
+        <span 
+          key={index} 
+          className="font-semibold text-[#303F9F]"
+        >
+          {boldText}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 interface MessageBubbleProps {
   message: string;
   response?: string;
@@ -41,7 +63,9 @@ export default function MessageBubble({ message, response, timestamp, chart }: M
             </svg>
           </div>
           <div className="bg-muted/50 rounded-2xl px-4 py-3 max-w-2xl border border-border/50">
-            <p className="text-sm text-foreground whitespace-pre-wrap">{response}</p>
+            <div className="text-sm text-foreground whitespace-pre-wrap">
+              {formatResponseText(response)}
+            </div>
             
             {chart && (
               <div className="mt-3 p-3 bg-background/50 rounded-lg border border-border/30">
