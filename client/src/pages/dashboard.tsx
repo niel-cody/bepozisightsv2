@@ -222,13 +222,13 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider>
       <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
       } as React.CSSProperties}>
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="icon">
+        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -453,11 +453,11 @@ export default function Dashboard() {
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarFooter>
-            <SidebarRail />
           </Sidebar>
 
           {/* Main Content */}
-        <SidebarInset className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <SidebarInset className="flex-1 flex flex-col min-w-0">
+          <div className="h-screen overflow-hidden flex flex-col">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
               <SidebarTrigger />
@@ -578,6 +578,7 @@ export default function Dashboard() {
                   </div>
                 )}
             </main>
+          </div>
         </SidebarInset>
       </div>
     </SidebarProvider>

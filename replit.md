@@ -54,9 +54,9 @@ The system models core POS entities:
 - Session persistence across server restarts
 
 ### UI/UX Design System (Updated: August 13, 2025)
-- **Official Shadcn Sidebar**: Complete shadcn sidebar implementation with SidebarProvider master container, official header/footer structure, and proper workspace dropdown
-- **Height Constraints**: Fixed container layout with h-screen and overflow-hidden to prevent chat content from affecting sidebar height
-- **Sidebar Architecture**: Fixed positioning issues with correct CSS custom properties (--sidebar-width) and proper flexbox structure using SidebarInset
+- **Official Shadcn Sidebar**: Complete shadcn sidebar implementation following official documentation with SidebarProvider master container, proper offcanvas collapsible mode, and correct responsive behavior
+- **Cross-Device Trigger**: Fixed SidebarTrigger to work on desktop, tablet, and mobile with proper offcanvas behavior that shows/hides sidebar appropriately per device
+- **Sidebar Architecture**: Proper shadcn layout structure with SidebarInset container and correct responsive patterns following official documentation
 - **Professional Header**: Official shadcn dropdown menu pattern for workspace selection with multiple organization options
 - **Professional Footer**: Official shadcn dropdown menu pattern for user account actions (Account, Settings, Sign out) following SidebarMenu structure
 - **Mobile Safari Viewport Fixes**: Comprehensive mobile viewport handling with dvh units and Safari-specific CSS fixes to prevent header cutoff issues
