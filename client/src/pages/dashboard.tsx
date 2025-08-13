@@ -262,17 +262,17 @@ export default function Dashboard() {
                   <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
                 ) : (
                   conversations.map((conversation) => (
-                    <button
+                    <div
                       key={conversation.id}
-                      onClick={() => {
-                        setCurrentView("chat");
-                        setCurrentConversationId(conversation.id);
-                      }}
-                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm group ${
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm group cursor-pointer ${
                         currentView === "chat" && currentConversationId === conversation.id 
                           ? 'bg-sidebar-accent' 
                           : 'hover:bg-sidebar-accent'
                       }`}
+                      onClick={() => {
+                        setCurrentView("chat");
+                        setCurrentConversationId(conversation.id);
+                      }}
                     >
                       <Calendar className="w-3 h-3 text-sidebar-muted-foreground flex-shrink-0" />
                       <span className="text-sidebar-foreground truncate">
@@ -284,7 +284,7 @@ export default function Dashboard() {
                       >
                         <Trash2 className="w-2 h-2 text-destructive" />
                       </button>
-                    </button>
+                    </div>
                   ))
                 )}
               </div>
