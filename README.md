@@ -298,6 +298,9 @@ npm run db:push
 
 # Context compilation
 npx tsx scripts/compile-context.ts
+
+# Fix unrealistic test data (if needed)
+npx tsx scripts/fix-brendan-data-realistic.ts
 ```
 
 ## 📊 Features
