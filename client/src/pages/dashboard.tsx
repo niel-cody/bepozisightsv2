@@ -226,351 +226,272 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider className="flex min-h-svh [--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
-      <Sidebar side="left" variant="inset" collapsible="icon" className="h-svh">
-          <SidebarRail />
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton className="w-full h-auto p-3">
-                      <div className="flex items-center gap-3 w-full">
-                        <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
-                          <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</div>
-                          <div className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</div>
-                        </div>
-                        <ChevronDown className="ml-auto w-4 h-4 text-sidebar-muted-foreground" />
-                      </div>
-                    </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                    <DropdownMenuItem>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-sidebar-primary rounded flex items-center justify-center">
-                          <MessageSquare className="w-3 h-3 text-sidebar-primary-foreground" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">Bepoz Insights</div>
-                          <div className="text-xs text-muted-foreground">Demo Org AGE 2025</div>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-orange-500 rounded flex items-center justify-center">
-                          <BarChart3 className="w-3 h-3 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">Analytics Pro</div>
-                          <div className="text-xs text-muted-foreground">Production</div>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-green-500 rounded flex items-center justify-center">
-                          <TrendingUp className="w-3 h-3 text-white" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-sm">Sales Dashboard</div>
-                          <div className="text-xs text-muted-foreground">Staging</div>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div className="w-64 bg-sidebar border-r flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+              <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
+            </div>
+            <div className="flex-1">
+              <div className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</div>
+              <div className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</div>
+            </div>
+          </div>
+        </div>
 
-          <SidebarContent className="p-2">
-              <SidebarGroup>
-                <SidebarGroupLabel>AI Assistant</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu className="space-y-1">
-                    {/* Chat Navigation with Conversations - Collapsible */}
-                    <Collapsible defaultOpen={chatOpen} className="group/collapsible">
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton onClick={() => setChatOpen(!chatOpen)}>
-                            <MessageSquare className="w-4 h-4" />
-                            <span className="ml-2">Chat history</span>
-                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {/* Existing Conversations */}
-                            {loadingConversations ? (
-                              <SidebarMenuSubItem>
-                                <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
-                              </SidebarMenuSubItem>
-                            ) : conversations.length === 0 ? (
-                              <SidebarMenuSubItem>
-                                <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
-                              </SidebarMenuSubItem>
-                            ) : (
-                              conversations.map((conversation) => (
-                                <SidebarMenuSubItem key={conversation.id}>
-                                  <SidebarMenuSubButton
-                                    isActive={currentView === "chat" && currentConversationId === conversation.id}
-                                    onClick={() => {
-                                      setCurrentView("chat");
-                                      setCurrentConversationId(conversation.id);
-                                    }}
-                                    className="group w-full"
-                                  >
-                                    <Calendar className="w-3 h-3 text-sidebar-muted-foreground flex-shrink-0" />
-                                    <span className="text-sm text-sidebar-foreground truncate">
-                                      {new Date(conversation.updatedAt || Date.now()).toLocaleDateString()}
-                                    </span>
-                                    <div
-                                      onClick={(e) => handleDeleteChat(conversation.id, e)}
-                                      className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 flex-shrink-0 rounded cursor-pointer flex items-center justify-center ml-auto"
-                                    >
-                                      <Trash2 className="w-2 h-2 text-destructive" />
-                                    </div>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))
-                            )}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                    
-                    <SidebarGroupLabel className="mt-2">Insights</SidebarGroupLabel>
-                    {/* Insights Menu - Collapsible */}
-                    <Collapsible defaultOpen={insightsOpen} className="group/collapsible">
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton onClick={() => setInsightsOpen(!insightsOpen)}>
-                            <TrendingUp className="w-4 h-4" />
-                            <span className="ml-2">Insights</span>
-                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {insightsItems.map((item) => (
-                              <SidebarMenuSubItem key={item.view}>
-                                <SidebarMenuSubButton
-                                  isActive={currentView === item.view}
-                                  onClick={() => setCurrentView(item.view)}
-                                >
-                                  <BarChart3 className="w-3 h-3" />
-                                  <span>{item.title}</span>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                    
-                    <SidebarGroupLabel className="mt-2">Admin</SidebarGroupLabel>
-                    {/* Admin Menu - Collapsible */}
-                    <Collapsible defaultOpen={adminOpen} className="group/collapsible">
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton onClick={() => setAdminOpen(!adminOpen)}>
-                            <Shield className="w-4 h-4" />
-                            <span className="ml-2">Admin</span>
-                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {adminItems.map((item) => (
-                              <SidebarMenuSubItem key={item.view}>
-                                <SidebarMenuSubButton
-                                  isActive={currentView === item.view}
-                                  onClick={() => setCurrentView(item.view)}
-                                >
-                                  {item.view === 'operators' && <Users className="w-3 h-3" />}
-                                  {item.view === 'products' && <Package className="w-3 h-3" />}
-                                  {item.view === 'accounts' && <CreditCard className="w-3 h-3" />}
-                                  {item.view === 'settings' && <Settings className="w-3 h-3" />}
-                                  <span>{item.title}</span>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </SidebarContent>
-
-            <SidebarFooter>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuButton>
-                        <User2 className="w-4 h-4" />
-                        <span className="truncate">{user?.username || 'User'}</span>
-                        <ChevronUp className="ml-auto w-4 h-4" />
-                      </SidebarMenuButton>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      side="top"
-                      className="w-[--radix-popper-anchor-width]"
-                    >
-                      <DropdownMenuItem>
-                        <User2 className="w-4 h-4 mr-2" />
-                        <span>Account</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Settings className="w-4 h-4 mr-2" />
-                        <span>Settings</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={handleLogout}
-                        disabled={logoutMutation.isPending}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <LogOut className="w-4 h-4 mr-2" />
-                        <span>{logoutMutation.isPending ? 'Signing out...' : 'Sign out'}</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarFooter>
-          </Sidebar>
-      <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-[--header-height] shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-[--header-height]">
-          <div className="flex items-center gap-2 w-full">
-            <SidebarTrigger className="-ml-1" />
-            <div className="h-4 w-px bg-sidebar-border mr-2" />
-            <div className="flex-1 min-w-0">
-              <div>
-                {currentView === "chat" ? (
-                  <div>
-                    <h2 className="text-base md:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
-                    <p className="text-xs text-muted-foreground truncate hidden md:block">Always available and always ready...</p>
-                  </div>
+        {/* Navigation */}
+        <div className="flex-1 p-2 space-y-1">
+          {/* Chat Section */}
+          <div>
+            <button
+              onClick={() => setChatOpen(!chatOpen)}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Chat history</span>
+              <ChevronRight className={`ml-auto w-4 h-4 transition-transform ${chatOpen ? 'rotate-90' : ''}`} />
+            </button>
+            {chatOpen && (
+              <div className="ml-6 mt-1 space-y-0.5">
+                {loadingConversations ? (
+                  <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
+                ) : conversations.length === 0 ? (
+                  <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
                 ) : (
-                  <h2 className="text-base md:text-lg font-semibold text-foreground truncate">
-                    {allNavigationItems.find(item => item.view === currentView)?.title}
-                  </h2>
+                  conversations.map((conversation) => (
+                    <button
+                      key={conversation.id}
+                      onClick={() => {
+                        setCurrentView("chat");
+                        setCurrentConversationId(conversation.id);
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm group ${
+                        currentView === "chat" && currentConversationId === conversation.id 
+                          ? 'bg-sidebar-accent' 
+                          : 'hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <Calendar className="w-3 h-3 text-sidebar-muted-foreground flex-shrink-0" />
+                      <span className="text-sidebar-foreground truncate">
+                        {new Date(conversation.updatedAt || Date.now()).toLocaleDateString()}
+                      </span>
+                      <button
+                        onClick={(e) => handleDeleteChat(conversation.id, e)}
+                        className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 flex-shrink-0 rounded cursor-pointer flex items-center justify-center ml-auto"
+                      >
+                        <Trash2 className="w-2 h-2 text-destructive" />
+                      </button>
+                    </button>
+                  ))
                 )}
               </div>
-            </div>
-
-            {/* New AI Chat Button */}
-            <Button 
-              onClick={handleNewChat}
-              size="sm" 
-              variant="outline"
-              className="gap-2 hidden md:flex h-8"
-              data-testid="button-new-ai-chat"
-            >
-              <Plus className="w-4 h-4" />
-              New AI Chat
-            </Button>
-
-            {/* Mobile New Chat Button */}
-            <Button 
-              onClick={handleNewChat}
-              size="sm" 
-              variant="outline"
-              className="md:hidden p-2 h-8 w-8"
-              data-testid="button-new-ai-chat-mobile"
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
+            )}
           </div>
+
+          {/* Insights Section */}
+          <div>
+            <button
+              onClick={() => setInsightsOpen(!insightsOpen)}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>Insights</span>
+              <ChevronRight className={`ml-auto w-4 h-4 transition-transform ${insightsOpen ? 'rotate-90' : ''}`} />
+            </button>
+            {insightsOpen && (
+              <div className="ml-6 mt-1 space-y-0.5">
+                {insightsItems.map((item) => (
+                  <button
+                    key={item.view}
+                    onClick={() => setCurrentView(item.view)}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm ${
+                      currentView === item.view ? 'bg-sidebar-accent' : 'hover:bg-sidebar-accent'
+                    }`}
+                  >
+                    <BarChart3 className="w-3 h-3" />
+                    <span>{item.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Admin Section */}
+          <div>
+            <button
+              onClick={() => setAdminOpen(!adminOpen)}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+            >
+              <Shield className="w-4 h-4" />
+              <span>Admin</span>
+              <ChevronRight className={`ml-auto w-4 h-4 transition-transform ${adminOpen ? 'rotate-90' : ''}`} />
+            </button>
+            {adminOpen && (
+              <div className="ml-6 mt-1 space-y-0.5">
+                {adminItems.map((item) => (
+                  <button
+                    key={item.view}
+                    onClick={() => setCurrentView(item.view)}
+                    className={`w-full flex items-center gap-2 px-3 py-1.5 rounded text-sm ${
+                      currentView === item.view ? 'bg-sidebar-accent' : 'hover:bg-sidebar-accent'
+                    }`}
+                  >
+                    {item.view === 'operators' && <Users className="w-3 h-3" />}
+                    {item.view === 'products' && <Package className="w-3 h-3" />}
+                    {item.view === 'accounts' && <CreditCard className="w-3 h-3" />}
+                    {item.view === 'settings' && <Settings className="w-3 h-3" />}
+                    <span>{item.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-sidebar-accent">
+                <User2 className="w-4 h-4" />
+                <span className="truncate">{user?.username || 'User'}</span>
+                <ChevronUp className="ml-auto w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuItem>
+                <User2 className="w-4 h-4 mr-2" />
+                <span>Account</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="w-4 h-4 mr-2" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                className="text-destructive focus:text-destructive"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                <span>{logoutMutation.isPending ? 'Signing out...' : 'Sign out'}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="h-14 border-b px-4 flex items-center gap-4 bg-background">
+          <div className="flex-1 min-w-0">
+            {currentView === "chat" ? (
+              <div>
+                <h2 className="text-lg font-semibold">AI Assisted Chat</h2>
+                <p className="text-sm text-muted-foreground">Always available and always ready...</p>
+              </div>
+            ) : (
+              <h2 className="text-lg font-semibold">
+                {allNavigationItems.find(item => item.view === currentView)?.title}
+              </h2>
+            )}
+          </div>
+          <Button 
+            onClick={handleNewChat}
+            size="sm" 
+            variant="outline"
+            className="gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            New AI Chat
+          </Button>
         </header>
 
-        {/* Main Content Area */}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto p-4">
-            {currentView === "chat" && (
-              <div className="h-full">
-                <ChatInterface currentConversationId={currentConversationId} />
+        {/* Content */}
+        <main className="flex-1 overflow-auto p-4">
+          {currentView === "chat" && (
+            <div className="h-full">
+              <ChatInterface currentConversationId={currentConversationId} />
+            </div>
+          )}
+
+          {currentView === "sales" && (
+            <SalesPage />
+          )}
+
+          {currentView === "operators" && (
+            <OperatorsTradingView />
+          )}
+
+          {currentView === "products" && (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-xl font-semibold mb-2">Product Reports</h3>
+                <p className="text-muted-foreground mb-4">Analyze product performance and inventory</p>
+                <Button onClick={() => setCurrentView("chat")}>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI for Product Insights
+                </Button>
               </div>
-            )}
+            </div>
+          )}
 
-            {currentView === "sales" && (
-              <SalesPage />
-            )}
-
-            {currentView === "operators" && (
-              <OperatorsTradingView />
-            )}
-
-            {currentView === "products" && (
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">Product Reports</h3>
-                  <p className="text-muted-foreground mb-4">Analyze product performance and inventory</p>
-                  <Button onClick={() => setCurrentView("chat")}>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Ask AI for Product Insights
-                  </Button>
-                </div>
+          {currentView === "accounts" && (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-xl font-semibold mb-2">Account Reports</h3>
+                <p className="text-muted-foreground mb-4">Customer accounts and transaction history</p>
+                <Button onClick={() => setCurrentView("chat")}>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI for Account Insights
+                </Button>
               </div>
-            )}
+            </div>
+          )}
 
-            {currentView === "accounts" && (
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-xl font-semibold mb-2">Account Reports</h3>
-                  <p className="text-muted-foreground mb-4">Customer accounts and transaction history</p>
-                  <Button onClick={() => setCurrentView("chat")}>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Ask AI for Account Insights
-                  </Button>
-                </div>
-              </div>
-            )}
+          {currentView === "settings" && (
+            <div className="h-full">
+              <div className="max-w-3xl mx-auto">
+                <div className="space-y-8">
+                  <div className="text-center">
+                    <Settings className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                    <h1 className="text-3xl font-semibold mb-2">Settings</h1>
+                    <p className="text-muted-foreground text-lg">Manage your POS system configuration</p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <div className="bg-card border rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4">Data Import</h3>
+                      <p className="text-muted-foreground mb-4">Upload CSV files to import your POS data</p>
+                      <CSVUpload />
+                    </div>
 
-            {currentView === "settings" && (
-              <div className="h-full">
-                <div className="max-w-3xl mx-auto">
-                      <div className="mb-8">
-                        <h2 className="text-2xl font-semibold mb-2">Settings</h2>
-                        <p className="text-muted-foreground">Configure your POS intelligence system</p>
-                      </div>
-                      
-                      <div className="space-y-6">
-                        <div className="bg-card border rounded-lg p-6">
-                          <h3 className="text-lg font-semibold mb-4">Data Import</h3>
-                          <p className="text-muted-foreground mb-4">Upload CSV files to import your POS data</p>
-                          <CSVUpload />
+                    <div className="bg-card border rounded-lg p-6">
+                      <h3 className="text-lg font-semibold mb-4">AI Configuration</h3>
+                      <p className="text-muted-foreground mb-4">Configure AI assistant behavior and preferences</p>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Assistant Name</label>
+                          <Input defaultValue="Alex" className="mt-1" readOnly />
                         </div>
-
-                        <div className="bg-card border rounded-lg p-6">
-                          <h3 className="text-lg font-semibold mb-4">AI Configuration</h3>
-                          <p className="text-muted-foreground mb-4">Configure AI assistant behavior and preferences</p>
-                          <div className="space-y-4">
-                            <div>
-                              <label className="text-sm font-medium">Assistant Name</label>
-                              <Input defaultValue="Alex" className="mt-1" readOnly />
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium">Response Style</label>
-                              <Input defaultValue="Professional" className="mt-1" readOnly />
-                            </div>
-                          </div>
+                        <div>
+                          <label className="text-sm font-medium">Response Style</label>
+                          <Input defaultValue="Professional" className="mt-1" readOnly />
                         </div>
                       </div>
                     </div>
                   </div>
-                )}
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
   );
 }
