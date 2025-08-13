@@ -222,13 +222,10 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="h-screen overflow-hidden flex w-full bg-background" style={{
-        "--sidebar-width": "16rem",
-        "--sidebar-width-mobile": "18rem"
-      } as React.CSSProperties}>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="icon">
+        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -456,10 +453,10 @@ export default function Dashboard() {
           </Sidebar>
 
           {/* Main Content */}
-        <SidebarInset className="flex-1 flex flex-col min-w-0">
-          <div className="h-screen overflow-hidden flex flex-col">
+        <SidebarInset className="flex-1">
+          <div className="min-h-screen flex flex-col">
             {/* Header */}
-            <header className="sticky top-0 z-40 flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur">
+            <header className="flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
               <div className="flex-1 min-w-0">
                 <div>
@@ -501,7 +498,7 @@ export default function Dashboard() {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-hidden min-h-0 h-full">
+            <main className="flex-1 overflow-auto h-full">
                 {currentView === "chat" && (
                   <div className="h-full">
                     <ChatInterface currentConversationId={currentConversationId} />
