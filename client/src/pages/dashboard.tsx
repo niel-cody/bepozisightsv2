@@ -13,11 +13,13 @@ import {
   Menu,
   ChevronDown,
   ChevronRight,
+  ChevronUp,
   LogOut,
   Calendar,
   Trash2,
   TrendingUp,
-  Shield
+  Shield,
+  User2
 } from "lucide-react";
 import { 
   Sidebar,
@@ -36,6 +38,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ChatInterface from "@/components/chat/chat-interface";
 import CSVUpload from "@/components/import/csv-upload";
 import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/useConversations";
@@ -362,34 +370,41 @@ export default function Dashboard() {
               </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="p-4 border-t border-sidebar-border flex-shrink-0">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-sidebar-accent rounded-full flex items-center justify-center">
-                    <span className="text-xs font-semibold text-sidebar-accent-foreground">
-                      {user?.username?.slice(0, 2).toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-sidebar-foreground truncate">
-                      {user?.username || 'User'}
-                    </div>
-                    <div className="text-xs text-sidebar-muted-foreground">
-                      Authenticated
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  onClick={handleLogout}
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start text-muted-foreground hover:text-destructive h-8"
-                  disabled={logoutMutation.isPending}
-                >
-                  <LogOut className="w-3 h-3 mr-2" />
-                  {logoutMutation.isPending ? 'Signing out...' : 'Sign Out'}
-                </Button>
-              </div>
+            <SidebarFooter>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton>
+                        <User2 className="w-4 h-4" />
+                        <span className="truncate">{user?.username || 'User'}</span>
+                        <ChevronUp className="ml-auto w-4 h-4" />
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="top"
+                      className="w-[--radix-popper-anchor-width]"
+                    >
+                      <DropdownMenuItem>
+                        <User2 className="w-4 h-4 mr-2" />
+                        <span>Account</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Settings className="w-4 h-4 mr-2" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={handleLogout}
+                        disabled={logoutMutation.isPending}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        <span>{logoutMutation.isPending ? 'Signing out...' : 'Sign out'}</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              </SidebarMenu>
             </SidebarFooter>
           </Sidebar>
 
@@ -397,7 +412,7 @@ export default function Dashboard() {
         <SidebarInset className="flex-1 flex flex-col min-w-0">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
-              <SidebarTrigger className="" />
+              <SidebarTrigger className="lg:hidden" />
               <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
