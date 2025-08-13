@@ -229,15 +229,61 @@ export default function Dashboard() {
         {/* Sidebar */}
         <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
           <SidebarHeader>
-            <div className="flex items-center gap-3 p-4">
-              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
-                <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</h1>
-                <p className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</p>
-              </div>
-            </div>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton className="w-full h-auto p-3">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                          <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</div>
+                          <div className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</div>
+                        </div>
+                        <ChevronDown className="ml-auto w-4 h-4 text-sidebar-muted-foreground" />
+                      </div>
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
+                    <DropdownMenuItem>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-sidebar-primary rounded flex items-center justify-center">
+                          <MessageSquare className="w-3 h-3 text-sidebar-primary-foreground" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Bepoz Insights</div>
+                          <div className="text-xs text-muted-foreground">Demo Org AGE 2025</div>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-orange-500 rounded flex items-center justify-center">
+                          <BarChart3 className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Analytics Pro</div>
+                          <div className="text-xs text-muted-foreground">Production</div>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-green-500 rounded flex items-center justify-center">
+                          <TrendingUp className="w-3 h-3 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">Sales Dashboard</div>
+                          <div className="text-xs text-muted-foreground">Staging</div>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarHeader>
 
           <SidebarContent className="p-2">
