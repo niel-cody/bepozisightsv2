@@ -21,9 +21,9 @@ function AuthWrapper() {
 
   useEffect(() => {
     console.log("Auth check result:", authData);
-    if (authData?.user && !isAuthenticated) {
+    if (authData && typeof authData === 'object' && 'user' in authData && authData.user && !isAuthenticated) {
       console.log("Auto-logging in user:", authData.user);
-      login(authData.user);
+      login(authData.user as any);
     }
   }, [authData, isAuthenticated, login]);
 

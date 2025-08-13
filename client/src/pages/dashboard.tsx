@@ -213,24 +213,26 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <div className="h-screen h-dvh w-screen bg-background overflow-hidden">
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex h-screen h-dvh w-full">
-          {/* Left Sidebar */}
-          <Sidebar className="w-64 h-screen h-dvh border-r border-border/30 bg-sidebar-background flex-shrink-0 flex flex-col">
-            <SidebarHeader className="p-4 border-b border-sidebar-border flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</h1>
-                  <p className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</p>
-                </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex w-full bg-background"  style={{
+        "--sidebar-width": "16rem",
+        "--sidebar-width-mobile": "18rem"
+      } as React.CSSProperties}>
+        {/* Sidebar */}
+        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
+          <SidebarHeader>
+            <div className="flex items-center gap-3 p-4">
+              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-sidebar-primary-foreground" />
               </div>
-            </SidebarHeader>
+              <div>
+                <h1 className="font-semibold text-sm text-sidebar-foreground">Bepoz Insights</h1>
+                <p className="text-xs text-sidebar-muted-foreground">Demo Org AGE 2025</p>
+              </div>
+            </div>
+          </SidebarHeader>
 
-            <SidebarContent className="p-2 flex-1 overflow-y-auto">
+          <SidebarContent className="p-2">
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
@@ -392,7 +394,7 @@ export default function Dashboard() {
           </Sidebar>
 
           {/* Main Content */}
-          <SidebarInset className="flex-1 h-screen h-dvh min-w-0 flex flex-col">
+        <SidebarInset className="flex-1 flex flex-col min-w-0">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
               <SidebarTrigger className="lg:hidden" />
@@ -512,10 +514,9 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-              </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-    </div>
+            </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
