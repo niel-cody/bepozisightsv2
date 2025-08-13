@@ -34,6 +34,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -227,7 +228,7 @@ export default function Dashboard() {
         "--sidebar-width-mobile": "18rem"
       } as React.CSSProperties}>
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
+        <Sidebar side="left" variant="sidebar" collapsible="icon">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -452,6 +453,7 @@ export default function Dashboard() {
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarFooter>
+            <SidebarRail />
           </Sidebar>
 
           {/* Main Content */}
