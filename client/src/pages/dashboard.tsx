@@ -222,7 +222,7 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="[--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
       <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
@@ -459,17 +459,17 @@ export default function Dashboard() {
         <SidebarInset className="flex-1 flex flex-col min-w-0">
           <div className="h-screen overflow-hidden flex flex-col">
             {/* Header */}
-            <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
-              <SidebarTrigger />
+            <header className="sticky top-0 z-40 flex h-[--header-height] shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur">
+              <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
               <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
                     <div>
-                      <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
-                      <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">Always available and always ready...</p>
+                      <h2 className="text-base md:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
+                      <p className="text-xs text-muted-foreground truncate hidden md:block">Always available and always ready...</p>
                     </div>
                   ) : (
-                    <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
+                    <h2 className="text-base md:text-lg font-semibold text-foreground truncate">
                       {allNavigationItems.find(item => item.view === currentView)?.title}
                     </h2>
                   )}
@@ -481,7 +481,7 @@ export default function Dashboard() {
                 onClick={handleNewChat}
                 size="sm" 
                 variant="outline"
-                className="gap-2 hidden sm:flex"
+                className="gap-2 hidden md:flex h-8"
                 data-testid="button-new-ai-chat"
               >
                 <Plus className="w-4 h-4" />
@@ -493,7 +493,7 @@ export default function Dashboard() {
                 onClick={handleNewChat}
                 size="sm" 
                 variant="outline"
-                className="sm:hidden p-2"
+                className="md:hidden p-2 h-8 w-8"
                 data-testid="button-new-ai-chat-mobile"
               >
                 <Plus className="w-4 h-4" />

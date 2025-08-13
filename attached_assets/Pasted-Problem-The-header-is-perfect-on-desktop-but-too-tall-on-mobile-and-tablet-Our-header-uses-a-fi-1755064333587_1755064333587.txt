@@ -1,0 +1,70 @@
+Problem
+- The header is perfect on desktop but too tall on mobile and tablet. Our `header` uses a fixed `h-16` with generous padding, so small screens inherit the same height.
+
+Reference (shadcn/ui)
+- Sidebar blocks reduce header height on small screens and often drive it via a CSS variable. See “sidebar-01” and “sidebar-16” in the shadcn blocks.
+- Pattern: wrap layout with a container that sets a responsive `--header-height`, and use `h-[--header-height]` on the `header`. Combine with sticky header and reduced padding on mobile.
+
+Current code
+```26:31:client/src/pages/dashboard.tsx
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6 bg-background/80 backdrop-blur-sm">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+```
+
+Proposed implementation
+1) Set a responsive `--header-height` at the page level (or on `SidebarProvider`).
+2) Use that variable for the header height and tighten padding on small screens.
+3) Keep the header sticky and blur, with safe-area support for iOS.
+
+Edits
+
+A. Wrap your layout with responsive header height variables
+```tsx
+// In client/src/pages/dashboard.tsx (around the page root)
+return (
+  <SidebarProvider className="[--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
+    <AppSidebar currentView={currentView} setCurrentView={setCurrentView} />
+    <SidebarInset>
+      {/* header here */}
+      ...
+    </SidebarInset>
+  </SidebarProvider>
+)
+```
+
+B. Replace the header class to use the variable and smaller mobile padding
+```tsx
+// In client/src/pages/dashboard.tsx
+<header
+  className="sticky top-0 z-40 flex h-[--header-height] shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur"
+>
+  <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
+  {/* rest unchanged */}
+</header>
+```
+
+C. Optional: add safe area padding for iOS notches
+```css
+/* client/src/index.css */
+@layer base {
+  body { padding-top: env(safe-area-inset-top); }
+}
+```
+
+Why this works
+- On small screens: `--header-height = theme(spacing.12)` (~48px), with tighter horizontal padding. Targets 44–48px touch hit area.
+- On tablets: `md:[--header-height:theme(spacing.14)]` (~56px).
+- On desktop: `lg:[--header-height:theme(spacing.16)]` (64px) — matches current look.
+
+Extras (optional, shadcn-friendly)
+- Reduce heading text size on small screens: `text-base md:text-xl`.
+- Hide non-essential labels on mobile and rely on tooltips for icon-only buttons.
+- Keep the content container paddings responsive: `p-3 md:p-4 lg:p-6`.
+
+QA checklist
+- Header height is ~48px on mobile, ~56px on tablet, 64px on desktop.
+- Sticky header does not overlap content; scrolling is smooth.
+- iOS notch devices have proper spacing (safe area).
+- Sidebar trigger remains at least 40–44px touch target on mobile.

@@ -88,6 +88,10 @@
     @apply border-border;
   }
 
+  body {
+    @apply bg-background text-foreground;
+  }
+
   html, body, #root {
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile browsers */
@@ -97,6 +101,10 @@
     padding: 0;
     overflow: hidden;
     /* Prevent address bar issues on mobile */
+  }
+
+  body {
+    padding-top: env(safe-area-inset-top);
   }
   
   /* Additional mobile viewport fixes */
