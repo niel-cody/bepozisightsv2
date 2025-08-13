@@ -108,31 +108,6 @@ export default function ChatInterface({ currentConversationId: propConversationI
 
   return (
     <div className="h-full max-h-screen flex flex-col bg-background overflow-hidden" data-testid="chat-interface">
-      {/* Chat Header */}
-      <div className="p-3 sm:p-4 border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="flex items-center justify-end w-full">
-          {/* Model Selection - Far Right */}
-          <div className="flex items-center gap-2">
-            <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-              <SelectTrigger className="w-28 sm:w-32 gap-1 sm:gap-2 text-xs sm:text-sm" data-testid="select-model">
-                <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
-                  <span>Standard</span>
-                </SelectItem>
-                <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
-                  <span>Detailed</span>
-                </SelectItem>
-                <SelectItem value="gpt-4o" data-testid="model-scientific">
-                  <span>Scientific</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0" data-testid="messages-container">
           {loadingMessages ? (
@@ -192,8 +167,31 @@ export default function ChatInterface({ currentConversationId: propConversationI
           )}
           <div ref={messagesEndRef} />
         </div>
-      {/* Input Area */}
-      <div className="p-3 sm:p-4 border-t border-border bg-card/50 backdrop-blur-sm">
+      {/* Input Area with Model Selection */}
+      <div className="p-3 sm:p-4 border-t border-border bg-card/50 backdrop-blur-sm space-y-3">
+        {/* Model Selection */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">AI Model:</span>
+          <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
+            <SelectTrigger className="w-32 gap-2 text-sm" data-testid="select-model">
+              <Brain className="w-4 h-4 text-muted-foreground" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="gpt-3.5-turbo" data-testid="model-standard">
+                <span>Standard</span>
+              </SelectItem>
+              <SelectItem value="gpt-4o-mini" data-testid="model-detailed">
+                <span>Detailed</span>
+              </SelectItem>
+              <SelectItem value="gpt-4o" data-testid="model-scientific">
+                <span>Scientific</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Message Input */}
         <form onSubmit={handleSubmit} className="flex gap-2">
           <Input
             value={inputMessage}
