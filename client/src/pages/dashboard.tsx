@@ -222,7 +222,7 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider className="[--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
+    <SidebarProvider>
       <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
@@ -459,7 +459,7 @@ export default function Dashboard() {
         <SidebarInset className="flex-1 flex flex-col min-w-0">
           <div className="h-screen overflow-hidden flex flex-col">
             {/* Header */}
-            <header className="sticky top-0 z-40 flex h-[--header-height] shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur">
+            <header className="sticky top-0 z-40 flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur">
               <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
               <div className="flex-1 min-w-0">
                 <div>
