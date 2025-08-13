@@ -107,7 +107,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
   };
 
   return (
-    <div className="h-full flex flex-col bg-background" data-testid="chat-interface">
+    <div className="h-full max-h-screen flex flex-col bg-background overflow-hidden" data-testid="chat-interface">
       {/* Chat Header */}
       <div className="p-3 sm:p-4 border-b border-border bg-card/50 backdrop-blur-sm">
         <div className="flex items-center justify-end w-full">
@@ -134,7 +134,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
         </div>
       </div>
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4" data-testid="messages-container">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 min-h-0" data-testid="messages-container">
           {loadingMessages ? (
             <div className="flex justify-center py-8">
               <div className="text-muted-foreground">Loading messages...</div>
@@ -169,7 +169,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
             </div>)
           ) : (
             /* Messages */
-            (messages.map((message) => (
+            (messages.map((message: ChatMessage) => (
               <MessageBubble
                 key={message.id}
                 message={message.message}

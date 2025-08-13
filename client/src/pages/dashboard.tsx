@@ -222,7 +222,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-background"  style={{
+      <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
       } as React.CSSProperties}>
@@ -455,7 +455,7 @@ export default function Dashboard() {
           </Sidebar>
 
           {/* Main Content */}
-        <SidebarInset className="flex-1 flex flex-col min-w-0">
+        <SidebarInset className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
               <SidebarTrigger className="lg:hidden" />
@@ -499,7 +499,7 @@ export default function Dashboard() {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-hidden min-h-0">
+            <main className="flex-1 overflow-hidden min-h-0 h-full">
                 {currentView === "chat" && (
                   <div className="h-full">
                     <ChatInterface currentConversationId={currentConversationId} />
