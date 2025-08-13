@@ -346,71 +346,70 @@ export default function Dashboard() {
                       </SidebarMenuItem>
                     </Collapsible>
                     
-                    {/* Insights Menu */}
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => setInsightsOpen(!insightsOpen)}
-                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                      >
-                        <TrendingUp className="w-4 h-4 mr-2" />
-                        <div className="text-sm font-normal">Insights</div>
-                        {insightsOpen ? (
-                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    {/* Insights Menu - Collapsible */}
+                    <Collapsible defaultOpen={insightsOpen} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            onClick={() => setInsightsOpen(!insightsOpen)}
+                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                          >
+                            <TrendingUp className="w-4 h-4 mr-2" />
+                            <div className="text-sm font-normal">Insights</div>
+                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {insightsItems.map((item) => (
+                              <SidebarMenuSubItem key={item.view}>
+                                <SidebarMenuSubButton
+                                  isActive={currentView === item.view}
+                                  onClick={() => setCurrentView(item.view)}
+                                >
+                                  <BarChart3 className="w-3 h-3" />
+                                  <span>{item.title}</span>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
                     
-                    {/* Insights Submenu */}
-                    {insightsOpen && (
-                      <div className="ml-6 space-y-0.5">
-                        {insightsItems.map((item) => (
-                          <SidebarMenuItem key={item.view}>
-                            <SidebarMenuButton
-                              isActive={currentView === item.view}
-                              onClick={() => setCurrentView(item.view)}
-                              className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
-                            >
-                              <div className="text-sm font-normal">{item.title}</div>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Admin Menu */}
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => setAdminOpen(!adminOpen)}
-                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                      >
-                        <Shield className="w-4 h-4 mr-2" />
-                        <div className="text-sm font-normal">Admin</div>
-                        {adminOpen ? (
-                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    
-                    {/* Admin Submenu */}
-                    {adminOpen && (
-                      <div className="ml-6 space-y-0.5">
-                        {adminItems.map((item) => (
-                          <SidebarMenuItem key={item.view}>
-                            <SidebarMenuButton
-                              isActive={currentView === item.view}
-                              onClick={() => setCurrentView(item.view)}
-                              className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground"
-                            >
-                              <div className="text-sm font-normal">{item.title}</div>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </div>
-                    )}
+                    {/* Admin Menu - Collapsible */}
+                    <Collapsible defaultOpen={adminOpen} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            onClick={() => setAdminOpen(!adminOpen)}
+                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                          >
+                            <Shield className="w-4 h-4 mr-2" />
+                            <div className="text-sm font-normal">Admin</div>
+                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {adminItems.map((item) => (
+                              <SidebarMenuSubItem key={item.view}>
+                                <SidebarMenuSubButton
+                                  isActive={currentView === item.view}
+                                  onClick={() => setCurrentView(item.view)}
+                                >
+                                  {item.view === 'operators' && <Users className="w-3 h-3" />}
+                                  {item.view === 'products' && <Package className="w-3 h-3" />}
+                                  {item.view === 'accounts' && <CreditCard className="w-3 h-3" />}
+                                  {item.view === 'settings' && <Settings className="w-3 h-3" />}
+                                  <span>{item.title}</span>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>
