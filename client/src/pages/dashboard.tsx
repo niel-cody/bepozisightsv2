@@ -227,9 +227,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="icon">
+      <Sidebar side="left" variant="sidebar" collapsible="icon">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -452,55 +450,53 @@ export default function Dashboard() {
               </SidebarMenu>
             </SidebarFooter>
           </Sidebar>
-
-          {/* Main Content */}
-        <SidebarInset className="flex-1">
-          <div className="min-h-screen flex flex-col">
-            {/* Header */}
-            <header className="flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
-              <div className="h-4 w-px bg-sidebar-border" />
-              <div className="flex-1 min-w-0">
-                <div>
-                  {currentView === "chat" ? (
-                    <div>
-                      <h2 className="text-base md:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
-                      <p className="text-xs text-muted-foreground truncate hidden md:block">Always available and always ready...</p>
-                    </div>
-                  ) : (
-                    <h2 className="text-base md:text-lg font-semibold text-foreground truncate">
-                      {allNavigationItems.find(item => item.view === currentView)?.title}
-                    </h2>
-                  )}
-                </div>
+      <SidebarInset>
+        <header className="flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-3 md:px-4 lg:px-6">
+            <SidebarTrigger className="-ml-1" />
+            <div className="h-4 w-px bg-sidebar-border mr-2" />
+            <div className="flex-1 min-w-0">
+              <div>
+                {currentView === "chat" ? (
+                  <div>
+                    <h2 className="text-base md:text-lg font-semibold text-foreground truncate">AI Assisted Chat</h2>
+                    <p className="text-xs text-muted-foreground truncate hidden md:block">Always available and always ready...</p>
+                  </div>
+                ) : (
+                  <h2 className="text-base md:text-lg font-semibold text-foreground truncate">
+                    {allNavigationItems.find(item => item.view === currentView)?.title}
+                  </h2>
+                )}
               </div>
+            </div>
 
-              {/* New AI Chat Button */}
-              <Button 
-                onClick={handleNewChat}
-                size="sm" 
-                variant="outline"
-                className="gap-2 hidden md:flex h-8"
-                data-testid="button-new-ai-chat"
-              >
-                <Plus className="w-4 h-4" />
-                New AI Chat
-              </Button>
+            {/* New AI Chat Button */}
+            <Button 
+              onClick={handleNewChat}
+              size="sm" 
+              variant="outline"
+              className="gap-2 hidden md:flex h-8"
+              data-testid="button-new-ai-chat"
+            >
+              <Plus className="w-4 h-4" />
+              New AI Chat
+            </Button>
 
-              {/* Mobile New Chat Button */}
-              <Button 
-                onClick={handleNewChat}
-                size="sm" 
-                variant="outline"
-                className="md:hidden p-2 h-8 w-8"
-                data-testid="button-new-ai-chat-mobile"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </header>
+            {/* Mobile New Chat Button */}
+            <Button 
+              onClick={handleNewChat}
+              size="sm" 
+              variant="outline"
+              className="md:hidden p-2 h-8 w-8"
+              data-testid="button-new-ai-chat-mobile"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+        </header>
 
-            {/* Main Content Area */}
-            <main className="flex-1 overflow-auto h-full">
+        {/* Main Content Area */}
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 min-h-screen">
                 {currentView === "chat" && (
                   <div className="h-full">
                     <ChatInterface currentConversationId={currentConversationId} />
@@ -576,10 +572,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-            </main>
-          </div>
-        </SidebarInset>
-      </div>
+        </div>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
