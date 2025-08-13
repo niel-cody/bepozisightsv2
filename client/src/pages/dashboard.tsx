@@ -227,7 +227,8 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider className="flex min-h-svh [--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
-      <Sidebar side="left" variant="sidebar" collapsible="icon" className="h-svh">
+      <Sidebar side="left" variant="inset" collapsible="icon" className="h-svh">
+          <SidebarRail />
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -295,10 +296,7 @@ export default function Dashboard() {
                     <Collapsible defaultOpen={chatOpen} className="group/collapsible">
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            onClick={() => setChatOpen(!chatOpen)}
-                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                          >
+                          <SidebarMenuButton onClick={() => setChatOpen(!chatOpen)}>
                             <MessageSquare className="w-4 h-4" />
                             <span className="ml-2">Chat history</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
@@ -350,10 +348,7 @@ export default function Dashboard() {
                     <Collapsible defaultOpen={insightsOpen} className="group/collapsible">
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            onClick={() => setInsightsOpen(!insightsOpen)}
-                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                          >
+                          <SidebarMenuButton onClick={() => setInsightsOpen(!insightsOpen)}>
                             <TrendingUp className="w-4 h-4" />
                             <span className="ml-2">Insights</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
@@ -382,10 +377,7 @@ export default function Dashboard() {
                     <Collapsible defaultOpen={adminOpen} className="group/collapsible">
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            onClick={() => setAdminOpen(!adminOpen)}
-                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                          >
+                          <SidebarMenuButton onClick={() => setAdminOpen(!adminOpen)}>
                             <Shield className="w-4 h-4" />
                             <span className="ml-2">Admin</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
