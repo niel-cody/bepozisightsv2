@@ -397,7 +397,7 @@ export default function Dashboard() {
         <SidebarInset className="flex-1 flex flex-col min-w-0">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
-              <SidebarTrigger className="lg:hidden" />
+              <SidebarTrigger className="" />
               <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
