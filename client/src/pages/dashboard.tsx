@@ -496,52 +496,53 @@ export default function Dashboard() {
         </header>
 
         {/* Main Content Area */}
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 min-h-screen">
-                {currentView === "chat" && (
-                  <div className="h-full">
-                    <ChatInterface currentConversationId={currentConversationId} />
-                  </div>
-                )}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex-1 overflow-auto p-4">
+            {currentView === "chat" && (
+              <div className="h-full">
+                <ChatInterface currentConversationId={currentConversationId} />
+              </div>
+            )}
 
-                {currentView === "sales" && (
-                  <SalesPage />
-                )}
+            {currentView === "sales" && (
+              <SalesPage />
+            )}
 
-                {currentView === "operators" && (
-                  <OperatorsTradingView />
-                )}
+            {currentView === "operators" && (
+              <OperatorsTradingView />
+            )}
 
-                {currentView === "products" && (
-                  <div className="h-full flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-semibold mb-2">Product Reports</h3>
-                      <p className="text-muted-foreground mb-4">Analyze product performance and inventory</p>
-                      <Button onClick={() => setCurrentView("chat")}>
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Ask AI for Product Insights
-                      </Button>
-                    </div>
-                  </div>
-                )}
+            {currentView === "products" && (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-xl font-semibold mb-2">Product Reports</h3>
+                  <p className="text-muted-foreground mb-4">Analyze product performance and inventory</p>
+                  <Button onClick={() => setCurrentView("chat")}>
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Ask AI for Product Insights
+                  </Button>
+                </div>
+              </div>
+            )}
 
-                {currentView === "accounts" && (
-                  <div className="h-full flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <h3 className="text-xl font-semibold mb-2">Account Reports</h3>
-                      <p className="text-muted-foreground mb-4">Customer accounts and transaction history</p>
-                      <Button onClick={() => setCurrentView("chat")}>
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Ask AI for Account Insights
-                      </Button>
-                    </div>
-                  </div>
-                )}
+            {currentView === "accounts" && (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-xl font-semibold mb-2">Account Reports</h3>
+                  <p className="text-muted-foreground mb-4">Customer accounts and transaction history</p>
+                  <Button onClick={() => setCurrentView("chat")}>
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Ask AI for Account Insights
+                  </Button>
+                </div>
+              </div>
+            )}
 
-                {currentView === "settings" && (
-                  <div className="h-full overflow-y-auto p-8">
-                    <div className="max-w-3xl mx-auto">
+            {currentView === "settings" && (
+              <div className="h-full">
+                <div className="max-w-3xl mx-auto">
                       <div className="mb-8">
                         <h2 className="text-2xl font-semibold mb-2">Settings</h2>
                         <p className="text-muted-foreground">Configure your POS intelligence system</p>
@@ -572,6 +573,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
