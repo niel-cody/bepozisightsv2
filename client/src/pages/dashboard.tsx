@@ -221,7 +221,7 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
@@ -458,7 +458,7 @@ export default function Dashboard() {
         <SidebarInset className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
             {/* Header */}
             <header className="flex h-14 sm:h-16 items-center gap-2 sm:gap-4 border-b border-border/30 px-3 sm:px-4 bg-background/95 backdrop-blur flex-shrink-0">
-              <SidebarTrigger className="lg:hidden" />
+              <SidebarTrigger />
               <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
