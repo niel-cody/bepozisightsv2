@@ -226,7 +226,7 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="[--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
       <Sidebar side="left" variant="sidebar" collapsible="icon">
           <SidebarHeader>
             <SidebarMenu>
@@ -451,8 +451,8 @@ export default function Dashboard() {
             </SidebarFooter>
           </Sidebar>
       <SidebarInset>
-        <header className="flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-3 md:px-4 lg:px-6">
+        <header className="sticky top-0 z-40 flex h-[--header-height] shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-[--header-height]">
+          <div className="flex items-center gap-2 w-full">
             <SidebarTrigger className="-ml-1" />
             <div className="h-4 w-px bg-sidebar-border mr-2" />
             <div className="flex-1 min-w-0">
