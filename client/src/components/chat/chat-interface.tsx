@@ -169,11 +169,20 @@ export default function ChatInterface({ currentConversationId: propConversationI
         </div>
       {/* Input Area with Model Selection */}
       <div className="p-3 sm:p-4 border-t border-border bg-card/50 backdrop-blur-sm space-y-3">
-        {/* Model Selection */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">AI Model:</span>
+        {/* Message Input with inline Model Selection */}
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Input
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Ask me about your business data..."
+            disabled={sendMessageMutation.isPending}
+            className="flex-1 text-base sm:text-sm min-h-[44px] sm:min-h-auto"
+            data-testid="input-message"
+          />
+          
+          {/* Model Selection - Same height as send button */}
           <Select value={selectedModel} onValueChange={(value: ModelType) => setSelectedModel(value)}>
-            <SelectTrigger className="w-32 gap-2 text-sm" data-testid="select-model">
+            <SelectTrigger className="w-32 gap-2 text-sm min-h-[44px] sm:min-h-auto" data-testid="select-model">
               <Brain className="w-4 h-4 text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>
@@ -189,18 +198,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        
-        {/* Message Input */}
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Ask me about your business data..."
-            disabled={sendMessageMutation.isPending}
-            className="flex-1 text-base sm:text-sm min-h-[44px] sm:min-h-auto"
-            data-testid="input-message"
-          />
+          
           <Button 
             type="submit" 
             disabled={sendMessageMutation.isPending || !inputMessage.trim()}
