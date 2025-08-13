@@ -226,8 +226,8 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider className="[--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
-      <Sidebar side="left" variant="sidebar" collapsible="icon">
+    <SidebarProvider className="flex min-h-svh [--header-height:theme(spacing.12)] md:[--header-height:theme(spacing.14)] lg:[--header-height:theme(spacing.16)]">
+      <Sidebar side="left" variant="sidebar" collapsible="icon" className="h-svh">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -288,6 +288,7 @@ export default function Dashboard() {
 
           <SidebarContent className="p-2">
               <SidebarGroup>
+                <SidebarGroupLabel>AI Assistant</SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
                     {/* Chat Navigation with Conversations - Collapsible */}
@@ -344,6 +345,7 @@ export default function Dashboard() {
                       </SidebarMenuItem>
                     </Collapsible>
                     
+                    <SidebarGroupLabel className="mt-2">Insights</SidebarGroupLabel>
                     {/* Insights Menu - Collapsible */}
                     <Collapsible defaultOpen={insightsOpen} className="group/collapsible">
                       <SidebarMenuItem>
@@ -375,6 +377,7 @@ export default function Dashboard() {
                       </SidebarMenuItem>
                     </Collapsible>
                     
+                    <SidebarGroupLabel className="mt-2">Admin</SidebarGroupLabel>
                     {/* Admin Menu - Collapsible */}
                     <Collapsible defaultOpen={adminOpen} className="group/collapsible">
                       <SidebarMenuItem>
