@@ -33,10 +33,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -288,61 +292,59 @@ export default function Dashboard() {
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu className="space-y-1">
-                    {/* Chat Navigation with Conversations */}
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        onClick={() => setChatOpen(!chatOpen)}
-                        className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        <div className="text-sm font-normal">Chat history</div>
-                        {chatOpen ? (
-                          <ChevronDown className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-sidebar-muted-foreground ml-auto" />
-                        )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    
-                    {/* Chat Conversations Submenu */}
-                    {chatOpen && (
-                      <div className="ml-4 space-y-0.5 max-h-60 overflow-y-auto">
-                        {/* Existing Conversations */}
-                        {loadingConversations ? (
-                          <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
-                        ) : conversations.length === 0 ? (
-                          <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
-                        ) : (
-                          conversations.map((conversation) => (
-                            <SidebarMenuItem key={conversation.id}>
-                              <SidebarMenuButton
-                                isActive={currentView === "chat" && currentConversationId === conversation.id}
-                                onClick={() => {
-                                  setCurrentView("chat");
-                                  setCurrentConversationId(conversation.id);
-                                }}
-                                className="w-full justify-start px-3 py-1.5 rounded-lg hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent text-sidebar-foreground group"
-                              >
-                                <div className="flex-1 min-w-0 pr-1">
-                                  <div className="flex items-center gap-1">
+                    {/* Chat Navigation with Conversations - Collapsible */}
+                    <Collapsible defaultOpen={chatOpen} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton
+                            onClick={() => setChatOpen(!chatOpen)}
+                            className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            <div className="text-sm font-normal">Chat history</div>
+                            <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {/* Existing Conversations */}
+                            {loadingConversations ? (
+                              <SidebarMenuSubItem>
+                                <div className="text-xs text-sidebar-muted-foreground px-3 py-2">Loading...</div>
+                              </SidebarMenuSubItem>
+                            ) : conversations.length === 0 ? (
+                              <SidebarMenuSubItem>
+                                <div className="text-xs text-sidebar-muted-foreground px-3 py-2">No conversations</div>
+                              </SidebarMenuSubItem>
+                            ) : (
+                              conversations.map((conversation) => (
+                                <SidebarMenuSubItem key={conversation.id}>
+                                  <SidebarMenuSubButton
+                                    isActive={currentView === "chat" && currentConversationId === conversation.id}
+                                    onClick={() => {
+                                      setCurrentView("chat");
+                                      setCurrentConversationId(conversation.id);
+                                    }}
+                                    className="group w-full"
+                                  >
                                     <Calendar className="w-3 h-3 text-sidebar-muted-foreground flex-shrink-0" />
-                                    <span className="text-sm text-sidebar-foreground">
-                                      {new Date(conversation.updatedAt).toLocaleDateString()}
+                                    <span className="text-sm text-sidebar-foreground truncate">
+                                      {new Date(conversation.updatedAt || Date.now()).toLocaleDateString()}
                                     </span>
-                                  </div>
-                                </div>
-                                <div
-                                  onClick={(e) => handleDeleteChat(conversation.id, e)}
-                                  className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 flex-shrink-0 rounded cursor-pointer flex items-center justify-center"
-                                >
-                                  <Trash2 className="w-2 h-2 text-destructive" />
-                                </div>
-                              </SidebarMenuButton>
-                            </SidebarMenuItem>
-                          ))
-                        )}
-                      </div>
-                    )}
+                                    <div
+                                      onClick={(e) => handleDeleteChat(conversation.id, e)}
+                                      className="h-4 w-4 opacity-0 group-hover:opacity-100 hover:bg-destructive/20 flex-shrink-0 rounded cursor-pointer flex items-center justify-center ml-auto"
+                                    >
+                                      <Trash2 className="w-2 h-2 text-destructive" />
+                                    </div>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))
+                            )}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
                     
                     {/* Insights Menu */}
                     <SidebarMenuItem>
