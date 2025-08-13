@@ -298,8 +298,8 @@ export default function Dashboard() {
                             onClick={() => setChatOpen(!chatOpen)}
                             className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                           >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            <div className="text-sm font-normal">Chat history</div>
+                            <MessageSquare className="w-4 h-4" />
+                            <span className="ml-2">Chat history</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -352,8 +352,8 @@ export default function Dashboard() {
                             onClick={() => setInsightsOpen(!insightsOpen)}
                             className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                           >
-                            <TrendingUp className="w-4 h-4 mr-2" />
-                            <div className="text-sm font-normal">Insights</div>
+                            <TrendingUp className="w-4 h-4" />
+                            <span className="ml-2">Insights</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
@@ -383,8 +383,8 @@ export default function Dashboard() {
                             onClick={() => setAdminOpen(!adminOpen)}
                             className="w-full justify-start px-3 py-2 rounded-lg hover:bg-sidebar-accent text-sidebar-foreground"
                           >
-                            <Shield className="w-4 h-4 mr-2" />
-                            <div className="text-sm font-normal">Admin</div>
+                            <Shield className="w-4 h-4" />
+                            <span className="ml-2">Admin</span>
                             <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
