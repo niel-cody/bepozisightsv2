@@ -386,7 +386,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="h-14 border-b px-4 flex items-center gap-4 bg-background">
+        <header className="sticky top-0 z-40 h-14 border-b px-4 flex items-center gap-4 bg-background/80 supports-[backdrop-filter]:bg-background/60 backdrop-blur">
           <div className="flex-1 min-w-0">
             {currentView === "chat" ? (
               <div>
