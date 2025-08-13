@@ -222,13 +222,13 @@ export default function Dashboard() {
   const [insightsOpen, setInsightsOpen] = useState(true);
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="h-screen overflow-hidden flex w-full bg-background" style={{
         "--sidebar-width": "16rem",
         "--sidebar-width-mobile": "18rem"
       } as React.CSSProperties}>
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
+        <Sidebar side="left" variant="sidebar" collapsible="icon">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
