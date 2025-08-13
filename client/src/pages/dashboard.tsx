@@ -225,7 +225,7 @@ export default function Dashboard() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
+        <Sidebar side="left" variant="sidebar" collapsible="icon">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -458,6 +458,7 @@ export default function Dashboard() {
             {/* Header */}
             <header className="flex h-12 md:h-14 lg:h-16 shrink-0 items-center gap-2 border-b px-3 md:px-4 lg:px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <SidebarTrigger className="-ml-1 h-8 w-8 md:h-7 md:w-7" />
+              <div className="h-4 w-px bg-sidebar-border" />
               <div className="flex-1 min-w-0">
                 <div>
                   {currentView === "chat" ? (
