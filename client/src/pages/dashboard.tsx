@@ -227,7 +227,7 @@ export default function Dashboard() {
         "--sidebar-width-mobile": "18rem"
       } as React.CSSProperties}>
         {/* Sidebar */}
-        <Sidebar side="left" variant="sidebar" collapsible="icon">
+        <Sidebar side="left" variant="sidebar" collapsible="offcanvas">
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
