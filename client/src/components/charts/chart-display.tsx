@@ -33,15 +33,27 @@ const COLORS = [
 ];
 
 export function ChartDisplay({ chartData }: ChartDisplayProps) {
-  const { chartType, title, description, data, config } = chartData;
-
-  if (!chartData || !data || !Array.isArray(data) || data.length === 0) {
-    return (
-      <div className="p-4 border border-border/50 rounded-lg bg-muted/20">
-        <p className="text-sm text-muted-foreground">No chart data available</p>
-      </div>
-    );
+  console.log('🎯 ChartDisplay received:', chartData);
+  
+  if (!chartData) {
+    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ No chartData prop</p></div>;
   }
+  
+  const { chartType, title, description, data, config } = chartData;
+  
+  if (!data) {
+    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ No data in chartData</p></div>;
+  }
+  
+  if (!Array.isArray(data)) {
+    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ Data is not array: {typeof data}</p></div>;
+  }
+  
+  if (data.length === 0) {
+    return <div className="p-4 border border-yellow-500 rounded-lg"><p className="text-yellow-500">⚠️ Data array is empty</p></div>;
+  }
+  
+  console.log('✅ ChartDisplay rendering with valid data:', { chartType, dataLength: data.length });
 
   const renderChart = () => {
     const commonProps = {
