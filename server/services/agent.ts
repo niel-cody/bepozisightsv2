@@ -144,8 +144,8 @@ const tools = [
           },
           dataType: {
             type: "string", 
-            description: "What data to visualize: 'products', 'revenue', 'staff', 'categories', 'venues'",
-            enum: ["products", "revenue", "staff", "categories", "venues"]
+            description: "What data to visualize: 'products', 'revenue', 'staff', 'categories', 'venues', 'daily_venues', 'daily_revenue'",
+            enum: ["products", "revenue", "staff", "categories", "venues", "daily_venues", "daily_revenue"]
           },
           metric: {
             type: "string",
@@ -822,6 +822,134 @@ const functions = {
             
           title = `Top ${limit} Staff by Sales Performance`;
           description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing staff performance`;
+          break;
+
+        case 'daily_venues':
+        case 'venues':
+          const tillSummaries = await storage.getDailySummaries();
+          if (!tillSummaries.length) {
+            return { error: "No venue data available for chart generation" };
+          }
+          
+          // Get recent data based on period
+          const now = new Date();
+          let periodStart: Date;
+          
+          switch (args.period) {
+            case 'week':
+              periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              break;
+            case 'month':
+              periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+              break;
+            default:
+              periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); // Default to last 7 days
+          }
+          
+          const filteredSummaries = tillSummaries.filter(s => 
+            new Date(s.date) >= periodStart
+          );
+          
+          if (args.dataType === 'daily_venues') {
+            // Group by date and venue for daily breakdown
+            const dailyVenueData = filteredSummaries.reduce((acc, summary) => {
+              const dateKey = summary.date;
+              const venue = summary.venue || 'Unknown Venue';
+              
+              if (!acc[dateKey]) {
+                acc[dateKey] = {};
+              }
+              if (!acc[dateKey][venue]) {
+                acc[dateKey][venue] = 0;
+              }
+              
+              acc[dateKey][venue] += parseFloat(summary.nettTotal || "0");
+              return acc;
+            }, {} as Record<string, Record<string, number>>);
+            
+            // Convert to chart format - each day shows venue totals
+            chartData = Object.entries(dailyVenueData)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .slice(-limit)
+              .map(([date, venues]) => {
+                const venueEntries = Object.entries(venues);
+                const topVenue = venueEntries.reduce((max, [venue, total]) => 
+                  total > max.total ? { venue, total } : max, 
+                  { venue: '', total: 0 }
+                );
+                
+                return {
+                  name: date,
+                  value: Math.round(Object.values(venues).reduce((sum, val) => sum + val, 0)),
+                  venue: topVenue.venue,
+                  venueCount: venueEntries.length
+                };
+              });
+              
+            title = `Daily Venue Totals (Last ${args.period || '7'} Days)`;
+            description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing daily totals across venues`;
+          } else {
+            // Aggregate by venue for venue comparison
+            const venueStats = filteredSummaries.reduce((acc, summary) => {
+              const venue = summary.venue || 'Unknown Venue';
+              if (!acc[venue]) {
+                acc[venue] = { name: venue, revenue: 0, transactions: 0, days: 0 };
+              }
+              acc[venue].revenue += parseFloat(summary.nettTotal || "0");
+              acc[venue].transactions += summary.transactionCount || 0;
+              acc[venue].days += 1;
+              return acc;
+            }, {} as Record<string, any>);
+            
+            chartData = Object.values(venueStats)
+              .sort((a: any, b: any) => b.revenue - a.revenue)
+              .slice(0, limit)
+              .map((venue: any) => ({
+                name: venue.name,
+                value: Math.round(venue.revenue),
+                transactions: venue.transactions,
+                avgDaily: venue.days > 0 ? Math.round(venue.revenue / venue.days) : 0
+              }));
+              
+            title = `Venue Performance (${args.period || 'Last 7 Days'})`;
+            description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing venue comparison`;
+          }
+          break;
+
+        case 'daily_revenue':
+          const dailySummaries = await storage.getDailySummaries();
+          if (!dailySummaries.length) {
+            return { error: "No daily revenue data available for chart generation" };
+          }
+          
+          // Get recent summaries and group by date
+          const recentDailySummaries = dailySummaries
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(-limit);
+            
+          // Group by date and sum across venues
+          const dailyTotals = recentDailySummaries.reduce((acc, summary) => {
+            const date = summary.date;
+            if (!acc[date]) {
+              acc[date] = { date, revenue: 0, transactions: 0, venues: new Set() };
+            }
+            acc[date].revenue += parseFloat(summary.nettTotal || "0");
+            acc[date].transactions += summary.transactionCount || 0;
+            acc[date].venues.add(summary.venue);
+            return acc;
+          }, {} as Record<string, any>);
+          
+          chartData = Object.values(dailyTotals)
+            .sort((a: any, b: any) => a.date.localeCompare(b.date))
+            .map((day: any) => ({
+              name: day.date,
+              value: Math.round(day.revenue),
+              transactions: day.transactions,
+              venues: day.venues.size
+            }));
+          
+          title = `Daily Revenue Totals (Last ${limit} Days)`;
+          description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing daily revenue across all venues`;
           break;
 
         default:
