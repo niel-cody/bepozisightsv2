@@ -113,6 +113,7 @@ export const chatMessages = pgTable("chat_messages", {
   conversationId: varchar("conversation_id").references(() => conversations.id).notNull(),
   message: text("message").notNull(),
   response: text("response").notNull(),
+  chart: text("chart"), // JSON string containing chart data
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   userId: varchar("user_id").references(() => users.id),
 });

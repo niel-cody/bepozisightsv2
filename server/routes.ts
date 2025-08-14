@@ -314,11 +314,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get AI response using function calling with conversation context
       const agentResponse = await agentChat(messageData.message, messageData.conversationId || 'default', messageData.model || 'gpt-4o-mini');
       
-      // Save message with AI response (include conversationId and model)
+      // Save message with AI response (include conversationId, model, and chart data)
       const chatMessage = await storage.createChatMessage({
         conversationId: messageData.conversationId || 'default',
         message: messageData.message,
         response: agentResponse.content,
+        chart: agentResponse.chart ? JSON.stringify(agentResponse.chart) : null,
         model: messageData.model || 'gpt-4o-mini',
         userId: messageData.userId || null
       });

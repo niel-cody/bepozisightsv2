@@ -153,12 +153,17 @@ export class PostgresStorage implements IStorage {
   }
 
   async getChatMessages(conversationId?: string): Promise<ChatMessage[]> {
-    if (conversationId) {
-      return await db.select().from(chatMessages)
-        .where(eq(chatMessages.conversationId, conversationId))
-        .orderBy(chatMessages.timestamp);
-    }
-    return await db.select().from(chatMessages).orderBy(chatMessages.timestamp);
+    const messages = conversationId 
+      ? await db.select().from(chatMessages)
+          .where(eq(chatMessages.conversationId, conversationId))
+          .orderBy(chatMessages.timestamp)
+      : await db.select().from(chatMessages).orderBy(chatMessages.timestamp);
+    
+    // Parse chart data from JSON string
+    return messages.map(msg => ({
+      ...msg,
+      chart: msg.chart ? JSON.parse(msg.chart) : null
+    }));
   }
 
   async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
