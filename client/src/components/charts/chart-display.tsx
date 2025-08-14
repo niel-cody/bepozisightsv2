@@ -25,11 +25,11 @@ interface ChartDisplayProps {
 }
 
 const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  '#3B82F6',  // Blue-500 - Primary blue
+  '#60A5FA',  // Blue-400 - Lighter blue  
+  '#1D4ED8',  // Blue-700 - Deeper blue
+  '#06B6D4',  // Cyan-500 - Cyan accent
+  '#8B5CF6',  // Violet-500 - Purple accent
 ];
 
 export function ChartDisplay({ chartData }: ChartDisplayProps) {
@@ -61,10 +61,10 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'area':
         return (
           <AreaChart {...commonProps}>
-            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
+            <CartesianGrid strokeDasharray="1 4" stroke="#374151" opacity={0.3} />
             <XAxis 
               dataKey={config.xAxisKey} 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -72,7 +72,7 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
               tickMargin={12}
             />
             <YAxis 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -95,9 +95,9 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
             <Area
               type="monotone"
               dataKey={config.yAxisKey}
-              stroke="hsl(var(--chart-1))"
-              fill="hsl(var(--chart-1))"
-              fillOpacity={0.08}
+              stroke="#3B82F6"
+              fill="#3B82F6"
+              fillOpacity={0.12}
               strokeWidth={1.5}
             />
           </AreaChart>
@@ -106,10 +106,10 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'bar':
         return (
           <BarChart {...commonProps}>
-            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
+            <CartesianGrid strokeDasharray="1 4" stroke="#374151" opacity={0.3} />
             <XAxis 
               dataKey={config.xAxisKey} 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -117,7 +117,7 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
               tickMargin={12}
             />
             <YAxis 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -139,9 +139,9 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
             />
             <Bar 
               dataKey={config.yAxisKey} 
-              fill="hsl(var(--chart-1))"
+              fill="#3B82F6"
               radius={[2, 2, 0, 0]}
-              stroke="hsl(var(--chart-1))"
+              stroke="#3B82F6"
               strokeWidth={0}
             />
           </BarChart>
@@ -150,10 +150,10 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'line':
         return (
           <LineChart {...commonProps}>
-            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
+            <CartesianGrid strokeDasharray="1 4" stroke="#374151" opacity={0.3} />
             <XAxis 
               dataKey={config.xAxisKey} 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -161,7 +161,7 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
               tickMargin={12}
             />
             <YAxis 
-              stroke="hsl(var(--muted-foreground))"
+              stroke="#9CA3AF"
               fontSize={11}
               fontWeight={300}
               tickLine={false}
@@ -184,10 +184,10 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
             <Line
               type="monotone"
               dataKey={config.yAxisKey}
-              stroke="hsl(var(--chart-1))"
+              stroke="#3B82F6"
               strokeWidth={1.5}
               dot={false}
-              activeDot={{ r: 4, stroke: 'hsl(var(--chart-1))', strokeWidth: 2, fill: "hsl(var(--background))" }}
+              activeDot={{ r: 4, stroke: '#3B82F6', strokeWidth: 2, fill: "hsl(var(--background))" }}
             />
           </LineChart>
         );
