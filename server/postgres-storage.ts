@@ -180,8 +180,13 @@ export class PostgresStorage implements IStorage {
   }
 
   async insertProductSales(productSalesData: InsertProductSales[]): Promise<void> {
-    if (productSalesData.length > 0) {
-      await db.insert(productSales).values(productSalesData);
+    if (productSalesData.length === 0) return;
+    
+    // Process in batches of 100 to avoid "value too large to transmit" error
+    const batchSize = 100;
+    for (let i = 0; i < productSalesData.length; i += batchSize) {
+      const batch = productSalesData.slice(i, i + batchSize);
+      await db.insert(productSales).values(batch);
     }
   }
 }

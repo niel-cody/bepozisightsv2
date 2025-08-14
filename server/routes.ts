@@ -182,12 +182,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         refundAmount: parseFloat(row.refund_amount) || 0,
       }));
 
+      console.log(`Processing ${productSalesData.length} product sales records in batches...`);
       await storage.insertProductSales(productSalesData);
 
       res.json({ 
-        message: `Successfully imported ${productSalesData.length} product sales records`,
+        message: `Successfully imported ${productSalesData.length} product sales records from ${data.length} total rows`,
         imported: productSalesData.length,
-        total: data.length
+        total: data.length,
+        skipped: data.length - productSalesData.length
       });
     } catch (error) {
       console.error('Product sales upload error:', error);

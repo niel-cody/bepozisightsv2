@@ -84,7 +84,7 @@ export function CSVUpload({
       setUploadResult(result);
       toast({
         title: "Upload successful",
-        description: `Imported ${result.imported} product sales records`,
+        description: `Imported ${result.imported} product sales records${result.skipped > 0 ? ` (${result.skipped} skipped)` : ''}`,
       });
 
       // Invalidate relevant queries to refresh data
