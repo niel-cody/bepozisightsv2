@@ -61,36 +61,44 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'area':
         return (
           <AreaChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
             <XAxis 
               dataKey={config.xAxisKey} 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
+              tickMargin={12}
             />
             <YAxis 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              tickMargin={8}
+              width={60}
+              tickFormatter={(value) => `$${(value / 1000)}k`}
             />
             <Tooltip 
               contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)',
+                fontSize: '12px',
+                fontWeight: '400',
               }}
-              formatter={(value: any) => [`$${value.toLocaleString()}`, 'Value']}
+              formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
             />
             <Area
               type="monotone"
               dataKey={config.yAxisKey}
               stroke="hsl(var(--chart-1))"
               fill="hsl(var(--chart-1))"
-              fillOpacity={0.2}
-              strokeWidth={2}
+              fillOpacity={0.08}
+              strokeWidth={1.5}
             />
           </AreaChart>
         );
@@ -98,33 +106,43 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'bar':
         return (
           <BarChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
             <XAxis 
               dataKey={config.xAxisKey} 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
+              tickMargin={12}
             />
             <YAxis 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              tickMargin={8}
+              width={60}
+              tickFormatter={(value) => `$${(value / 1000)}k`}
             />
             <Tooltip 
               contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)',
+                fontSize: '12px',
+                fontWeight: '400',
               }}
-              formatter={(value: any) => [`$${value.toLocaleString()}`, 'Value']}
+              formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
             />
             <Bar 
               dataKey={config.yAxisKey} 
               fill="hsl(var(--chart-1))"
-              radius={[4, 4, 0, 0]}
+              radius={[2, 2, 0, 0]}
+              stroke="hsl(var(--chart-1))"
+              strokeWidth={0}
             />
           </BarChart>
         );
@@ -132,36 +150,44 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
       case 'line':
         return (
           <LineChart {...commonProps}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.3} />
+            <CartesianGrid strokeDasharray="1 4" stroke="hsl(var(--muted-foreground))" opacity={0.15} />
             <XAxis 
               dataKey={config.xAxisKey} 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
+              tickMargin={12}
             />
             <YAxis 
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={11}
+              fontWeight={300}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              tickMargin={8}
+              width={60}
+              tickFormatter={(value) => `$${(value / 1000)}k`}
             />
             <Tooltip 
               contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)',
+                fontSize: '12px',
+                fontWeight: '400',
               }}
-              formatter={(value: any) => [`$${value.toLocaleString()}`, 'Value']}
+              formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
             />
             <Line
               type="monotone"
               dataKey={config.yAxisKey}
               stroke="hsl(var(--chart-1))"
-              strokeWidth={2}
-              dot={{ fill: 'hsl(var(--chart-1))', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'hsl(var(--chart-1))', strokeWidth: 2 }}
+              strokeWidth={1.5}
+              dot={false}
+              activeDot={{ r: 4, stroke: 'hsl(var(--chart-1))', strokeWidth: 2, fill: "hsl(var(--background))" }}
             />
           </LineChart>
         );
@@ -174,10 +200,13 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-              outerRadius={100}
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              outerRadius={110}
+              innerRadius={40}
               fill="#8884d8"
               dataKey={config.yAxisKey}
+              stroke="hsl(var(--background))"
+              strokeWidth={2}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -187,9 +216,12 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
               contentStyle={{
                 backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px 0 rgba(0, 0, 0, 0.05)',
+                fontSize: '12px',
+                fontWeight: '400',
               }}
-              formatter={(value: any) => [`$${value.toLocaleString()}`, 'Value']}
+              formatter={(value: any) => [`$${value.toLocaleString()}`, '']}
             />
           </PieChart>
         );
@@ -201,14 +233,14 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
 
   return (
     <div className="w-full">
-      <div className="h-80 w-full">
+      <div className="h-96 w-full">
         <ResponsiveContainer width="100%" height="100%">
           {renderChart()}
         </ResponsiveContainer>
       </div>
-      <div className="mt-3 flex justify-between items-center text-xs text-muted-foreground">
-        <span>{data.length} data points</span>
-        <span className="capitalize">{chartType} chart</span>
+      <div className="mt-4 flex justify-between items-center">
+        <span className="text-xs text-muted-foreground/60 font-light">{data.length} data points</span>
+        <span className="text-xs text-muted-foreground/60 font-light capitalize">{chartType} chart</span>
       </div>
     </div>
   );

@@ -109,12 +109,12 @@ export default function MessageBubble({ message, response, timestamp, chart }: M
                     <p className="text-sm text-red-700 dark:text-red-400">{chart.error}</p>
                   </div>
                 ) : (
-                  <div className="mt-6 space-y-4">
-                    <div className="border border-border rounded-lg bg-card p-4">
-                      <div className="mb-3">
-                        <h4 className="text-sm font-semibold text-foreground">{chart.title}</h4>
+                  <div className="mt-8">
+                    <div className="bg-background rounded-xl border border-border/20 p-6 shadow-sm">
+                      <div className="mb-6">
+                        <h4 className="text-base font-medium text-foreground tracking-tight">{chart.title}</h4>
                         {chart.description && (
-                          <p className="text-xs text-muted-foreground mt-1">{chart.description}</p>
+                          <p className="text-sm text-muted-foreground mt-2 font-light">{chart.description}</p>
                         )}
                       </div>
                       <ChartDisplay chartData={chart} />
