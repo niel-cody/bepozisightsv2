@@ -327,8 +327,7 @@ const functions = {
           avgTransaction: op.transactionCount && op.transactionCount > 0 ? parseFloat(op.totalSales || "0") / op.transactionCount : 0,
           // Include additional details for context
           role: op.role,
-          status: op.status,
-          employeeId: op.employeeId
+          status: op.status
         }));
       
       return { topPerformers: topOperators, period: args.period };
@@ -355,7 +354,6 @@ const functions = {
         name: staffMember.name,
         role: staffMember.role,
         status: staffMember.status,
-        employeeId: staffMember.employeeId,
         totalSales: parseFloat(staffMember.totalSales || "0"),
         transactionCount: staffMember.transactionCount || 0,
         avgTransaction: staffMember.transactionCount && staffMember.transactionCount > 0 ? 
@@ -1005,6 +1003,7 @@ CHART GENERATION REQUIREMENTS:
       let chartData = null;
       
       for (const toolCall of responseMessage.tool_calls) {
+        if (toolCall.type !== 'function') continue;
         const functionName = toolCall.function.name;
         const functionArgs = JSON.parse(toolCall.function.arguments);
         
