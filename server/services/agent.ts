@@ -958,13 +958,16 @@ When users ask about top selling products, use getTopSellingProducts.
 When users ask for product breakdown by category, use getProductSalesBreakdown.
 When users ask for charts, graphs, or visual data representations, use generateChart.
 
-CHART GENERATION GUIDANCE:
-- If user requests are unclear about chart type, ask for clarification or choose the most appropriate visualization
-- Use generateChart for visual data representations (area, bar, line, pie charts)
-- Area charts work well for trends over time (revenue, daily sales)
-- Bar charts work well for comparisons (top products, staff performance) 
-- Pie charts work well for category breakdowns
-- Line charts work well for time series trends`
+CHART GENERATION REQUIREMENTS:
+- ALWAYS use generateChart when users ask for charts, graphs, visualizations, or visual representations
+- When users say "show me a chart", "create a chart", "visualize", or similar, you MUST call generateChart
+- For product analysis: use generateChart with dataType='products' 
+- For category breakdown: use generateChart with dataType='categories'
+- For revenue trends: use generateChart with dataType='revenue'
+- For staff performance: use generateChart with dataType='staff'
+- Choose appropriate chartType: 'area' for trends, 'bar' for comparisons, 'pie' for breakdowns, 'line' for time series
+- If user doesn't specify chart type, choose the most appropriate one and use generateChart
+- NEVER just describe charts - always generate them using the generateChart function`
       }
     ];
 
