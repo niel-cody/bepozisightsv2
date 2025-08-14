@@ -313,22 +313,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get AI response using function calling with conversation context
       const agentResponse = await agentChat(messageData.message, messageData.conversationId || 'default', messageData.model || 'gpt-4o-mini');
-      const aiResult = {
-        response: agentResponse.content,
-        data: null // Agent handles data internally via function calls
-      };
       
       // Save message with AI response (include conversationId and model)
       const chatMessage = await storage.createChatMessage({
         conversationId: messageData.conversationId || 'default',
         message: messageData.message,
-        response: aiResult.response,
+        response: agentResponse.content,
         model: messageData.model || 'gpt-4o-mini',
         userId: messageData.userId || null
       });
 
-      console.log("Sending response:", { message: chatMessage, data: aiResult.data });
-      res.json(chatMessage);
+      // Include chart data in response if available
+      const responseData = {
+        ...chatMessage,
+        chart: agentResponse.chart || null
+      };
+
+      console.log("Sending response:", { message: responseData, data: agentResponse.chart });
+      res.json(responseData);
     } catch (error) {
       console.error("Chat error:", error);
       if (error instanceof z.ZodError) {

@@ -131,6 +131,47 @@ const tools = [
   {
     type: "function" as const,
     function: {
+      name: "generateChart",
+      description: "Generate a chart visualization for business data. Can create area, bar, line, or pie charts",
+      parameters: {
+        type: "object",
+        properties: {
+          chartType: {
+            type: "string",
+            description: "Type of chart to generate: 'area', 'bar', 'line', 'pie'",
+            enum: ["area", "bar", "line", "pie"],
+            default: "area"
+          },
+          dataType: {
+            type: "string", 
+            description: "What data to visualize: 'products', 'revenue', 'staff', 'categories', 'venues'",
+            enum: ["products", "revenue", "staff", "categories", "venues"]
+          },
+          metric: {
+            type: "string",
+            description: "Which metric to show: 'quantity', 'revenue', 'transactions', 'performance'",
+            enum: ["quantity", "revenue", "transactions", "performance"],
+            default: "revenue"
+          },
+          period: {
+            type: "string",
+            description: "Time period for the data: 'day', 'week', 'month', 'all'",
+            enum: ["day", "week", "month", "all"],
+            default: "all"
+          },
+          limit: {
+            type: "number",
+            description: "Number of items to include in chart",
+            default: 10
+          }
+        },
+        required: ["dataType"]
+      }
+    }
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "getVenueSales",
       description: "Get sales performance data for venues/locations including daily summaries, gross sales, transaction counts, and venue comparisons",
       parameters: {
@@ -664,6 +705,155 @@ const functions = {
     }
   },
 
+  generateChart: async (args: { 
+    chartType?: string; 
+    dataType: string; 
+    metric?: string; 
+    period?: string; 
+    limit?: number 
+  }) => {
+    try {
+      const chartType = args.chartType || 'area';
+      const metric = args.metric || 'revenue';
+      const limit = args.limit || 10;
+      
+      let chartData: any[] = [];
+      let title = '';
+      let description = '';
+      
+      switch (args.dataType) {
+        case 'products':
+          const productSales = await storage.getProductSales();
+          if (!productSales.length) {
+            return { error: "No product sales data available for chart generation" };
+          }
+          
+          // Aggregate products by name
+          const productStats = productSales.reduce((acc, sale) => {
+            const key = sale.productName;
+            if (!acc[key]) {
+              acc[key] = {
+                name: sale.productName,
+                quantity: 0,
+                revenue: 0,
+                category: sale.category
+              };
+            }
+            acc[key].quantity += sale.qtySold || 0;
+            acc[key].revenue += parseFloat(sale.nettSales || "0");
+            return acc;
+          }, {} as Record<string, any>);
+          
+          chartData = Object.values(productStats)
+            .sort((a: any, b: any) => b[metric] - a[metric])
+            .slice(0, limit)
+            .map((product: any) => ({
+              name: product.name,
+              value: metric === 'quantity' ? product.quantity : Math.round(product.revenue),
+              category: product.category
+            }));
+          
+          title = `Top ${limit} Products by ${metric === 'quantity' ? 'Quantity Sold' : 'Revenue'}`;
+          description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing product performance`;
+          break;
+
+        case 'categories':
+          const categorySales = await storage.getProductSales();
+          if (!categorySales.length) {
+            return { error: "No product sales data available for chart generation" };
+          }
+          
+          // Aggregate by category
+          const categoryStats = categorySales.reduce((acc, sale) => {
+            const category = sale.category;
+            if (!acc[category]) {
+              acc[category] = { name: category, quantity: 0, revenue: 0 };
+            }
+            acc[category].quantity += sale.qtySold || 0;
+            acc[category].revenue += parseFloat(sale.nettSales || "0");
+            return acc;
+          }, {} as Record<string, any>);
+          
+          chartData = Object.values(categoryStats)
+            .sort((a: any, b: any) => b[metric] - a[metric])
+            .map((cat: any) => ({
+              name: cat.name,
+              value: metric === 'quantity' ? cat.quantity : Math.round(cat.revenue)
+            }));
+            
+          title = `Sales by Category (${metric === 'quantity' ? 'Quantity' : 'Revenue'})`;
+          description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing category performance`;
+          break;
+
+        case 'revenue':
+          const summaries = await storage.getDailySummaries();
+          if (!summaries.length) {
+            return { error: "No revenue data available for chart generation" };
+          }
+          
+          // Sort by date and take recent data
+          const recentSummaries = summaries
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .slice(-limit);
+            
+          chartData = recentSummaries.map(summary => ({
+            name: summary.date,
+            value: Math.round(parseFloat(summary.nettTotal || "0")),
+            transactions: summary.transactionCount || 0
+          }));
+          
+          title = `Daily Revenue Trend (Last ${limit} Days)`;
+          description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing revenue over time`;
+          break;
+
+        case 'staff':
+          const operators = await storage.getOperators();
+          if (!operators.length) {
+            return { error: "No staff data available for chart generation" };
+          }
+          
+          chartData = operators
+            .filter(op => parseFloat(op.totalSales || "0") > 0)
+            .sort((a, b) => parseFloat(b.totalSales || "0") - parseFloat(a.totalSales || "0"))
+            .slice(0, limit)
+            .map(operator => ({
+              name: operator.name,
+              value: Math.round(parseFloat(operator.totalSales || "0")),
+              transactions: operator.transactionCount || 0
+            }));
+            
+          title = `Top ${limit} Staff by Sales Performance`;
+          description = `${chartType.charAt(0).toUpperCase() + chartType.slice(1)} chart showing staff performance`;
+          break;
+
+        default:
+          return { error: `Unknown data type: ${args.dataType}` };
+      }
+      
+      if (!chartData.length) {
+        return { error: `No data available for ${args.dataType} chart` };
+      }
+      
+      return {
+        chartType,
+        dataType: args.dataType,
+        metric,
+        title,
+        description,
+        data: chartData,
+        totalDataPoints: chartData.length,
+        config: {
+          xAxisKey: 'name',
+          yAxisKey: 'value',
+          colors: ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))']
+        }
+      };
+    } catch (error) {
+      console.error("Error generating chart:", error);
+      return { error: "Could not generate chart data" };
+    }
+  },
+
   getCustomerDetails: async (args: { customerName: string }) => {
     try {
       const customers = await storage.getCustomerSummaries();
@@ -733,7 +923,7 @@ const functions = {
 };
 
 // Main agent chat function with function calling and conversation memory
-export async function agentChat(message: string, conversationId: string, model: string = "gpt-4o-mini"): Promise<{ content: string }> {
+export async function agentChat(message: string, conversationId: string, model: string = "gpt-4o-mini"): Promise<{ content: string; chart?: any }> {
   try {
     // Get conversation history to maintain context
     const conversationHistory = await storage.getChatMessages(conversationId);
@@ -763,7 +953,18 @@ When users ask for general business overview, use getBusinessSummary.
 When users ask about staff performance, use getTopPerformingStaff.
 When users ask about specific staff members or refunds, use getStaffDetails.
 When users ask about top spending customers or customer spending patterns, use getTopSpendingCustomers.
-When users ask about specific customers, use getCustomerDetails.`
+When users ask about specific customers, use getCustomerDetails.
+When users ask about top selling products, use getTopSellingProducts.
+When users ask for product breakdown by category, use getProductSalesBreakdown.
+When users ask for charts, graphs, or visual data representations, use generateChart.
+
+CHART GENERATION GUIDANCE:
+- If user requests are unclear about chart type, ask for clarification or choose the most appropriate visualization
+- Use generateChart for visual data representations (area, bar, line, pie charts)
+- Area charts work well for trends over time (revenue, daily sales)
+- Bar charts work well for comparisons (top products, staff performance) 
+- Pie charts work well for category breakdowns
+- Line charts work well for time series trends`
       }
     ];
 
@@ -798,6 +999,7 @@ When users ask about specific customers, use getCustomerDetails.`
     // Handle function calls
     if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
       const functionResults = [];
+      let chartData = null;
       
       for (const toolCall of responseMessage.tool_calls) {
         const functionName = toolCall.function.name;
@@ -805,6 +1007,12 @@ When users ask about specific customers, use getCustomerDetails.`
         
         if (functions[functionName as keyof typeof functions]) {
           const result = await (functions as any)[functionName](functionArgs);
+          
+          // Check if this is chart generation
+          if (functionName === 'generateChart' && result && !result.error) {
+            chartData = result;
+          }
+          
           functionResults.push({
             tool_call_id: toolCall.id,
             content: JSON.stringify(result)
@@ -828,10 +1036,14 @@ When users ask about specific customers, use getCustomerDetails.`
         messages: finalMessages
       });
       
-      return { content: finalResponse.choices[0].message.content || "I couldn't generate a response." };
+      return { 
+        content: finalResponse.choices[0].message.content || "I couldn't generate a response.",
+        chart: chartData
+      };
+    } else {
+      // No function calls, return direct response
+      return { content: responseMessage.content || "I couldn't understand that request." };
     }
-    
-    return { content: responseMessage.content || "I couldn't generate a response." };
   } catch (error) {
     console.error("Agent chat error:", error);
     throw new Error("Failed to get AI response");

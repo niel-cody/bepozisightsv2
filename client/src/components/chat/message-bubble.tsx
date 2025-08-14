@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { ChartDisplay } from "@/components/charts/chart-display";
 
 // Function to format response text with Markdown-like formatting and sentiment colors
 function formatResponseText(text: string) {
@@ -102,11 +103,21 @@ export default function MessageBubble({ message, response, timestamp, chart }: M
             </div>
             
             {chart && (
-              <div className="mt-3 p-3 bg-background/50 rounded-lg border border-border/30">
-                <p className="text-xs text-muted-foreground mb-2 font-medium">Chart Data</p>
-                <pre className="text-xs text-foreground/80 whitespace-pre-wrap font-mono">
-                  {JSON.stringify(chart, null, 2)}
-                </pre>
+              <div className="mt-4">
+                {chart.error ? (
+                  <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
+                    <p className="text-sm text-red-700 dark:text-red-400">{chart.error}</p>
+                  </div>
+                ) : chart.data ? (
+                  <ChartDisplay chartData={chart} />
+                ) : (
+                  <div className="p-3 bg-background/50 rounded-lg border border-border/30">
+                    <p className="text-xs text-muted-foreground mb-2 font-medium">Chart Data</p>
+                    <pre className="text-xs text-foreground/80 whitespace-pre-wrap font-mono">
+                      {JSON.stringify(chart, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </div>
             )}
             
