@@ -109,9 +109,21 @@ export default function MessageBubble({ message, response, timestamp, chart }: M
                     <p className="text-sm text-red-700 dark:text-red-400">{chart.error}</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    <p className="text-xs text-blue-500">🔄 Force rendering chart: {chart.chartType} | Data items: {chart.data?.length || 0}</p>
-                    <ChartDisplay chartData={chart} />
+                  <div className="space-y-3 border-2 border-green-500 p-4 rounded-lg bg-green-50 dark:bg-green-950/20">
+                    <p className="text-sm font-bold text-green-700 dark:text-green-300">✅ CHART RENDERING FORCED</p>
+                    <p className="text-xs text-green-600">Chart Type: {chart.chartType} | Data Items: {chart.data?.length || 0}</p>
+                    <p className="text-xs text-green-600">Title: {chart.title}</p>
+                    
+                    <div className="border-2 border-blue-400 p-3 rounded bg-blue-50 dark:bg-blue-950/20">
+                      <p className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-2">📊 ChartDisplay Component Below:</p>
+                      <ChartDisplay chartData={chart} />
+                      <p className="text-sm text-blue-600 mt-2">⬆️ ChartDisplay component rendered above</p>
+                    </div>
+                    
+                    <div className="text-xs text-gray-600 space-y-1">
+                      <p>Debug: chartData prop passed = {JSON.stringify(!!chart)}</p>
+                      <p>Debug: data array length = {chart.data?.length}</p>
+                    </div>
                   </div>
                 )}
               </div>
