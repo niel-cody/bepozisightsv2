@@ -33,27 +33,23 @@ const COLORS = [
 ];
 
 export function ChartDisplay({ chartData }: ChartDisplayProps) {
-  console.log('🎯 ChartDisplay received:', chartData);
-  
   if (!chartData) {
-    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ No chartData prop</p></div>;
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        <p>No chart data available</p>
+      </div>
+    );
   }
   
   const { chartType, title, description, data, config } = chartData;
   
-  if (!data) {
-    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ No data in chartData</p></div>;
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        <p>No data available for visualization</p>
+      </div>
+    );
   }
-  
-  if (!Array.isArray(data)) {
-    return <div className="p-4 border border-red-500 rounded-lg"><p className="text-red-500">❌ Data is not array: {typeof data}</p></div>;
-  }
-  
-  if (data.length === 0) {
-    return <div className="p-4 border border-yellow-500 rounded-lg"><p className="text-yellow-500">⚠️ Data array is empty</p></div>;
-  }
-  
-  console.log('✅ ChartDisplay rendering with valid data:', { chartType, dataLength: data.length });
 
   const renderChart = () => {
     const commonProps = {
@@ -204,21 +200,16 @@ export function ChartDisplay({ chartData }: ChartDisplayProps) {
   };
 
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            {renderChart()}
-          </ResponsiveContainer>
-        </div>
-        <div className="mt-4 text-sm text-muted-foreground">
-          Data points: {data.length} | Chart type: {chartType}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="w-full">
+      <div className="h-80 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          {renderChart()}
+        </ResponsiveContainer>
+      </div>
+      <div className="mt-3 flex justify-between items-center text-xs text-muted-foreground">
+        <span>{data.length} data points</span>
+        <span className="capitalize">{chartType} chart</span>
+      </div>
+    </div>
   );
 }
