@@ -150,6 +150,7 @@ export default function ChatInterface({ currentConversationId: propConversationI
                 message={message.message}
                 response={message.response || ""}
                 timestamp={message.timestamp}
+                chart={message.chart}
               />
             )))
           )}
