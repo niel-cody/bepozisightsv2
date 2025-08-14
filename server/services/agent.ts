@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { storage } from "../storage";
 
-// Initialize OpenAI client directly with function calling
+// Initialize OpenAI client with function calling
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
 });
@@ -187,6 +187,15 @@ const tools = [
             type: "boolean",
             description: "Whether to compare performance across different venues",
             default: true
+          },
+          venueName: {
+            type: "string",
+            description: "Specific venue name to analyze (e.g., 'McBrew - QLD'). If provided, shows detailed breakdown for that venue only."
+          },
+          showDailyBreakdown: {
+            type: "boolean",
+            description: "Whether to show day-by-day breakdown instead of summary totals",
+            default: false
           }
         }
       }
@@ -212,6 +221,36 @@ const tools = [
           }
         },
         required: ["period"]
+      }
+    }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getVenueDailyBreakdown",
+      description: "Get daily breakdown of sales for a specific venue, showing each day's totals, transactions, and performance metrics",
+      parameters: {
+        type: "object",
+        properties: {
+          venueName: {
+            type: "string",
+            description: "Name of the venue to analyze (e.g., 'McBrew - QLD', 'McBrew - SYD')",
+            default: "McBrew - QLD"
+          },
+          period: {
+            type: "string",
+            description: "Time period to analyze: 'week', 'month', 'all'",
+            enum: ["week", "month", "all"],
+            default: "week"
+          },
+          chartType: {
+            type: "string",
+            description: "Type of chart to generate: 'area', 'bar', 'line'",
+            enum: ["area", "bar", "line"],
+            default: "bar"
+          }
+        },
+        required: ["venueName"]
       }
     }
   },
@@ -398,7 +437,7 @@ const functions = {
     }
   },
 
-  getVenueSales: async (args: { period?: string; compareVenues?: boolean }) => {
+  getVenueSales: async (args: { period?: string; compareVenues?: boolean; venueName?: string; showDailyBreakdown?: boolean }) => {
     try {
       const summaries = await storage.getDailySummaries();
       const period = args.period || "week";
@@ -412,6 +451,59 @@ const functions = {
       } else if (period === "month") {
         const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         filteredSummaries = summaries.filter(s => new Date(s.date) >= monthAgo);
+      }
+      
+      // Handle venue-specific requests
+      if (args.venueName) {
+        const venueSummaries = filteredSummaries.filter(s => 
+          s.venue?.toLowerCase().includes(args.venueName!.toLowerCase())
+        );
+        
+        if (!venueSummaries.length) {
+          return { error: `No data found for venue: ${args.venueName}` };
+        }
+        
+        if (args.showDailyBreakdown) {
+          const dailyData = venueSummaries
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .map(summary => ({
+              date: summary.date,
+              revenue: parseFloat(summary.nettTotal || "0"),
+              transactions: summary.transactionCount || 0,
+              avgTransactionValue: summary.transactionCount > 0 ? 
+                parseFloat(summary.nettTotal || "0") / summary.transactionCount : 0
+            }));
+          
+          const totalRevenue = dailyData.reduce((sum, day) => sum + day.revenue, 0);
+          const totalTransactions = dailyData.reduce((sum, day) => sum + day.transactions, 0);
+          
+          return {
+            venueName: args.venueName,
+            period: period,
+            dailyBreakdown: dailyData,
+            summary: {
+              totalRevenue,
+              totalTransactions,
+              avgDailyRevenue: dailyData.length > 0 ? totalRevenue / dailyData.length : 0,
+              avgTransactionValue: totalTransactions > 0 ? totalRevenue / totalTransactions : 0,
+              daysAnalyzed: dailyData.length
+            }
+          };
+        }
+        
+        // Return venue summary if not requesting daily breakdown
+        const totalSales = venueSummaries.reduce((sum, s) => sum + parseFloat(s.nettTotal || "0"), 0);
+        const totalTransactions = venueSummaries.reduce((sum, s) => sum + (s.transactionCount || 0), 0);
+        
+        return {
+          venueName: args.venueName,
+          period: period,
+          totalSales,
+          totalTransactions,
+          avgDailySales: venueSummaries.length > 0 ? totalSales / venueSummaries.length : 0,
+          avgTransactionValue: totalTransactions > 0 ? totalSales / totalTransactions : 0,
+          daysAnalyzed: venueSummaries.length
+        };
       }
       
       if (compareVenues) {
@@ -980,6 +1072,102 @@ const functions = {
     }
   },
 
+  getVenueDailyBreakdown: async (args: { 
+    venueName: string; 
+    period?: string; 
+    chartType?: string 
+  }) => {
+    try {
+      const summaries = await storage.getDailySummaries();
+      
+      if (!summaries.length) {
+        return { error: "No daily summary data available for venue analysis" };
+      }
+      
+      // Filter by venue
+      const venueSummaries = summaries.filter(s => 
+        s.venue?.toLowerCase().includes(args.venueName.toLowerCase())
+      );
+      
+      if (!venueSummaries.length) {
+        return { error: `No data found for venue: ${args.venueName}` };
+      }
+      
+      // Filter by period
+      const now = new Date();
+      let periodStart: Date;
+      
+      switch (args.period) {
+        case 'week':
+          periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case 'month':
+          periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        default:
+          periodStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      }
+      
+      const filteredSummaries = venueSummaries.filter(s => 
+        new Date(s.date) >= periodStart
+      ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      if (!filteredSummaries.length) {
+        return { error: `No recent data found for ${args.venueName} in the specified period` };
+      }
+      
+      // Create daily breakdown data
+      const dailyData = filteredSummaries.map(summary => ({
+        date: summary.date,
+        revenue: parseFloat(summary.nettTotal || "0"),
+        transactions: summary.transactionCount || 0,
+        avgTransactionValue: summary.transactionCount > 0 ? 
+          parseFloat(summary.nettTotal || "0") / summary.transactionCount : 0
+      }));
+      
+      // Generate chart data
+      const chartData = dailyData.map(day => ({
+        name: day.date,
+        value: Math.round(day.revenue),
+        transactions: day.transactions,
+        avgTransaction: Math.round(day.avgTransactionValue)
+      }));
+      
+      const totalRevenue = dailyData.reduce((sum, day) => sum + day.revenue, 0);
+      const totalTransactions = dailyData.reduce((sum, day) => sum + day.transactions, 0);
+      
+      return {
+        venueName: args.venueName,
+        period: args.period || 'week',
+        dailyBreakdown: dailyData,
+        chart: {
+          chartType: args.chartType || 'bar',
+          dataType: 'daily_venue_breakdown',
+          metric: 'revenue',
+          title: `${args.venueName} - Daily Sales (Last ${args.period || 'Week'})`,
+          description: `${(args.chartType || 'bar').charAt(0).toUpperCase() + (args.chartType || 'bar').slice(1)} chart showing daily performance for ${args.venueName}`,
+          data: chartData,
+          totalDataPoints: chartData.length,
+          config: {
+            xAxisKey: 'name',
+            yAxisKey: 'value',
+            colors: ['#3B82F6', '#60A5FA', '#1D4ED8', '#06B6D4', '#8B5CF6']
+          }
+        },
+        summary: {
+          totalRevenue,
+          totalTransactions,
+          avgDailyRevenue: dailyData.length > 0 ? totalRevenue / dailyData.length : 0,
+          avgTransactionValue: totalTransactions > 0 ? totalRevenue / totalTransactions : 0,
+          daysAnalyzed: dailyData.length
+        }
+      };
+    } catch (error) {
+      console.error("Error getting venue daily breakdown:", error);
+      return { error: "Could not retrieve venue daily breakdown data" };
+    }
+  },
+
   getCustomerDetails: async (args: { customerName: string }) => {
     try {
       const customers = await storage.getCustomerSummaries();
@@ -1048,7 +1236,44 @@ const functions = {
   }
 };
 
-// Main agent chat function with function calling and conversation memory
+// Add venue sales function to existing tools array
+const venueToolDefinition = {
+  type: "function" as const,
+  function: {
+    name: "getVenueSales",
+    description: "Get venue sales data with optional daily breakdown for specific venues like McBrew - QLD",
+    parameters: {
+      type: "object",
+      properties: {
+        period: {
+          type: "string",
+          description: "Time period: 'week', 'month'",
+          enum: ["week", "month"],
+          default: "week"
+        },
+        compareVenues: {
+          type: "boolean", 
+          description: "Whether to compare multiple venues",
+          default: false
+        },
+        venueName: {
+          type: "string",
+          description: "Specific venue name to analyze (e.g., 'McBrew - QLD')"
+        },
+        showDailyBreakdown: {
+          type: "boolean",
+          description: "Whether to show daily breakdown for the venue",
+          default: false
+        }
+      }
+    }
+  }
+};
+
+// Add venue tool to existing tools
+tools.push(venueToolDefinition);
+
+// Main agent chat function with enhanced venue sales functionality  
 export async function agentChat(message: string, conversationId: string, model: string = "gpt-4o-mini"): Promise<{ content: string; chart?: any }> {
   try {
     // Get conversation history to maintain context
@@ -1059,44 +1284,23 @@ export async function agentChat(message: string, conversationId: string, model: 
       {
         role: "system" as const,
         content: `You are Alex, a virtual manager AI assistant for a Point of Sale (POS) system. 
-        
+
 Your role is to help analyze business data and provide insights about sales, staff performance, and operations.
 
+IMPORTANT: Maintain conversation context. When users ask follow-up questions like "did he also do refunds?" or mention names like "Brendan Catering", refer back to previous messages in the conversation to understand what they're referring to.
+
 You have access to these functions to get real business data:
-- getRevenueComparison: Compare revenue across time periods
-- getBusinessSummary: Get overall business metrics and today's performance  
-- getTopPerformingStaff: Get information about top performing staff members
-- getStaffDetails: Get detailed information about a specific staff member
-- getTopSpendingCustomers: Get customers who spent the most money in a given time period
-- getCustomerDetails: Get detailed information about a specific customer including transaction history
+- getVenueSales: Get venue sales data with optional daily breakdown for specific venues like McBrew - QLD
+- generateChart: Generate charts for visual data representation - MANDATORY for any chart requests
 
-IMPORTANT: Maintain conversation context. When users ask follow-up questions like "did he also do refunds?" or mention names like "Brendan Catering", refer back to previous messages in the conversation to understand what they're referring to. Use getStaffDetails to get specific information about staff members mentioned in conversation.
+MANDATORY VENUE ANALYTICS RULES - CRITICAL:
+- RULE 1: If message mentions venue sales + daily → MUST call getVenueSales with showDailyBreakdown=true
+- RULE 2: If message contains "McBrew QLD" or "McBrew - QLD" → call getVenueSales with venueName="McBrew - QLD"
+- RULE 3: If message contains "chart" → MUST call generateChart function
+- RULE 4: For venue daily breakdown → call getVenueSales(venueName="McBrew - QLD", showDailyBreakdown=true, period="week")
+- RULE 5: Text responses for chart requests are FORBIDDEN - generateChart is MANDATORY
 
-Use these functions to answer questions with real data. Be conversational, friendly, and provide actionable insights.
-
-When users ask about revenue comparisons, use getRevenueComparison.
-When users ask for general business overview, use getBusinessSummary.
-When users ask about staff performance, use getTopPerformingStaff.
-When users ask about specific staff members or refunds, use getStaffDetails.
-When users ask about top spending customers or customer spending patterns, use getTopSpendingCustomers.
-When users ask about specific customers, use getCustomerDetails.
-When users ask about top selling products, use getTopSellingProducts.
-When users ask for product breakdown by category, use getProductSalesBreakdown.
-When users ask for charts, graphs, or visual data representations, use generateChart.
-
-MANDATORY CHART GENERATION RULES - CRITICAL:
-- RULE 1: If message contains "chart" → MUST call generateChart function
-- RULE 2: If message contains "bar chart" → generateChart(chartType='bar', dataType='products', limit=5)
-- RULE 3: If message contains "pie chart" → generateChart(chartType='pie', dataType='categories')
-- RULE 4: If message contains "top products" → generateChart(chartType='bar', dataType='products', limit=5)
-- RULE 5: If message contains "categories" → generateChart(chartType='pie', dataType='categories')
-- RULE 6: Text responses for chart requests are FORBIDDEN - generateChart is MANDATORY
-- RULE 7: Before responding to ANY chart request, FIRST call generateChart function
-
-ABSOLUTE REQUIREMENT: For "create a bar chart of top 5 products" you MUST call:
-generateChart(chartType='bar', dataType='products', limit=5)
-
-FAILURE TO CALL generateChart FOR CHART REQUESTS IS A CRITICAL ERROR`
+ABSOLUTE REQUIREMENT: Always use functions to get real data before responding.`
       }
     ];
 
@@ -1123,7 +1327,7 @@ FAILURE TO CALL generateChart FOR CHART REQUESTS IS A CRITICAL ERROR`
       model: model,
       messages: messages,
       tools: tools,
-      tool_choice: message.toLowerCase().includes('chart') ? { type: "function", function: { name: "generateChart" } } : "auto"
+      tool_choice: message.toLowerCase().includes('chart') || message.toLowerCase().includes('venue') ? "required" : "auto"
     });
 
     const responseMessage = response.choices[0].message;
@@ -1138,8 +1342,8 @@ FAILURE TO CALL generateChart FOR CHART REQUESTS IS A CRITICAL ERROR`
         const functionName = toolCall.function.name;
         const functionArgs = JSON.parse(toolCall.function.arguments);
         
-        if (functions[functionName as keyof typeof functions]) {
-          const result = await (functions as any)[functionName](functionArgs);
+        if (functionImplementations[functionName as keyof typeof functionImplementations]) {
+          const result = await (functionImplementations as any)[functionName](functionArgs);
           
           // Check if this is chart generation
           if (functionName === 'generateChart' && result && !result.error) {
