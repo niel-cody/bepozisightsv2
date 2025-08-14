@@ -108,15 +108,19 @@ export default function MessageBubble({ message, response, timestamp, chart }: M
                   <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800">
                     <p className="text-sm text-red-700 dark:text-red-400">{chart.error}</p>
                   </div>
-                ) : chart.chartType && chart.data && Array.isArray(chart.data) && chart.data.length > 0 ? (
-                  <ChartDisplay chartData={chart} />
+                ) : chart && chart.chartType && chart.data && Array.isArray(chart.data) && chart.data.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-xs text-green-500">✓ Chart rendering: {chart.chartType} | {chart.data.length} items</p>
+                    <ChartDisplay chartData={chart} />
+                  </div>
                 ) : (
                   <div className="p-3 bg-background/50 rounded-lg border border-border/30">
                     <p className="text-xs text-muted-foreground mb-2 font-medium">Chart Debug Info</p>
                     <p className="text-xs text-foreground/80 mb-2">
                       Chart Type: {chart.chartType || 'undefined'} | 
                       Data: {chart.data ? `${chart.data.length} items` : 'undefined'} | 
-                      Is Array: {Array.isArray(chart.data) ? 'yes' : 'no'}
+                      Is Array: {Array.isArray(chart.data) ? 'yes' : 'no'} |
+                      Condition Check: chartType={!!chart.chartType}, data={!!chart.data}, isArray={Array.isArray(chart.data)}, length={chart.data?.length || 0}
                     </p>
                     <pre className="text-xs text-foreground/80 whitespace-pre-wrap font-mono">
                       {JSON.stringify(chart, null, 2)}
