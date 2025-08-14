@@ -35,6 +35,14 @@ const COLORS = [
 export function ChartDisplay({ chartData }: ChartDisplayProps) {
   const { chartType, title, description, data, config } = chartData;
 
+  if (!chartData || !data || !Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="p-4 border border-border/50 rounded-lg bg-muted/20">
+        <p className="text-sm text-muted-foreground">No chart data available</p>
+      </div>
+    );
+  }
+
   const renderChart = () => {
     const commonProps = {
       data,
