@@ -148,6 +148,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product Sales CSV Upload endpoint
+  app.post('/api/upload/product-sales', async (req, res) => {
+    try {
+      const { data } = req.body;
+      
+      if (!data || !Array.isArray(data)) {
+        return res.status(400).json({ error: 'Invalid CSV data' });
+      }
+
+      const validRecords = data.filter(row => 
+        row.Date && row.Venue && row.product_name && row.size && 
+        row.catergory && row.reporting_group && row.qty_sold !== undefined
+      );
+
+      if (validRecords.length === 0) {
+        return res.status(400).json({ error: 'No valid product sales records found' });
+      }
+
+      // Transform CSV data to match database schema
+      const productSalesData = validRecords.map(row => ({
+        date: row.Date,
+        venue: row.Venue,
+        productName: row.product_name,
+        size: row.size,
+        category: row.catergory, // keeping original spelling from CSV
+        reportingGroup: row.reporting_group,
+        qtySold: parseInt(row.qty_sold) || 0,
+        nettSales: parseFloat(row.nett_sales) || 0,
+        discountQty: parseInt(row.discount_qty) || 0,
+        discountAmount: parseFloat(row.discount_amount) || 0,
+        refundQty: parseInt(row.refund_qty) || 0,
+        refundAmount: parseFloat(row.refund_amount) || 0,
+      }));
+
+      await storage.insertProductSales(productSalesData);
+
+      res.json({ 
+        message: `Successfully imported ${productSalesData.length} product sales records`,
+        imported: productSalesData.length,
+        total: data.length
+      });
+    } catch (error) {
+      console.error('Product sales upload error:', error);
+      res.status(500).json({ error: 'Failed to upload product sales data' });
+    }
+  });
+
   // CSV Import endpoint
   app.post("/api/import/csv", async (req, res) => {
     try {

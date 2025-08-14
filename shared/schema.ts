@@ -35,6 +35,24 @@ export const operatorSummaries = pgTable("operator_summaries", {
   lastTransactionDate: timestamp("last_transaction_date"),
 });
 
+// Product sales table - matches McBrew sales CSV format exactly
+export const productSales = pgTable("product_sales", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  date: text("date").notNull(), // 2020-08-15
+  venue: text("venue").notNull(), // McBrew - QLD
+  productName: text("product_name").notNull(), // Espresso, Latte, etc.
+  size: text("size").notNull(), // Small, Medium, Large, Regular
+  category: text("catergory").notNull(), // Coffee, Hotdog, Pastry (keeping original spelling)
+  reportingGroup: text("reporting_group").notNull(), // Beverage, Food, Bakery
+  qtySold: integer("qty_sold").notNull(),
+  nettSales: decimal("nett_sales", { precision: 10, scale: 2 }).notNull(),
+  discountQty: integer("discount_qty").default(0),
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }).default("0.00"),
+  refundQty: integer("refund_qty").default(0),
+  refundAmount: decimal("refund_amount", { precision: 10, scale: 2 }).default("0.00"),
+});
+
+// Legacy products table for backwards compatibility - keeping simple structure
 export const products = pgTable("products", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -116,6 +134,10 @@ export const insertTillSummarySchema = createInsertSchema(tillSummaries).omit({
   id: true,
 });
 
+export const insertProductSalesSchema = createInsertSchema(productSales).omit({
+  id: true,
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
 });
@@ -172,6 +194,8 @@ export type InsertTill = z.infer<typeof insertTillSchema>;
 export type Till = typeof tills.$inferSelect;
 export type InsertOperatorSummary = z.infer<typeof insertOperatorSummarySchema>;
 export type OperatorSummary = typeof operatorSummaries.$inferSelect;
+export type InsertProductSales = z.infer<typeof insertProductSalesSchema>;
+export type ProductSales = typeof productSales.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;

@@ -50,7 +50,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ChatInterface from "@/components/chat/chat-interface";
-import CSVUpload from "@/components/import/csv-upload";
+import { CSVUpload } from "@/components/csv-upload";
 import { useConversations, useCreateConversation, useDeleteConversation } from "@/hooks/useConversations";
 import { SalesOverview } from "@/components/sales/sales-overview";
 import { CalendarHeatmap } from "@/components/sales/calendar-heatmap";

@@ -8,6 +8,8 @@ import {
   type InsertOperatorSummary,
   type Product,
   type InsertProduct,
+  type ProductSales,
+  type InsertProductSales,
   type Transaction,
   type InsertTransaction,
   type TillSummary,
@@ -19,6 +21,7 @@ import {
   tills,
   operatorSummaries,
   products,
+  productSales,
   transactions,
   tillSummaries,
   customerSummaries,
@@ -168,6 +171,17 @@ export class PostgresStorage implements IStorage {
       await db.delete(chatMessages).where(eq(chatMessages.conversationId, conversationId));
     } else {
       await db.delete(chatMessages);
+    }
+  }
+
+  // Product Sales methods
+  async getProductSales(): Promise<ProductSales[]> {
+    return await db.select().from(productSales);
+  }
+
+  async insertProductSales(productSalesData: InsertProductSales[]): Promise<void> {
+    if (productSalesData.length > 0) {
+      await db.insert(productSales).values(productSalesData);
     }
   }
 }

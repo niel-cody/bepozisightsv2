@@ -7,6 +7,8 @@ import {
   type InsertOperatorSummary,
   type Product,
   type InsertProduct,
+  type ProductSales,
+  type InsertProductSales,
   type Transaction,
   type InsertTransaction,
   type TillSummary,
@@ -37,6 +39,10 @@ export interface IStorage {
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
+  
+  // Product Sales
+  getProductSales(): Promise<ProductSales[]>;
+  insertProductSales(productSales: InsertProductSales[]): Promise<void>;
   
   getTransactions(): Promise<Transaction[]>;
   getTransactionsByDate(date: string): Promise<Transaction[]>;
@@ -412,6 +418,16 @@ export class MemStorage implements IStorage {
       // Clear all messages
       this.chatMessages.clear();
     }
+  }
+
+  // Product Sales methods
+  async getProductSales(): Promise<ProductSales[]> {
+    return [];
+  }
+
+  async insertProductSales(productSales: InsertProductSales[]): Promise<void> {
+    // MemStorage doesn't persist product sales data
+    console.log(`MemStorage: Would insert ${productSales.length} product sales records`);
   }
 }
 
