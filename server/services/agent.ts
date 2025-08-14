@@ -86,6 +86,51 @@ const tools = [
   {
     type: "function" as const,
     function: {
+      name: "getTopSellingProducts",
+      description: "Get the top selling products by quantity sold or revenue",
+      parameters: {
+        type: "object",
+        properties: {
+          metric: {
+            type: "string",
+            description: "Sort by 'quantity' or 'revenue'",
+            enum: ["quantity", "revenue"],
+            default: "quantity"
+          },
+          limit: {
+            type: "number",
+            description: "Number of top products to return",
+            default: 10
+          }
+        }
+      }
+    }
+  },
+  {
+    type: "function" as const,
+    function: {
+      name: "getProductSalesBreakdown",
+      description: "Get detailed product sales breakdown with categories, sizes, and revenue",
+      parameters: {
+        type: "object",
+        properties: {
+          category: {
+            type: "string",
+            description: "Filter by product category (Coffee, Hotdog, Pastry, etc.)",
+            default: null
+          },
+          venue: {
+            type: "string", 
+            description: "Filter by venue name",
+            default: null
+          }
+        }
+      }
+    }
+  },
+  {
+    type: "function" as const,
+    function: {
       name: "getVenueSales",
       description: "Get sales performance data for venues/locations including daily summaries, gross sales, transaction counts, and venue comparisons",
       parameters: {
@@ -490,6 +535,132 @@ const functions = {
     } catch (error) {
       console.error("Error getting top spending customers:", error);
       return { error: "Could not retrieve customer spending data" };
+    }
+  },
+
+  getTopSellingProducts: async (args: { metric?: string; limit?: number }) => {
+    try {
+      const productSales = await storage.getProductSales();
+      
+      if (!productSales.length) {
+        return { error: "No product sales data available. Upload CSV data to see top selling products." };
+      }
+      
+      // Group by product name and size, then aggregate
+      const productStats = productSales.reduce((acc, sale) => {
+        const key = `${sale.productName} - ${sale.size}`;
+        if (!acc[key]) {
+          acc[key] = {
+            productName: sale.productName,
+            size: sale.size,
+            category: sale.category,
+            reportingGroup: sale.reportingGroup,
+            totalQuantity: 0,
+            totalRevenue: 0,
+            discountQty: 0,
+            discountAmount: 0,
+            refundQty: 0,
+            refundAmount: 0,
+            venue: sale.venue
+          };
+        }
+        
+        acc[key].totalQuantity += sale.qtySold || 0;
+        acc[key].totalRevenue += parseFloat(sale.nettSales || "0");
+        acc[key].discountQty += sale.discountQty || 0;
+        acc[key].discountAmount += parseFloat(sale.discountAmount || "0");
+        acc[key].refundQty += sale.refundQty || 0;
+        acc[key].refundAmount += parseFloat(sale.refundAmount || "0");
+        
+        return acc;
+      }, {} as Record<string, any>);
+      
+      // Convert to array and sort
+      const products = Object.values(productStats);
+      const sortField = args.metric === 'revenue' ? 'totalRevenue' : 'totalQuantity';
+      const sortedProducts = products
+        .sort((a: any, b: any) => b[sortField] - a[sortField])
+        .slice(0, args.limit || 10);
+      
+      return {
+        metric: args.metric || 'quantity',
+        products: sortedProducts,
+        totalProductsAnalyzed: products.length,
+        summary: {
+          totalQuantity: products.reduce((sum: number, p: any) => sum + p.totalQuantity, 0),
+          totalRevenue: products.reduce((sum: number, p: any) => sum + p.totalRevenue, 0),
+          topProduct: sortedProducts[0] ? `${sortedProducts[0].productName} - ${sortedProducts[0].size}` : null
+        }
+      };
+    } catch (error) {
+      console.error("Error getting top selling products:", error);
+      return { error: "Could not retrieve product sales data" };
+    }
+  },
+
+  getProductSalesBreakdown: async (args: { category?: string; venue?: string }) => {
+    try {
+      const productSales = await storage.getProductSales();
+      
+      if (!productSales.length) {
+        return { error: "No product sales data available. Upload CSV data to see product breakdown." };
+      }
+      
+      // Filter by category and venue if specified
+      let filteredSales = productSales;
+      if (args.category) {
+        filteredSales = filteredSales.filter(sale => 
+          sale.category.toLowerCase().includes(args.category!.toLowerCase())
+        );
+      }
+      if (args.venue) {
+        filteredSales = filteredSales.filter(sale => 
+          sale.venue.toLowerCase().includes(args.venue!.toLowerCase())
+        );
+      }
+      
+      // Group by category
+      const categoryBreakdown = filteredSales.reduce((acc, sale) => {
+        const category = sale.category;
+        if (!acc[category]) {
+          acc[category] = {
+            category,
+            totalQuantity: 0,
+            totalRevenue: 0,
+            uniqueProducts: new Set(),
+            products: []
+          };
+        }
+        
+        acc[category].totalQuantity += sale.qtySold || 0;
+        acc[category].totalRevenue += parseFloat(sale.nettSales || "0");
+        acc[category].uniqueProducts.add(`${sale.productName} - ${sale.size}`);
+        
+        return acc;
+      }, {} as Record<string, any>);
+      
+      // Convert sets to counts and prepare response
+      const breakdown = Object.values(categoryBreakdown).map((cat: any) => ({
+        category: cat.category,
+        totalQuantity: cat.totalQuantity,
+        totalRevenue: cat.totalRevenue,
+        uniqueProducts: cat.uniqueProducts.size,
+        avgRevenuePerItem: cat.totalQuantity > 0 ? cat.totalRevenue / cat.totalQuantity : 0
+      })).sort((a: any, b: any) => b.totalRevenue - a.totalRevenue);
+      
+      return {
+        filters: { category: args.category, venue: args.venue },
+        breakdown,
+        summary: {
+          totalCategories: breakdown.length,
+          totalQuantity: breakdown.reduce((sum: number, cat: any) => sum + cat.totalQuantity, 0),
+          totalRevenue: breakdown.reduce((sum: number, cat: any) => sum + cat.totalRevenue, 0),
+          topCategory: breakdown[0]?.category || null
+        }
+      };
+    } catch (error) {
+      console.error("Error getting product sales breakdown:", error);
+      return { error: "Could not retrieve product breakdown data" };
     }
   },
 
