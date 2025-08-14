@@ -956,16 +956,19 @@ When users ask about top selling products, use getTopSellingProducts.
 When users ask for product breakdown by category, use getProductSalesBreakdown.
 When users ask for charts, graphs, or visual data representations, use generateChart.
 
-CHART GENERATION REQUIREMENTS:
-- ALWAYS use generateChart when users ask for charts, graphs, visualizations, or visual representations
-- When users say "show me a chart", "create a chart", "visualize", or similar, you MUST call generateChart
-- For product analysis: use generateChart with dataType='products' 
-- For category breakdown: use generateChart with dataType='categories'
-- For revenue trends: use generateChart with dataType='revenue'
-- For staff performance: use generateChart with dataType='staff'
-- Choose appropriate chartType: 'area' for trends, 'bar' for comparisons, 'pie' for breakdowns, 'line' for time series
-- If user doesn't specify chart type, choose the most appropriate one and use generateChart
-- NEVER just describe charts - always generate them using the generateChart function`
+MANDATORY CHART GENERATION RULES - CRITICAL:
+- RULE 1: If message contains "chart" → MUST call generateChart function
+- RULE 2: If message contains "bar chart" → generateChart(chartType='bar', dataType='products', limit=5)
+- RULE 3: If message contains "pie chart" → generateChart(chartType='pie', dataType='categories')
+- RULE 4: If message contains "top products" → generateChart(chartType='bar', dataType='products', limit=5)
+- RULE 5: If message contains "categories" → generateChart(chartType='pie', dataType='categories')
+- RULE 6: Text responses for chart requests are FORBIDDEN - generateChart is MANDATORY
+- RULE 7: Before responding to ANY chart request, FIRST call generateChart function
+
+ABSOLUTE REQUIREMENT: For "create a bar chart of top 5 products" you MUST call:
+generateChart(chartType='bar', dataType='products', limit=5)
+
+FAILURE TO CALL generateChart FOR CHART REQUESTS IS A CRITICAL ERROR`
       }
     ];
 
@@ -992,7 +995,7 @@ CHART GENERATION REQUIREMENTS:
       model: model,
       messages: messages,
       tools: tools,
-      tool_choice: "auto"
+      tool_choice: message.toLowerCase().includes('chart') ? { type: "function", function: { name: "generateChart" } } : "auto"
     });
 
     const responseMessage = response.choices[0].message;
